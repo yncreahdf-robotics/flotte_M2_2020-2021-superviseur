@@ -1,4 +1,4 @@
-# Docker ROS Superviseur Image
+# Docker ROS Base Image
 
 This is a Docker Image.
 
@@ -6,7 +6,7 @@ This is a Docker Image.
 -Docker Desktop(for Windows or Mac)
 -Docker Engine (for Linux)
 
-## Getting Started !
+## Getting Started to work !
 
 First clone this image :
     
@@ -16,7 +16,7 @@ Then build the image using Docker
 
     docker build --tag ros:mykinetic 
 
-Next go to your wanted directory and pull your repo in this directory.
+Next go to your wanted directory and pull your repo from your branche to one directory.
 
     git pull <yourrepo>
 
@@ -32,10 +32,27 @@ Then check with:
 
     docker network ls
 
+Move to your the directory that contain your "workspace" folder
+
+    cd <path>
 
 Finally run your image
 
-    docker run --rm -it --net ros -e WORKSPACE_NAME=workspace -v $(pwd)/workspace:/root/workspace -w /root/workspace/catkin_ws ros:<yourimagename>
+    docker run --rm -it --net ros -e ROS_MASTER_URI=http://roscore:11311 -e WORKSPACE_NAME=workspace -v $(pwd)/workspace:/root/workspace -w /root/workspace/catkin_ws ros:<yourimagename>
+
+You are now in your docker container running your programs and nodes.
+You can modify the files directly from the shared folder "workspace" that you have pulled from github and use docker as your developpement environnement.
+
+## Save your work
+First commit your work:
+
+    git commit
+
+Push your local repository containing the "workspace" folder to your branch
+
+    git push <your repo>
+
+
 
 
 
@@ -43,56 +60,4 @@ sudo docker login https://docker.pkg.github.com -u USERNAME -p PASSWORD
 
 
 Now you are ready for next section.
-
-## Launch
-
-The wokspace folder contains all your dependencies.
-Now you can launch all your Ros command and developp your nodes.
----------------------------
-
-## ROS Nodes
-
-Here is a list of the nodes :
-- drive
-- odom
-- controller
-- joy_node (from external package xbox_controller)
-
-### drive
-- **Sets up the communication** between the computer and the physical **RoboteQ drivers**. 
-- Sends **commands** to control the **motors** via the drivers.
-- Gets **feedbacks** from **encoders** and publishes them. 
-
-> Based on the API provided by RoboteQ the drivers manufacturer.
-
-### odom
-**Computes** and **publishes** odometry over ROS using tf.
-
-### controller
-Translates inputs from **Xbox controller** to Twist to make the robot move.
-
-*Useful command :*
-
-    rosnode info <node>
-
----------------------------
-## Useful ROS Topics
-
-Topics are defined under a **namespace**. If you have a fleet of robots that operate on one **ROS_MASTER**, you will have those topics preceded by the name of each robot.
-
-> **For example :** My robot is named Heron01
-The following topics will be `/Heron01/...`
-
-|Topic|message type|Publisher Node|Subscriber Node|
-|---|:---|:---|:---|
-|`cmd_vel`|*Twist*|controller|drive|
-|`odom`|*Odometry*| odom|
-|`sensor_encs`|custom|drive|odom|
-|`joy`|*Joy*|joy_node (from external package)|controller|
-
-*Useful commands :*
-
-    rostopic list
-    rostopic echo <topic>
-    rostopic pub <topic> <message type> <data>
 
