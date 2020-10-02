@@ -70,14 +70,3 @@ if __name__ == '__main__':
 	create_command_tb()
 	check_command_tb()
 
-	insert_command(1, 1, 3)
-	insert_command(1, 2, 1)
-	insert_command(1, 2, 1)
-	insert_command(1, 3, 2)
-	insert_command(2, 1, 2)
-	get_command(1)
-	delete_command(1)
-	delete_command(2)
-
-
-	#delete_command_db()
