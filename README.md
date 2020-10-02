@@ -6,6 +6,29 @@ This is a Docker Image.
 -Docker Desktop(for Windows or Mac)
 -Docker Engine (for Linux)
 
+## Getting basic auth credentials
+
+In case of getting the error "no basic auth credentials"
+
+- Go to https://github.com/settings/tokens
+
+- Generate new token
+
+- Name it
+
+- Check write:packages
+
+- Generate token
+
+- Save it on your computer !
+
+Now you need to login to the repo with your token, open a terminal :
+
+    docker login docker.pkg.github.com -u <UserNameOfYourGitHub>
+
+Password is your freshly generated token. You can now start to pull the image
+
+
 ## Getting Started to work !
 
 First clone this image :
@@ -14,7 +37,8 @@ First clone this image :
 
 Then build the image using Docker
 
-    docker build --tag ros:mykinetic 
+    docker build --tag ros:mykinetic .
+(Dot is important !)
 
 Next go to your wanted directory and pull your repo from your branche to one directory.
 
