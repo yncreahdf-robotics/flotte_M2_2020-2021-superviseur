@@ -77,11 +77,10 @@ if __name__ == '__main__':
 	create_article_tb()
 	check_article_tb()
 
-"""
+
 	insert_article('Coca Cola', 'Boisson marron et pétillante', 2, 50)
 	insert_article('Whisky','Boisson saine pour la santé', 3, 10)
 	insert_article('Jagger','Boisson divine', 1, 100)
 	get_all_Articles();
 	delete_Article('Whisky')
 	delete_command_db()
-"""
