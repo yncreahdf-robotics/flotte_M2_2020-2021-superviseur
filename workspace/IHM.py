@@ -4,7 +4,7 @@ import curses
 import subprocess
 import os
 import time
-import CommandeSQL
+#import CommandeSQL
 
 #Menus
 menu_accueil = ["Customer","Employee"]
@@ -132,10 +132,10 @@ def main(stdscr):
 	print_menu(stdscr, current_row, menu)
 	
 
-	create_command_db()
-	check_command_db()
-	create_command_tb()
-	check_command_tb()
+	#create_command_db()
+	#check_command_db()
+	#create_command_tb()
+	#check_command_tb()
 
 
 	while 1:
