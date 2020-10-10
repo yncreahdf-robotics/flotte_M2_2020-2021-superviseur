@@ -1,0 +1,14 @@
+[Unit]
+Description=Lancement de l'ecoute sur le topic... En attente d'un ordre...
+After=multi-user.target
+
+[Service]
+TimeoutSec=50min
+User=nassima
+Group=nassima
+Type=simple
+Restart=always
+ExecStart=/usr/bin/python /home/nassima/Bureau/heronReception.py
+
+[Install]
+WantedBy=default.target

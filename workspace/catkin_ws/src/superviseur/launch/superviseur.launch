@@ -1,0 +1,4 @@
+<launch>
+	<node name="drive" pkg="robotino_rest_node" type="omnidrive.py" output="screen"/>
+	<node name="square" pkg="superviseur" type="square.py" output="screen"/>
+</launch>

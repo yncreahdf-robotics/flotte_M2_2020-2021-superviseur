@@ -1,0 +1,13 @@
+[Unit]
+Description = Ecoute des donnees du robot…
+After = multi-user.target
+[Service]
+Type = simple
+User = nassima
+Group = nassima
+Restart = always
+TimeOutSec = 5min
+ExecStart = /usr/bin/python /home/nassima/Bureau/superviseurReception.py
+[Install]
+WantedBy = default.target
+

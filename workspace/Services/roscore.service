@@ -1,0 +1,13 @@
+
+[Unit]
+
+After=multi-user.target
+[Service]
+Type=forking
+User=nassima
+Group=nassima
+ExecStart=/bin/bash /usr/local/bin/roscoreservice.sh
+Restart=always
+TimeoutSec=50min
+[Install]
+WantedBy=default.target

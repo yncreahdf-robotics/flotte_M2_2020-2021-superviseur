@@ -12,7 +12,7 @@ def on_connect(client, userdata, flags, rc):
                 print("ok")
         else:
                 print("no")
-        client.subscribe("topic/OrdreRobot", qos=0)
+        client.subscribe("topic/donneesRobots", qos=0)
 
 def on_disconnect(client, userdata, rc):
 
@@ -25,8 +25,7 @@ def on_message(client, userdata, msg):
         print("message topic=",msg.topic)
         print("message qos=",msg.qos)
         print("message retain flag=",msg.retain)
-        if ((str(msg.payload.decode("utf-8")))=="1"):
-		os.system("bash /home/nassima/Bureau/superviseur.sh")
+
 
 if __name__ == '__main__':
 
