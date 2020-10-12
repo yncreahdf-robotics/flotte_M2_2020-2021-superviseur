@@ -1,20 +1,35 @@
-#Dossier envoi ordres (superviseur vers robot)
+** Lire la documentation technique pour plus de détails **
 
-## Comment envoyer un ordre de déplacement du superviseur vers le robot ?
+# Dossier envoi ordres (superviseur vers robot)
 
-Placer le fichier heronReception sur le bureau d'un robot.
-Ajouter le fichier bash superviseur.sh au même endroit.
+## Permet d'envoyer un ordre de déplacement (pour l'instant un carré) au robot
 
-#Dossier réception données (robots vers superviseur)
+Placer le fichier heronReception.py sur le bureau d'un robot (penser à mettre à jour le bon path)
+Ajouter le fichier bash superviseur.sh au même endroit que le script python
 
-## Comment lire les données de batterie du robot vers le superviseur ?
+*Lancer heronReception.py & superviseurEnvoi : Vous recevez bien l'ordre de déplacement du superviseur*
 
-Placer le fichier heronEnvoi sur le bureau de ce même robot.
-Mettre le fichier superviseurReception sur le bureau du superviseur.
+# Dossier réception données (robots vers superviseur)
 
-#Dossier services
+## Permet de recevoir les données du robot (pour l'instant la batterie) sur le superviseur
 
-## Comment faire démarrer automatiquement tous ces scripts (et roscore) au boot de chaque robot ?
+Placer le fichier heronEnvoi.py sur le bureau de ce même robot
+Mettre le fichier superviseurReception.py sur le bureau du superviseur
 
-Mettre tous les fichiers services dans le chemin /etc/systemd/system sauf le fichier roscoreservice.sh.
-Placer ce dernier fichier dans /usr/local/bin.
+*Lancer heronEnvoi.py & superviseurReception.py : Vous recevez bien les données du robot*
+
+# Dossier services
+
+## Permet de faire démarrer automatiquement tous ces scripts (et roscore) au boot de chaque robot
+
+Mettre tous les fichiers services dans le chemin /etc/systemd/system de votre système, sauf le fichier roscoreservice.sh
+Placer ce dernier fichier dans /usr/local/bin
+Activer les services grâces aux commandes suivantes pour chacun de vos services :
+
+```
+$ sudo systemctl daemon-reload
+$ sudo systemctl enable <nomduservice>.service
+$ sudo systemctl start <nomduservice>.service
+```
+
+Enfin, pour finir, faites un reboot : les services sont actifs.
