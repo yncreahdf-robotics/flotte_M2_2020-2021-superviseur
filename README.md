@@ -33,7 +33,7 @@ Password is your freshly generated token. You can now start to pull the image
 
 First clone this image :
     
-    docker pull docker.pkg.github.com/yncreahdf-robotics/flotte_m2_2020-2021-<yourproductname>/ros:mykinetic
+    sudo docker pull docker.pkg.github.com/yncreahdf-robotics/flotte_m2_2020-2021-superviseur/xenialrosmysql:latest
 
 Then build the image using Docker
 
@@ -62,7 +62,7 @@ Move to your the directory that contain your "workspace" folder
 
 Finally run your image
 
-    docker run --rm -it --net ros -e ROS_MASTER_URI=http://roscore:11311 -e WORKSPACE_NAME=workspace -v $(pwd)/workspace:/root/workspace -w /root/workspace/catkin_ws ros:<yourimagename>
+    sudo docker run --rm -it --net ros -e ROS_MASTER_URI=http://roscore:11311 -e WORKSPACE_NAME=workspace -v $(pwd)/workspace:/home/workspace -w /home/workspace docker.pkg.github.com/yncreahdf-robotics/flotte_m2_2020-2021-superviseur/xenialrosmysql:latest
 
 You are now in your docker container running your programs and nodes.
 You can modify the files directly from the shared folder "workspace" that you have pulled from github and use docker as your developpement environnement.
