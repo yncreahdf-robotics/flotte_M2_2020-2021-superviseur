@@ -6,15 +6,50 @@ This is a Docker Image.
 -Docker Desktop(for Windows or Mac)
 -Docker Engine (for Linux)
 
+<<<<<<< HEAD
+=======
+## Getting basic auth credentials
+
+In case of getting the error "no basic auth credentials"
+
+- Go to https://github.com/settings/tokens
+
+- Generate new token
+
+- Name it
+
+- Check write:packages
+
+- Generate token
+
+- Save it on your computer !
+
+Now you need to login to the repo with your token, open a terminal :
+
+    docker login docker.pkg.github.com -u <UserNameOfYourGitHub>
+
+Password is your freshly generated token. You can now start to pull the image
+
+
+>>>>>>> 5a3dd90d0c958f961e854e65f75bcb5fd162d058
 ## Getting Started to work !
 
 First clone this image :
     
+<<<<<<< HEAD
     docker pull docker.pkg.github.com/yncreahdf-robotics/flotte_m2_2020-2021-<yourproductname>/ros:mykinetic
 
 Then build the image using Docker
 
     docker build --tag ros:mykinetic 
+=======
+    sudo docker pull docker.pkg.github.com/yncreahdf-robotics/flotte_m2_2020-2021-superviseur/xenialrosmysql:latest
+
+Then build the image using Docker
+
+    docker build --tag ros:mykinetic .
+(Dot is important !)
+>>>>>>> 5a3dd90d0c958f961e854e65f75bcb5fd162d058
 
 Next go to your wanted directory and pull your repo from your branche to one directory.
 
@@ -38,7 +73,11 @@ Move to your the directory that contain your "workspace" folder
 
 Finally run your image
 
+<<<<<<< HEAD
     docker run --rm -it --net ros -e ROS_MASTER_URI=http://roscore:11311 -e WORKSPACE_NAME=workspace -v $(pwd)/workspace:/root/workspace -w /root/workspace/catkin_ws ros:<yourimagename>
+=======
+    sudo docker run --rm -it --net ros -e ROS_MASTER_URI=http://roscore:11311 -e WORKSPACE_NAME=workspace -v $(pwd)/workspace:/home/workspace -w /home/workspace docker.pkg.github.com/yncreahdf-robotics/flotte_m2_2020-2021-superviseur/xenialrosmysql:latest
+>>>>>>> 5a3dd90d0c958f961e854e65f75bcb5fd162d058
 
 You are now in your docker container running your programs and nodes.
 You can modify the files directly from the shared folder "workspace" that you have pulled from github and use docker as your developpement environnement.
