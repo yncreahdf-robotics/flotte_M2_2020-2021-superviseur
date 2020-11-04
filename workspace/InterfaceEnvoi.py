@@ -21,6 +21,7 @@ import mqttperso
 # Import des librairies exterieures au projet
 
 import curses
+import time
 
 
 
@@ -29,9 +30,10 @@ import curses
 ##########################
 
 
-ip = "192.168.1.3"
+ip = "192.168.1.255"
+port = 1883
 
-menu_accueil = ["Initialisation", "bouton2"]
+menu_accueil = ["Test", "Demonstration navigation (initialisation)", "Demonstration navigation (demarrage)", "Demonstration carre", "Demonstration preparateur"]
 #menu_customer= ["Command","Call Waiter","Exit"]
 #menu_employee= ["Add New Robot","Follow Me","Start Service","Exit"]
 
@@ -101,10 +103,30 @@ def main(stdscr):
 		elif key in [10,13]:
 			stdscr.clear()
 			stdscr.refresh()
-			if menu[current_row] == "Initialisation":
-				mqttperso.publish(ip, 1883, "topiCoco", "testmessage", 2)
-			elif menu[current_row] == "bouton2":
-				pass
+
+			#Pour chaque appui sur un choix on lance la publication d'un msg à l'aide du python mqttperso.py
+			if menu[current_row] == "Test":
+				for i in range (1, 255):
+					
+					try:
+						mqttperso.publish("192.168.1." + str(i), port, "topiCoco", "testmessage", 0)
+						print(i)
+					except OSError as err:
+						print("OS error: {0}".format(err))
+					
+				#mqttperso.publish(ip, port, "topiCoco", "testmessage", 0)
+
+			elif menu[current_row] == "Demonstration navigation (initialisation)":
+				mqttperso.publish(ip, port, "topic/Ordre", "1", 0)
+
+			elif menu[current_row] == "Demonstration navigation (demarrage)":
+				mqttperso.publish(ip, port, "topic/Ordre", "2", 0)
+
+			elif menu[current_row] == "Demonstration carre":
+				mqttperso.publish(ip, port, "topic/Ordre", "3", 0)
+				
+			elif menu[current_row] == "Demonstration preparateur":
+				mqttperso.publish(ip, port, "topic/Ordre", "4", 0)
 		
 		IHM.print_menu(stdscr, current_row, menu)
 
