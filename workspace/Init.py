@@ -25,6 +25,7 @@ import time
 ### Variables globales ###
 ##########################
 
+my_ip=IPFinder.get_my_ip()
 port = 1883
 ipsuperviseur=""
 type_robot="Robotino"
@@ -63,9 +64,9 @@ def on_message(client, userdata, msg):
 	print("message topic=",msg.topic)
 	print("message qos=",msg.qos)
 	print("message retain flag=",msg.retain)
-	if (msg.topic=="Initialisation/Feedback"):
+	if (msg.topic=="Initialisation/Feedback" and msg.payload.decode("utf-8").split("/")[0]==my_ip):
 		global ipsuperviseur
-		ipsuperviseur=msg.payload.decode("utf-8")
+		ipsuperviseur=msg.payload.decode("utf-8").split("/")[1]
 		print(ipsuperviseur)
 		publish(ipsuperviseur, 1883, "Initialisation/Type", type_robot , 2)
 
@@ -100,13 +101,13 @@ def publish(ip, port, topic, message, qos):
 ###################################
 i=0
 #	Subscribe to the Feedback topic
-subscribe(IPFinder.get_my_ip(),1883, "Initialisation/Feedback",2)
+subscribe(my_ip,1883, "Initialisation/Feedback",2)
 
 #	Send the robot's IP to all connected ip
 AvailableIP=IPFinder.launch
 for ip in AvailableIP():
 	try:
-		publish(ip, 1883, "Initialisation/Envoi", str(IPFinder.get_my_ip()) , 2)
+		publish(ip, 1883, "Initialisation/Envoi", my_ip , 2)
 
 	except OSError as err:
 		print("OS error: {0}".format(err))
