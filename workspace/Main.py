@@ -15,14 +15,15 @@
 # Import des fichiers .py propre au projet
 
 import IHM
-import FonctionsMQTT
 import IPFinder
+
 
 
 # Import des librairies exterieures au projet
 
 import curses
 import time
+import paho.mqtt.client as mqtt
 
 
 
@@ -31,28 +32,11 @@ import time
 ##########################
 
 
-ip = "192.168.1.5"
 port = 1883
 
-menu_accueil = ["Test"]
+menu_accueil = ["Bienvenue"]
 
-
-
-
-######################
-### Initialisation ###
-######################
-
-
-# Lancement IHM Initialisation
-
-# Mode ecoute sur le topic de scan des nouveaux robots
-
-# Si nouveau robot
-
-	# Récupération des infos du message
-
-	# Mise en BDD
+ipsuperviseur = ""
 
 
 
@@ -60,6 +44,81 @@ menu_accueil = ["Test"]
 ############
 ### Defs ###
 ############
+
+
+
+def on_connect(client, userdata, flags, rc):
+
+	#print("Connected with result code "+str(rc))
+	if rc==0:
+		#print("connection ok")
+		pass
+	else:
+		#print("connection no")
+		pass
+
+	
+
+
+def on_disconnect(client, userdata, rc):
+
+	print("Client Got Disconnected")
+
+
+def on_message(client, userdata, msg):
+
+	#print("Yes! i receive the message :" , str(msg.payload))
+	#print("message received ", msg.payload.decode("utf-8"))
+	#print("message topic=",msg.topic)
+	#print("message qos=",msg.qos)
+	#print("message retain flag=",msg.retain)
+
+	if msg.topic == "Initialisation/Envoi":
+
+		global menu_accueil
+
+		if not msg.payload.decode("utf-8") in menu_accueil:
+
+			menu_accueil.append(msg.payload.decode("utf-8"))
+
+		AvailableIP = IPFinder.launch
+
+		for ip in AvailableIP():
+
+			try:
+				publish(ip, 1883, "Initialisation/Feedback", str(IPFinder.get_my_ip()), 2)
+
+			except OSError as err:
+
+				pass
+
+
+
+#Appel d'une fonction qui permet de recevoir un message
+
+def subscribe(ip, port, topic, qos):
+
+	client = mqtt.Client()
+
+	client.on_connect = on_connect
+	client.on_message = on_message
+	client.on_disconnect = on_disconnect
+	client.connect(ip,port,60)
+	client.subscribe(topic, qos)
+	client.loop_start()
+
+
+#Appel d'une fonction qui permet d'envoyer un message
+
+def publish(ip, port, topic, message, qos):
+
+	client = mqtt.Client()
+
+	client.connect(ip,port,60)
+	client.loop_start()
+	client.publish(topic, message, qos)
+
+
 
 
 
@@ -84,6 +143,7 @@ def main(stdscr):
 	#check_command_db()
 	#create_command_tb()
 	#check_command_tb()
+
 
 
 	while 1:
@@ -111,19 +171,40 @@ def main(stdscr):
 				for i in AvailableIP():
 					
 					try:
-						FonctionsMQTT.publish(i, port, "topiCoco", "testmessage", 0)
+						publish(i, port, "Initialisation/Feedback", IPFinder.get_my_ip(), 2)
 						print(i)
 					except OSError as err:
 						print("OS error: {0}".format(err))
 					
-				#mqttperso.publish(ip, port, "topiCoco", "testmessage", 0)
 
 			#elif menu[current_row] == "Demonstration navigation (initialisation)":
 			#	mqttperso.publish(ip, port, "topic/Ordre", "1", 0)
 		
 		IHM.print_menu(stdscr, current_row, menu)
 
+		print(ipsuperviseur)
+
 		
+
+
+
+
+######################
+### Initialisation ###
+######################
+
+
+# Lancement IHM Initialisation
+
+subscribe(IPFinder.get_my_ip(), port, "Initialisation/Envoi", 2)
+
+# Mode ecoute sur le topic de scan des nouveaux robots
+
+# Si nouveau robot
+
+	# Récupération des infos du message
+
+	# Mise en BDD
 
 
 
@@ -136,7 +217,6 @@ def main(stdscr):
 # Lancement de L'IHM principale
 
 curses.wrapper(main)
-
 
 
 

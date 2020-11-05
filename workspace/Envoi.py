@@ -2,11 +2,11 @@
 
 import time
 
-import mqttperso
+import FonctionsMQTT
 
-ip = "192.168.1.3"
+ip = "192.168.1.5"
 
-mqttperso.publish(ip, 1883, "topiCoco", "testmessage", 2)
+FonctionsMQTT.publish(ip, 1883, "topiCoco", "testmessage", 2)
 
 
 while (1):
