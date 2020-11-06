@@ -28,7 +28,7 @@ import time
 my_ip=IPFinder.get_my_ip()
 port = 1883
 ipsuperviseur=""
-type_robot="Turtlebot"
+type_robot="Robotino"
 
 ######################
 ### Initialisation ###
@@ -68,7 +68,7 @@ def on_message(client, userdata, msg):
 		global ipsuperviseur
 		ipsuperviseur=msg.payload.decode("utf-8").split("/")[1]
 		print(ipsuperviseur)
-		publish(ipsuperviseur, 1883, "Initialisation/Type", type_robot , 2)
+		publish(ipsuperviseur, 1883, "Initialisation/Type", my_ip+"/"+type_robot , 2)
 		client.unsubscribe("Initialisation/+")
 
 
