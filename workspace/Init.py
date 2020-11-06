@@ -69,12 +69,14 @@ def on_message(client, userdata, msg):
 		ipsuperviseur=msg.payload.decode("utf-8").split("/")[1]
 		print(ipsuperviseur)
 		publish(ipsuperviseur, 1883, "Initialisation/Type", type_robot , 2)
-		unsubscribe("Initialisation/+")
+		client.unsubscribe("Initialisation/+")
+
 
 #Appel d'une fonction qui permet de recevoir un message
 
 def subscribe(ip, port, topic, qos):
 
+	global client
 	client = mqtt.Client()
 
 	client.on_connect = on_connect
@@ -89,11 +91,11 @@ def subscribe(ip, port, topic, qos):
 
 def publish(ip, port, topic, message, qos):
 
-	client = mqtt.Client()
+	client2 = mqtt.Client()
 
-	client.connect(ip,port,60)
-	client.loop_start()
-	client.publish(topic, message, qos)
+	client2.connect(ip,port,60)
+	client2.loop_start()
+	client2.publish(topic, message, qos)
 	print("message envoye sur "+topic)
 
 
