@@ -28,7 +28,7 @@ import time
 my_ip=IPFinder.get_my_ip()
 port = 1883
 ipsuperviseur=""
-type_robot="Robotino"
+type_robot="Turtlebot"
 
 ######################
 ### Initialisation ###
@@ -69,6 +69,7 @@ def on_message(client, userdata, msg):
 		ipsuperviseur=msg.payload.decode("utf-8").split("/")[1]
 		print(ipsuperviseur)
 		publish(ipsuperviseur, 1883, "Initialisation/Type", type_robot , 2)
+		unsubscribe("Initialisation/+")
 
 #Appel d'une fonction qui permet de recevoir un message
 
