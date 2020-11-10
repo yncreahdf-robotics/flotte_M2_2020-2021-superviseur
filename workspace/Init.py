@@ -27,8 +27,16 @@ import time
 
 my_ip=IPFinder.get_my_ip()
 port = 1883
-ipsuperviseur=""
-type_robot="Robotino"
+
+hosts = open('/etc/hosts','r')
+for line in hosts:
+	try:
+		if line.split()[1] == "supIP":
+			ipsuperviseur = line.split()[0]
+	except IndexError:
+		pass
+
+type_robot="Turlebot"
 
 ######################
 ### Initialisation ###
@@ -102,18 +110,13 @@ def publish(ip, port, topic, message, qos):
 ###################################
 ###	PROGRAMME PRINCIPAL	###
 ###################################
+
+
 i=0
-#	Subscribe to the Feedback topic
-subscribe(my_ip,1883, "Initialisation/Feedback",2)
 
 #	Send the robot's IP to all connected ip
-AvailableIP=IPFinder.launch
-for ip in AvailableIP():
-	try:
-		publish(ip, 1883, "Initialisation/Envoi", my_ip , 2)
 
-	except OSError as err:
-		print("OS error: {0}".format(err))
+publish(ipsuperviseur, 1883, "Initialisation/Envoi", my_ip , 2)
 
 while(1):
 	i+=1
