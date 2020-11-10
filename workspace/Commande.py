@@ -2,13 +2,13 @@ import mysql.connector
 
 
 #	CREATE A NEW DATABASE
-def create_command_db():	
-	mycursor=command_db.cursor()
-	mycursor.execute("CREATE DATABASE IF NOT EXISTS command_db")
-	mycursor.execute("USE command_db")
+def create_flotte_db():	
+	mycursor=flotte_db.cursor()
+	mycursor.execute("CREATE DATABASE IF NOT EXISTS flotte_db")
+	mycursor.execute("USE flotte_db")
 
 #	Check if database exists
-def check_command_db():
+def check_flotte_db():
 	mycursor.execute("SHOW DATABASES")
 	for x in mycursor:
 		print(x)
@@ -29,7 +29,7 @@ def insert_command(CommandNbr,ArticleID,ArticleQtt):
 	sql="INSERT INTO command_tb (CommandNbr, ArticleID, ArticleQtt) VALUES(%s,%s,%s)"
 	val=(CommandNbr,ArticleID,ArticleQtt)
 	mycursor.execute(sql,val)
-	command_db.commit()
+	flotte_db.commit()
 	print(mycursor.rowcount,"article ajouté à la commande")
 
 #	GET ALL POSSIBLE ARTICLES
@@ -46,27 +46,28 @@ def get_command(CommandNbr):
 def delete_command(CommandNbr):
 	sql="DELETE FROM command_tb WHERE CommandNbr=CommandNbr"
 	mycursor.execute(sql)
-	command_db.commit()
+	flotte_db.commit()
 	print(mycursor.rowcount,"Command deleted")
 
-def delete_command_db():
-	sql="DROP DATABASE IF EXISTS command_db"
+def delete_flotte_db():
+	sql="DROP DATABASE IF EXISTS flotte_db"
 	mycursor.execute(sql)
-	command_db.commit()
-	print(mycursor.rowcount,"DATABASE DESTROYED LIKE UR ASS")
+	flotte_db.commit()
+	print(mycursor.rowcount,"DATABASE DESTROYED")
 
 if __name__ == '__main__':
 
 	#initialisation 
-	command_db=mysql.connector.connect(
+	flotte_db=mysql.connector.connect(
 		host='localhost',
 		user='root',
 		password='password'
 		)
-	mycursor=command_db.cursor()
+	mycursor=flotte_db.cursor()
 
-	create_command_db()
-	check_command_db()
+	create_flotte_db()
+	check_flotte_db()
 	create_command_tb()
 	check_command_tb()
+	#delete_flotte_db()
 
