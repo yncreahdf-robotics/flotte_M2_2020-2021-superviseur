@@ -25,9 +25,13 @@ import time
 ### Variables globales ###
 ##########################
 
+#	Robot retrieves his own IP
 my_ip=IPFinder.get_my_ip()
+
+#	TCP port used for MQTT
 port = 1883
 
+#	Determines the supervisor's IP using the hosts file
 hosts = open('/etc/hosts','r')
 for line in hosts:
 	try:
@@ -36,7 +40,9 @@ for line in hosts:
 	except IndexError:
 		pass
 
+###	ROBOTS VARIABLES     ###
 type_robot="Turlebot"
+etat_robot="libre"
 
 ######################
 ### Initialisation ###
@@ -65,20 +71,17 @@ def on_disconnect(client, userdata, rc):
 
 def on_message(client, userdata, msg):
 
-	print("Yes! i receive the message :" , str(msg.payload))
-	print("message received ", msg.payload.decode("utf-8"))
+	#print("Yes! i receive the message :" , str(msg.payload))
+	#print("message received ", msg.payload.decode("utf-8"))
         #with open('data.json', 'w') as f:
         #json.dumps(msg.payload.decode("utf-8"))
-	print("message topic=",msg.topic)
-	print("message qos=",msg.qos)
-	print("message retain flag=",msg.retain)
-	if (msg.topic=="Initialisation/Feedback" and msg.payload.decode("utf-8").split("/")[0]==my_ip):
-		global ipsuperviseur
-		ipsuperviseur=msg.payload.decode("utf-8").split("/")[1]
-		print(ipsuperviseur)
-		publish(ipsuperviseur, 1883, "Initialisation/Type", my_ip+"/"+type_robot , 2)
-		client.unsubscribe("Initialisation/+")
-
+	#print("message topic=",msg.topic)
+	#print("message qos=",msg.qos)
+	#print("message retain flag=",msg.retain)
+	if (msg.topic=="Ordre/Envoi" and msg.payload.decode("utf-8").split("/")[0]==my_ip):
+		global etat_robot		
+		etat_robot="occupe"		
+		print("ORDRE REçU")
 
 #Appel d'une fonction qui permet de recevoir un message
 
@@ -93,6 +96,7 @@ def subscribe(ip, port, topic, qos):
 	client.connect(ip,port,60)
 	client.subscribe(topic, qos)
 	client.loop_start()
+	print("subscribed to "+topic)
 
 
 #Appel d'une fonction qui permet d'envoyer un message
@@ -104,23 +108,22 @@ def publish(ip, port, topic, message, qos):
 	client2.connect(ip,port,60)
 	client2.loop_start()
 	client2.publish(topic, message, qos)
-	print("message envoye sur "+topic)
+	print("message sent on "+topic)
 
 
 ###################################
 ###	PROGRAMME PRINCIPAL	###
 ###################################
 
+#	publish his IP and type separated by a / on Initialisation/Envoi
+publish(ipsuperviseur, 1883, "Initialisation/Envoi", my_ip+"/"+type_robot , 2)
 
-i=0
-
-#	Send the robot's IP to all connected ip
-
-publish(ipsuperviseur, 1883, "Initialisation/Envoi", my_ip , 2)
+#	subscribe to Ordre/Envo - waits for orders
+subscribe(ipsuperviseur, 1883, "Ordre/Envoi", 2)
 
 while(1):
-	i+=1
-	print(i)
+	publish(ipsuperviseur,1883, "Ordre/Etat", my_ip+"/"+etat_robot,2)
+	print(etat_robot)
 	time.sleep(10)
 
 
