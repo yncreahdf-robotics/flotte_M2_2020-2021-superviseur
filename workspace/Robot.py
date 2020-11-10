@@ -1,4 +1,5 @@
 import mysql.connector
+from datetime import datetime
 
 #	CREATE A NEW DATABASE
 def create_flotte_db():	
@@ -13,47 +14,47 @@ def check_flotte_db():
 		print(x)
 
 #	CREATE A NEW TABLE
-def create_type_tb():
-	mycursor.execute("CREATE TABLE IF NOT EXISTS type_tb (TypeID INT AUTO_INCREMENT, TypeName VARCHAR(30), Role VARCHAR(30), WeightCapacity INT, CONSTRAINT TypeID_pk PRIMARY KEY (TypeID))" ) 
+def create_Robot_tb():
+	mycursor.execute("CREATE TABLE IF NOT EXISTS Robot_tb (RobotID INT AUTO_INCREMENT, RobotType VARCHAR(30), Position VARCHAR(30), Etat VARCHAR(30), LastCheck DATETIME, CONSTRAINT RobotID_pk PRIMARY KEY (RobotID))" ) 
 
 #	CHECK IF THE TABLE EXISTS
-def check_type_tb():	
+def check_Robot_tb():	
 	mycursor.execute("SHOW TABLES")
 	for x in mycursor:
 		print(x)
 
-#	INSERT TYPES IN THE COMMAND DATABASE
-def insert_Type(TypeName, Role, WeightCapacity):
-	#need to verify that the TypeName is an existing Type in the Type database
-	sql="INSERT INTO type_tb (TypeName, Role, WeightCapacity) VALUES(%s,%s,%s)"
-	val=(TypeName, Role, WeightCapacity)
+#	INSERT RobotS IN THE COMMAND DATABASE
+def insert_Robot(RobotType, Position, Etat, LastCheck):
+	#need to verify that the RobotType is an existing Type in the  Type database
+	sql="INSERT INTO Robot_tb (RobotType, Position, Etat, LastCheck) VALUES(%s,%s,%s,%s)"
+	val=(RobotType, Position, Etat, LastCheck)
 	mycursor.execute(sql,val)
 	flotte_db.commit()
-	print(mycursor.rowcount,"type ajouté")
+	print(mycursor.rowcount,"Robot ajouté")
 
-#	GET ALL POSSIBLE TYPES
-def get_all_Type():
-	sql="SELECT * FROM type_tb ORDER BY TypeName"
+#	GET ALL POSSIBLE RobotS
+def get_all_Robot():
+	sql="SELECT * FROM Robot_tb ORDER BY RobotType"
 	mycursor.execute(sql)
 	myresult=mycursor.fetchall()
 	for x in myresult:
 		print(x)
 
 
-#	GET A TYPE BY ITS NAME
-def get_Type_by_name(TypeName):
-	sql = "SELECT * FROM type_tb WHERE TypeName=TypeName IF EXISTS"
+#	GET A Robot BY ITS NAME
+def get_Robot_by_name(RobotType):
+	sql = "SELECT * FROM Robot_tb WHERE RobotName=RobotName IF EXISTS"
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	for x in myresult:
 		print(x)
 
-#	DELETE A TYPE
-def delete_Type(TypeName):
-	sql="DELETE FROM type_tb WHERE TypeName=TypeName"
+#	DELETE A Robot
+def delete_Robot(RobotID):
+	sql="DELETE FROM Robot_tb WHERE RobotID=RobotID"
 	mycursor.execute(sql)
 	flotte_db.commit()
-	print(mycursor.rowcount,"Type deleted")
+	print(mycursor.rowcount,"Robot deleted")
 
 def delete_flotte_db():
 	sql="DROP DATABASE flotte_db"
@@ -74,15 +75,14 @@ if __name__ == '__main__':
 	create_flotte_db()
 	check_flotte_db()
 
-	create_type_tb()
-	check_type_tb()
+	create_Robot_tb()
+	check_Robot_tb()
 
 
-	insert_Type('Robotino', 'Service', 5000)
-	insert_Type('Heron','Service', 3000)
-	insert_Type('Turtlebot','Service', 2000)
-	insert_Type('Niryo', 'Preparateur', 1000)
-	insert_Type('Colabot', 'Accueil', 0)
-	get_all_Type();
-	delete_Type('Whisky')
+	insert_Robot('Service', 'ServiceBase1', "Libre", datetime.now() )
+	insert_Robot('Service','Bar', "Occupe", datetime.now())
+	insert_Robot('Service','table 1', "Occupe", datetime.now())
+	insert_Robot('Preparateur', 'PrepaBar', "Occupe", datetime.now())
+	insert_Robot('Accueil', 'Accueil', "Libre", datetime.now())
+	get_all_Robot();
 	delete_flotte_db()
