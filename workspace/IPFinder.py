@@ -83,6 +83,6 @@ def map_network(pool_size=255):
 
 def launch():
 
-    #print('Mapping...')
+    print('Mapping...')
     lst = map_network()
     return lst

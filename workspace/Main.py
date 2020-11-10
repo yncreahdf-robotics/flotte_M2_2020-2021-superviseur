@@ -26,19 +26,22 @@ import time
 import paho.mqtt.client as mqtt
 
 
-
 ##########################
 ### Variables globales ###
 ##########################
 
-
+hosts = open('/etc/hosts','r')
+for line in hosts:
+	splitted_line=line.split()
+	try:
+		if splitted_line[1]=="supIP":
+			my_ip = splitted_line[0]
+	except IndexError:
+		pass			
+print (my_ip)		
 port = 1883
 
 menu_accueil = ["Bienvenue"]
-
-ipsuperviseur = ""
-
-
 
 
 ############
@@ -49,13 +52,13 @@ ipsuperviseur = ""
 
 def on_connect(client, userdata, flags, rc):
 
-	#print("Connected with result code "+str(rc))
+	print("Connected with result code "+str(rc))
 	if rc==0:
-		#print("connection ok")
-		pass
+		print("connection ok")
+		#pass
 	else:
-		#print("connection no")
-		pass
+		print("connection no")
+		#pass
 
 	
 
@@ -67,30 +70,36 @@ def on_disconnect(client, userdata, rc):
 
 def on_message(client, userdata, msg):
 
-	#print("Yes! i receive the message :" , str(msg.payload))
-	#print("message received ", msg.payload.decode("utf-8"))
-	#print("message topic=",msg.topic)
-	#print("message qos=",msg.qos)
-	#print("message retain flag=",msg.retain)
+	print("Yes! i receive the message :" , str(msg.payload))
+	print("message received ", msg.payload.decode("utf-8"))
+	print("message topic=",msg.topic)
+	print("message qos=",msg.qos)
+	print("message retain flag=",msg.retain)
 
 	if msg.topic == "Initialisation/Envoi":
+		print("J'aime les rillettes")
+		#global menu_accueil
 
-		global menu_accueil
+		#if not msg.payload.decode("utf-8") in menu_accueil:
 
-		if not msg.payload.decode("utf-8") in menu_accueil:
+		#	menu_accueil.append(msg.payload.decode("utf-8"))
 
-			menu_accueil.append(msg.payload.decode("utf-8"))
+		#AvailableIP = IPFinder.launch
 
-		AvailableIP = IPFinder.launch
+		#for ip in AvailableIP():
 
-		for ip in AvailableIP():
+		#	try:
+		#		print("envoi sur " + ip)
+		#		publish(ip, port, "Initialisation/Feedback", msg.payload.decode("utf-8") + "/" + my_ip, 2)
 
-			try:
-				publish(ip, 1883, "Initialisation/Feedback", str(IPFinder.get_my_ip()), 2)
+		#	except OSError as err:
 
-			except OSError as err:
+		#		pass
 
-				pass
+	if msg.topic == "Initialisation/Type":
+
+		print("ip du robot" + msg.payload.decode("utf-8").split("/")[0])
+		print("type de robot" + msg.payload.decode("utf-8").split("/")[1])
 
 
 
@@ -171,7 +180,7 @@ def main(stdscr):
 				for i in AvailableIP():
 					
 					try:
-						publish(i, port, "Initialisation/Feedback", IPFinder.get_my_ip(), 2)
+						publish(i, port, "Initialisation/Feedback", my_ip, 2)
 						print(i)
 					except OSError as err:
 						print("OS error: {0}".format(err))
@@ -181,9 +190,6 @@ def main(stdscr):
 			#	mqttperso.publish(ip, port, "topic/Ordre", "1", 0)
 		
 		IHM.print_menu(stdscr, current_row, menu)
-
-		print(ipsuperviseur)
-
 		
 
 
@@ -196,7 +202,8 @@ def main(stdscr):
 
 # Lancement IHM Initialisation
 
-subscribe(IPFinder.get_my_ip(), port, "Initialisation/Envoi", 2)
+subscribe(my_ip, port, "Initialisation/Envoi", 2)
+subscribe(my_ip, port, "Initialisation/Type", 2)
 
 # Mode ecoute sur le topic de scan des nouveaux robots
 
@@ -216,8 +223,9 @@ subscribe(IPFinder.get_my_ip(), port, "Initialisation/Envoi", 2)
 
 # Lancement de L'IHM principale
 
-curses.wrapper(main)
-
+#curses.wrapper(main)
+while 1:
+	time.sleep(5)
 
 
 # Ecoute des nouveaux clients
