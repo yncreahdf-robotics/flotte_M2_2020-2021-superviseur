@@ -14,40 +14,47 @@ def check_flotte_db():
 		print(x)
 
 #	CREATE A NEW TABLE
-def create_command_tb():
-	mycursor.execute("CREATE TABLE IF NOT EXISTS command_tb (CommandID INT AUTO_INCREMENT, CommandNbr INT, ArticleID INT, ArticleQtt INT, CONSTRAINT CommandID_pk PRIMARY KEY (CommandID))" ) 
+def create_Table_tb():
+	mycursor.execute("CREATE TABLE IF NOT EXISTS Table_tb (TableID INT AUTO_INCREMENT, CommandNbr INT, PositionID INT, Prix FLOAT, CONSTRAINT TableID_pk PRIMARY KEY (TableID))" ) 
 
 #	CHECK IF THE TABLE EXISTS
-def check_command_tb():	
+def check_Table_tb():	
 	mycursor.execute("SHOW TABLES")
 	for x in mycursor:
 		print(x)
 
-#	INSERT ARTICLES IN THE COMMAND DATABASE
-def insert_command(CommandNbr,ArticleID,ArticleQtt):
+#	INSERT ARTICLES IN THE Table DATABASE
+def insert_Table(CommandNbr, PositionID, Prix):
 	#need to verify that the articleID is an existing article in the article database
-	sql="INSERT INTO command_tb (CommandNbr, ArticleID, ArticleQtt) VALUES(%s,%s,%s)"
-	val=(CommandNbr,ArticleID,ArticleQtt)
+	sql="INSERT INTO Table_tb (CommandNbr, PositionID, Prix) VALUES(%s,%s,%s)"
+	val=(CommandNbr, PositionID, Prix)
 	mycursor.execute(sql,val)
 	flotte_db.commit()
-	print(mycursor.rowcount,"article ajouté à la commande")
+	print(mycursor.rowcount,"Table ajouté à la Table")
 
 #	GET ALL POSSIBLE ARTICLES
 
-#	GET ALL ARTICLES LINKED TO A COMMAND
-def get_command(CommandNbr):
-	sql = "SELECT * FROM command_tb WHERE CommandNbr=CommandNbr"
+#	GET ALL TABLES
+def get_Tables():
+	sql = "SELECT * FROM Table_tb"
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	for x in myresult:
 		print(x)
 
-#	DELETE A COMMAND
-def delete_command(CommandNbr):
-	sql="DELETE FROM command_tb WHERE CommandNbr=CommandNbr"
+def get_Table(PositionID):
+	sql = "SELECT * FROM Table_tb WHERE PositionID="+str(PositionID)
+	mycursor.execute(sql)
+	myresult = mycursor.fetchall()
+	for x in myresult:
+		print(x)
+
+#	DELETE A Table
+def delete_Table(PositionID):
+	sql="DELETE FROM Table_tb WHERE PositionID="+str(PositionID)
 	mycursor.execute(sql)
 	flotte_db.commit()
-	print(mycursor.rowcount,"Command deleted")
+	print(mycursor.rowcount,"Table deleted")
 
 def delete_flotte_db():
 	sql="DROP DATABASE IF EXISTS flotte_db"
@@ -67,7 +74,17 @@ if __name__ == '__main__':
 
 	create_flotte_db()
 	check_flotte_db()
-	create_command_tb()
-	check_command_tb()
-	#delete_flotte_db()
+	create_Table_tb()
+	check_Table_tb()
+	
+	insert_Table(1,1,18.50)	
+	insert_Table(2,2,304.90)
+	insert_Table(3,4,5)
+
+	get_Table(2)
+
+	delete_flotte_db()
+
+
+	
 
