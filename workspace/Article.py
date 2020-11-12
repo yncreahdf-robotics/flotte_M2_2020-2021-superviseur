@@ -14,7 +14,7 @@ def check_command_db():
 
 #	CREATE A NEW TABLE
 def create_article_tb():
-	mycursor.execute("CREATE TABLE IF NOT EXISTS article_tb (ArticleID INT AUTO_INCREMENT, ArticleName VARCHAR(30), ArticleDescription VARCHAR(30), ArticlePrice INT, ArticleWeight INT, CONSTRAINT ArticleID_pk PRIMARY KEY (ArticleID))" ) 
+	mycursor.execute("CREATE TABLE IF NOT EXISTS article_tb (ArticleID INT AUTO_INCREMENT, ArticleName VARCHAR(30), ArticlePrice INT, ArticleWeight INT, CONSTRAINT ArticleID_pk PRIMARY KEY (ArticleID))" ) 
 
 #	CHECK IF THE TABLE EXISTS
 def check_article_tb():	
@@ -23,10 +23,10 @@ def check_article_tb():
 		print(x)
 
 #	INSERT ARTICLES IN THE COMMAND DATABASE
-def insert_article(ArticleName, ArticleDescription , ArticlePrice, ArticleWeight):
+def insert_article(ArticleName, ArticlePrice, ArticleWeight):
 	#need to verify that the articleID is an existing article in the article database
-	sql="INSERT INTO article_tb (ArticleName, ArticleDescription, ArticlePrice, ArticleWeight) VALUES(%s,%s,%s,%s)"
-	val=(ArticleName,ArticleDescription,ArticlePrice,ArticleWeight)
+	sql="INSERT INTO article_tb (ArticleName, ArticlePrice, ArticleWeight) VALUES(%s,%s,%s)"
+	val=(ArticleName,ArticlePrice,ArticleWeight)
 	mycursor.execute(sql,val)
 	command_db.commit()
 	print(mycursor.rowcount,"article ajouté au menu")
@@ -78,9 +78,9 @@ if __name__ == '__main__':
 	check_article_tb()
 
 
-	insert_article('Coca Cola', 'Boisson marron et pétillante', 2, 50)
-	insert_article('Whisky','Boisson saine pour la santé', 3, 10)
-	insert_article('Jagger','Boisson divine', 1, 100)
+	insert_article('Coca Cola', 2, 50)
+	insert_article('Whisky',3, 10)
+	insert_article('Jagger', 1, 100)
 	get_all_Articles();
 	delete_Article('Whisky')
 	delete_command_db()
