@@ -14,47 +14,47 @@ def check_flotte_db():
 		print(x)
 
 #	CREATE A NEW TABLE
-def create_Table_tb():
-	mycursor.execute("CREATE TABLE IF NOT EXISTS Table_tb (TableID INT AUTO_INCREMENT, CommandNbr INT, PositionID INT, Prix FLOAT, CONSTRAINT TableID_pk PRIMARY KEY (TableID))" ) 
+def create_Ordre_tb():
+	mycursor.execute("CREATE TABLE IF NOT EXISTS Ordre_tb (OrdreID INT AUTO_INCREMENT, OrdreName VARCHAR(30), CONSTRAINT OrdreID_pk PRIMARY KEY (OrdreID))" ) 
 
 #	CHECK IF THE TABLE EXISTS
-def check_Table_tb():	
+def check_Ordre_tb():	
 	mycursor.execute("SHOW TABLES")
 	for x in mycursor:
 		print(x)
 
-#	INSERT ARTICLES IN THE Table DATABASE
-def insert_Table(CommandNbr, PositionID, Prix):
+#	INSERT ARTICLES IN THE Ordre DATABASE
+def insert_Ordre(CommandNbr, PositionID, Prix):
 	#need to verify that the articleID is an existing article in the article database
-	sql="INSERT INTO Table_tb (CommandNbr, PositionID, Prix) VALUES(%s,%s,%s)"
-	val=(CommandNbr, PositionID, Prix)
+	sql="INSERT INTO Ordre_tb (OrdreID, OrdreName) VALUES(%s,%s)"
+	val=(OrdreID, OrdreName)
 	mycursor.execute(sql,val)
 	flotte_db.commit()
-	print(mycursor.rowcount,"Table ajouté à la Table")
+	print(mycursor.rowcount,"Ordre ajouté à la Table")
 
 #	GET ALL POSSIBLE ARTICLES
 
 #	GET ALL TABLES
-def get_Tables():
-	sql = "SELECT * FROM Table_tb"
+def get_Ordres():
+	sql = "SELECT * FROM Ordre_tb"
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	for x in myresult:
 		print(x)
 
-def get_Table(PositionID):
-	sql = "SELECT * FROM Table_tb WHERE PositionID="+str(PositionID)
+def get_Ordre(OrdreID):
+	sql = "SELECT * FROM Ordre_tb WHERE OrdreID="+str(OrdreID)
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	for x in myresult:
 		print(x)
 
-#	DELETE A Table
-def delete_Table(PositionID):
-	sql="DELETE FROM Table_tb WHERE PositionID="+str(PositionID)
+#	DELETE A Ordre
+def delete_Ordre(OrdreID):
+	sql="DELETE FROM Ordre_tb WHERE OrdreID="+str(OrdreID)
 	mycursor.execute(sql)
 	flotte_db.commit()
-	print(mycursor.rowcount,"Table deleted")
+	print(mycursor.rowcount,"Ordre deleted")
 
 def delete_flotte_db():
 	sql="DROP DATABASE IF EXISTS flotte_db"
@@ -74,14 +74,9 @@ if __name__ == '__main__':
 
 	create_flotte_db()
 	check_flotte_db()
-	create_Table_tb()
-	check_Table_tb()
+	create_Ordre_tb()
+	check_Ordre_tb()
 	
-	insert_Table(1,1,18.50)	
-	insert_Table(2,2,304.90)
-	insert_Table(3,4,5)
-
-	get_Table(2)
 
 	delete_flotte_db()
 
