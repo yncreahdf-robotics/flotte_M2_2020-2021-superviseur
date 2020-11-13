@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
 
-############################################################
-### Programme principal à lancer pour démarrer le projet ###
-############################################################
-
-
-
-
 ###############
 ### Imports ###
 ###############
@@ -15,14 +8,11 @@
 # Import des fichiers .py propre au projet
 
 import IHM
-import IPFinder
-
 
 # Import des librairies exterieures au projet
 
 import curses
 import time
-import threading
 import paho.mqtt.client as mqtt
 
 
@@ -30,31 +20,26 @@ import paho.mqtt.client as mqtt
 ### Variables globales ###
 ##########################
 
-#	gets the supervisor's IP using the host file
+#	gets supervisor's IP using the host file
 hosts = open('/etc/hosts','r')
 for line in hosts:
 	splitted_line=line.split()
 	try:
 		if splitted_line[1]=="supIP":
-			my_ip = splitted_line[0]
+			ipsuperviseur = splitted_line[0]
 	except IndexError:
 		pass			
-print (my_ip)		
+print (ipsuperviseur)	
 
-# TCP port used for MQTT
+#	TCP port used for MQTT	
 port = 1883
 
 
-iprobot = ""
-
-menu_accueil = ["Bienvenue"]
-
+menu_accueil = ["Prise de commande"]
 
 ############
 ### Defs ###
 ############
-
-
 
 def on_connect(client, userdata, flags, rc):
 
@@ -67,8 +52,6 @@ def on_connect(client, userdata, flags, rc):
 		#pass
 
 	
-
-
 def on_disconnect(client, userdata, rc):
 
 	print("Client Got Disconnected")
@@ -76,38 +59,17 @@ def on_disconnect(client, userdata, rc):
 
 def on_message(client, userdata, msg):
 
-	#print("Yes! i receive the message :" , str(msg.payload))
-	#print("message received ", msg.payload.decode("utf-8"))
-	#print("message topic=",msg.topic)
-	#print("message qos=",msg.qos)
-	#print("message retain flag=",msg.retain)
-
-	if msg.topic == "Initialisation/Envoi":
-		print("Nouveau robot, mise en bdd")
-
-		iprobot = msg.payload.decode("utf-8").split("/")[0]
-
-		### 	AJOUT D'UN ROBOT DANS LA BASE DE DONNéES
-
-		#	Si le type de robot n'existe pas encore on l'ajoute à la base des types
-
-		#	Dans tous les cas on ajoute le robot à la liste des robots disponibles de la base de données
+	print("Yes! i receive the message :" , str(msg.payload))
+	print("message received ", msg.payload.decode("utf-8"))
+	print("message topic=",msg.topic)
+	print("message qos=",msg.qos)
+	print("message retain flag=",msg.retain)
 
 
-	if msg.topic == "Commande/Envoi":
-		print("Nouvelle commande, recherche du meilleur robot")
+	if msg.topic == "Initialisation/Type":
 
-		# recherche du robot dispo (+le plus proche de la destination)
-
-		global iprobot	# à retirer après avoir choppé en bdd
-		publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "ordre" , 2)
-
-
-	if msg.topic == "Ordre/Etat":
-		print("Etat du robot : " + msg.payload.decode("utf-8"))
-		
-		#	Enregistrer le temps de l'horloge dans la variable du robot dans la BDD
-		
+		print("ip du robot" + msg.payload.decode("utf-8").split("/")[0])
+		print("type de robot" + msg.payload.decode("utf-8").split("/")[1])
 
 
 
@@ -123,7 +85,7 @@ def subscribe(ip, port, topic, qos):
 	client.connect(ip,port,60)
 	client.subscribe(topic, qos)
 	client.loop_start()
-	print("subscribe to "+topic)
+	print("subscribed to "+topic)
 
 
 #Appel d'une fonction qui permet d'envoyer un message
@@ -136,14 +98,6 @@ def publish(ip, port, topic, message, qos):
 	client.loop_start()
 	client.publish(topic, message, qos)
 	print("message sent to "+topic)
-
-
-
-def pingRobots():
-	threading.Timer(20, pingRobots).start()	# Recommence toute les 20 sec
-
-	# Verifier que les robots en marche sont toujours en marche
-
 
 
 def main(stdscr):
@@ -176,30 +130,24 @@ def main(stdscr):
 		# 	monte si la flèche du haut est pressée
 		if key == curses.KEY_UP and current_row>0:
 			current_row -= 1
-
+		
+		#	descend si la flèche du bas est pressée
 		elif key == curses.KEY_DOWN and current_row < len(menu)-1:
 			current_row +=1
 
+		#	sort du menu si la touche echap est pressée
 		elif key == 27:
 			break
 
+		#	valide le choix si la touche entrée est pressée
 		elif key in [10,13]:
 			stdscr.clear()
 			stdscr.refresh()
 
 			#Pour chaque appui sur un choix on lance la publication d'un msg à l'aide du python mqttperso.py
-			if menu[current_row] == "Test":
+			if menu[current_row] == "Prise de commande":
 
-				AvailableIP = IPFinder.launch
-
-				for i in AvailableIP():
-					
-					try:
-						publish(i, port, "Initialisation/Feedback", my_ip, 2)
-						print(i)
-					except OSError as err:
-						print("OS error: {0}".format(err))
-					
+				publish(ipsuperviseur, port, "Commande/Envoi", "Un coca merci", 2)
 
 			#elif menu[current_row] == "Demonstration navigation (initialisation)":
 			#	mqttperso.publish(ip, port, "topic/Ordre", "1", 0)
@@ -217,9 +165,8 @@ def main(stdscr):
 
 # Lancement IHM Initialisation
 
-subscribe(my_ip, port, "Initialisation/Envoi", 2)
-subscribe(my_ip, port, "Commande/Envoi", 2)
-subscribe(my_ip, port, "Ordre/Etat", 2)
+#subscribe(my_ip, port, "Initialisation/Envoi", 2)
+#subscribe(my_ip, port, "Initialisation/Type", 2)
 
 # Mode ecoute sur le topic de scan des nouveaux robots
 
@@ -239,16 +186,7 @@ subscribe(my_ip, port, "Ordre/Etat", 2)
 
 # Lancement de L'IHM principale
 
-#curses.wrapper(main)
-
-
-#vérification des "ping" robot (25s)
-pingRobots()
-
-while 1:
-
-
-	time.sleep(10)
+curses.wrapper(main)
 
 
 # Ecoute des nouveaux clients
@@ -273,4 +211,4 @@ while 1:
 
 	# Si robot serveur dispo
 
-		# Envoi message pour livrer la commande 
+		# Envoi message pour livrer la commande
