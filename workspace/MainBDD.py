@@ -10,7 +10,7 @@ import Positions
 #	CREATE A NEW DATABASE
 def create_flotte_db(mycursor):	
 	mycursor.execute("CREATE DATABASE IF NOT EXISTS flotte_db")
-	mycursor.execute("USE command_db")
+	mycursor.execute("USE flotte_db")
 
 #	Check if database exists
 def check_flotte_db(mycursor):
@@ -20,8 +20,8 @@ def check_flotte_db(mycursor):
 
 #	CREATE ALL TABLES
 def create_all_tables(mycursor):
-	Article.create_article_tb(mycursor)
-	Command.create_command_tb(mycursor)
+	Article.create_Article_tb(mycursor)
+	Commande.create_Commande_tb(mycursor)
 	Table.create_Table_tb(mycursor)
 	Type.create_Type_tb(mycursor)
 	Robot.create_Robot_tb(mycursor)
@@ -32,13 +32,15 @@ def create_all_tables(mycursor):
 
 ###	CONNECTS TO DATABASE	### 
 flotte_db=mysql.connector.connect(
-	host='192.168.1.5',
+	host='localhost',
 	database='flotte_db',
-	user='robot',
-	password='robot'
+	user='root',
+	password='L@boRobotique'
 )
 global mycursor
 mycursor=flotte_db.cursor()
+
+create_all_tables(mycursor)
 
 #############################
 #####	CODE ROBOT	#####
