@@ -12,10 +12,11 @@ def check_Commande_tb(mycursor):
 		print(x)
 
 #	INSERT ARTICLES IN THE COMMAND DATABASE
-def insert_Commande(mycursor, CommandNbr,ArticleID,ArticleQtt):
+def insert_Commande(flotte_db, CommandNbr,ArticleID,ArticleQtt):
 	#need to verify that the articleID is an existing article in the article database
 	sql="INSERT INTO Commande_tb (CommandNbr, ArticleID, ArticleQtt) VALUES(%s,%s,%s)"
 	val=(CommandNbr,ArticleID,ArticleQtt)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
 	flotte_db.commit()
 	print(mycursor.rowcount,"article ajouté à la commande")
@@ -31,8 +32,9 @@ def get_Commande(mycursor, CommandNbr):
 		print(x)
 
 #	DELETE A COMMAND
-def delete_Commande(mycursor, CommandNbr):
+def delete_Commande(flotte_db, CommandNbr):
 	sql="DELETE FROM Commande_tb WHERE CommandNbr="+CommandNbr
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Command deleted")

@@ -24,10 +24,11 @@ def check_Ordre_tb():
 		print(x)
 
 #	INSERT ARTICLES IN THE Ordre DATABASE
-def insert_Ordre(CommandNbr, PositionID, Prix):
+def insert_Ordre(flotte_db, CommandNbr, PositionID, Prix):
 	#need to verify that the articleID is an existing article in the article database
 	sql="INSERT INTO Ordre_tb (OrdreID, OrdreName) VALUES(%s,%s)"
 	val=(OrdreID, OrdreName)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Ordre ajouté à la Table")
@@ -50,8 +51,9 @@ def get_Ordre(OrdreID):
 		print(x)
 
 #	DELETE A Ordre
-def delete_Ordre(OrdreID):
+def delete_Ordre(flotte_db, OrdreID):
 	sql="DELETE FROM Ordre_tb WHERE OrdreID="+str(OrdreID)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Ordre deleted")

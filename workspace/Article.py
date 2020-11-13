@@ -12,11 +12,12 @@ def check_Article_tb(mycursor):
 		print(x)
 
 #	INSERT ARTICLES IN THE COMMAND DATABASE
-def insert_Article(mycursor,ArticleName, ArticlePrice, ArticleWeight):
+def insert_Article(flotte_db,ArticleName, ArticlePrice, ArticleWeight):
 	sql="INSERT INTO Article_tb (ArticleName, ArticlePrice, ArticleWeight) VALUES(%s,%s,%s)"
 	val=(ArticleName,ArticlePrice,ArticleWeight)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
-	command_db.commit()
+	flotte_db.commit()
 	print(mycursor.rowcount,"Article ajouté au menu")
 
 #	GET ALL POSSIBLE ARTICLES
@@ -37,10 +38,11 @@ def get_Article_by_name(mycursor, ArticleName):
 		print(x)
 
 #	DELETE AN ARTICLE
-def delete_Article(mycursor, ArticleName):
+def delete_Article(flotte_db, ArticleName):
 	sql="DELETE FROM Article_tb WHERE ArticleName="+ArticleName
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
-	command_db.commit()
+	flotte_db.commit()
 	print(mycursor.rowcount,"Article deleted")
 
 

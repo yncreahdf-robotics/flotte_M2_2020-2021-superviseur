@@ -11,9 +11,10 @@ def check_Type_tb(mycursor):
 		print(x)
 
 #	INSERT TYPES IN THE COMMAND DATABASE
-def insert_Type(mycursor, TypeName, Role, WeightCapacity):
+def insert_Type(flotte_db, TypeName, Role, WeightCapacity):
 	sql="INSERT INTO Type_tb (TypeName, Role, WeightCapacity) VALUES(%s,%s,%s)"
 	val=(TypeName, Role, WeightCapacity)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Type ajouté")
@@ -36,8 +37,9 @@ def get_Type_by_name(mycursor, TypeName):
 		print(x)
 
 #	DELETE A TYPE
-def delete_Type(mycursor, TypeName):
+def delete_Type(flotte_db, TypeName):
 	sql="DELETE FROM Type_tb WHERE TypeName="+TypeName
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Type deleted")

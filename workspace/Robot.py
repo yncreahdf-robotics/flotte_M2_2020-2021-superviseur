@@ -14,10 +14,11 @@ def check_Robot_tb(mycursor):
 		print(x)
 
 #	INSERT RobotS IN THE COMMAND DATABASE
-def insert_Robot(mycursor, RobotType, Position, Etat, LastCheck):
+def insert_Robot(flotte_db, RobotType, Position, Etat, LastCheck):
 	#need to verify that the RobotType is an existing Type in the  Type database
 	sql="INSERT INTO Robot_tb (RobotType, Position, Etat, LastCheck) VALUES(%s,%s,%s,%s)"
 	val=(RobotType, Position, Etat, LastCheck)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Robot ajouté")
@@ -40,8 +41,9 @@ def get_Robot_by_name(mycursor, RobotType):
 		print(x)
 
 #	DELETE A Robot
-def delete_Robot(mycursor, RobotID):
+def delete_Robot(flotte_db, RobotID):
 	sql="DELETE FROM Robot_tb WHERE RobotID="+RobotID
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Robot deleted")

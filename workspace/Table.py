@@ -12,10 +12,11 @@ def check_Table_tb(mycursor):
 		print(x)
 
 #	INSERT ARTICLES IN THE Table DATABASE
-def insert_Table(mycursor, CommandNbr, PositionID, Prix):
+def insert_Table(flotte_db, CommandNbr, PositionID, Prix):
 	#need to verify that the articleID is an existing article in the article database
 	sql="INSERT INTO Table_tb (CommandNbr, PositionID, Prix) VALUES(%s,%s,%s)"
 	val=(CommandNbr, PositionID, Prix)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Table ajouté à la Table")
@@ -38,8 +39,9 @@ def get_Table(mycursor, PositionID):
 		print(x)
 
 #	DELETE A Table
-def delete_Table(mycursor, PositionID):
+def delete_Table(flotte_db, PositionID):
 	sql="DELETE FROM Table_tb WHERE PositionID="+str(PositionID)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Table deleted")

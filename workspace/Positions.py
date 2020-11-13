@@ -5,7 +5,7 @@ from datetime import datetime
 
 #	CREATE A NEW TABLE
 def create_Pose_tb(mycursor):
-	mycursor.execute("CREATE TABLE IF NOT EXISTS Pose_tb (PoseID INT AUTO_INCREMENT, PoseName VARCHAR(30), PoseX FLOAT, PoseY FLOAT, PoseW FLOAT, PoseZ FLOAT, CONSTRAINT PoseID_pk PRIMARY KEY (PoseID))" ) 
+	mycursor.execute("CREATE TABLE IF NOT EXISTS Pose_tb (PoseID INT AUTO_INCREMENT, PoseName VARCHAR(30), PoseX FLOAT, PoseY FLOAT, PoseZ FLOAT, PoseW FLOAT, CONSTRAINT PoseID_pk PRIMARY KEY (PoseID))" ) 
 
 #	CHECK IF THE TABLE EXISTS
 def check_Pose_tb(mycursor):	
@@ -14,9 +14,10 @@ def check_Pose_tb(mycursor):
 		print(x)
 
 #	INSERT POSES IN THE COMMAND DATABASE
-def insert_Pose(mycursor, PoseName, PoseX, PoseY, PoseW, PoseZ):
-	sql="INSERT INTO Pose_tb (PoseName, PoseX, PoseY, PoseW, PoseZ) VALUES(%s,%s,%s,%s,%s)"
-	val=(PoseName, PoseX, PoseY, PoseW, PoseZ)
+def insert_Pose(flotte_db, PoseName, PoseX, PoseY, PoseZ, PoseW):
+	sql="INSERT INTO Pose_tb (PoseName, PoseX, PoseY, PoseZ, PoseW) VALUES(%s,%s,%s,%s,%s)"
+	val=(PoseName, PoseX, PoseY, PoseZ, PoseW)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Pose ajoutée")
@@ -39,8 +40,9 @@ def get_Pose_by_name(mycursor, PoseName):
 		print(x)
 
 #	DELETE A Pose
-def delete_Pose(mycursor, PoseName):
+def delete_Pose(flotte_db, PoseName):
 	sql="DELETE FROM Pose_tb WHERE PoseName=" + PoseName
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Pose deleted")
