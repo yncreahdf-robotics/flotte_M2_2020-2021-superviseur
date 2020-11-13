@@ -15,7 +15,6 @@ def check_Pose_tb(mycursor):
 
 #	INSERT POSES IN THE COMMAND DATABASE
 def insert_Pose(mycursor, PoseName, PoseX, PoseY, PoseW, PoseZ):
-	#need to verify that the PoseType is an existing Type in the  Type database
 	sql="INSERT INTO Pose_tb (PoseName, PoseX, PoseY, PoseW, PoseZ) VALUES(%s,%s,%s,%s,%s)"
 	val=(PoseName, PoseX, PoseY, PoseW, PoseZ)
 	mycursor.execute(sql,val)
@@ -41,15 +40,10 @@ def get_Pose_by_name(mycursor, PoseName):
 
 #	DELETE A Pose
 def delete_Pose(mycursor, PoseName):
-	sql="DELETE FROM Pose_tb WHERE PoseName=PoseName"
+	sql="DELETE FROM Pose_tb WHERE PoseName=" + PoseName
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Pose deleted")
 
-def delete_flotte_db(mycursor):
-	sql="DROP DATABASE flotte_db"
-	mycursor.execute(sql)
-	flotte_db.commit()
-	print(mycursor.rowcount,"DATABASE DESTROYED **explosion**")
 
 

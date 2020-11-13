@@ -33,7 +33,7 @@ def get_all_Robot(mycursor):
 
 #	GET A Robot BY ITS NAME
 def get_Robot_by_name(mycursor, RobotType):
-	sql = "SELECT * FROM Robot_tb WHERE RobotName=RobotName IF EXISTS"
+	sql = "SELECT * FROM Robot_tb WHERE RobotName="+RobotName+" IF EXISTS"
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	for x in myresult:
@@ -41,15 +41,9 @@ def get_Robot_by_name(mycursor, RobotType):
 
 #	DELETE A Robot
 def delete_Robot(mycursor, RobotID):
-	sql="DELETE FROM Robot_tb WHERE RobotID=RobotID"
+	sql="DELETE FROM Robot_tb WHERE RobotID="+RobotID
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Robot deleted")
-
-def delete_flotte_db(mycursor):
-	sql="DROP DATABASE flotte_db"
-	mycursor.execute(sql)
-	flotte_db.commit()
-	print(mycursor.rowcount,"DATABASE DESTROYED **explosion**")
 
 

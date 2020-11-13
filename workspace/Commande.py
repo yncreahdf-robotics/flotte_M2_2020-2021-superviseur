@@ -24,7 +24,7 @@ def insert_Commande(mycursor, CommandNbr,ArticleID,ArticleQtt):
 
 #	GET ALL ARTICLES LINKED TO A COMMAND
 def get_Commande(mycursor, CommandNbr):
-	sql = "SELECT * FROM Commande_tb WHERE CommandNbr=CommandNbr"
+	sql = "SELECT * FROM Commande_tb WHERE CommandNbr="+CommandNbr
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	for x in myresult:
@@ -32,15 +32,11 @@ def get_Commande(mycursor, CommandNbr):
 
 #	DELETE A COMMAND
 def delete_Commande(mycursor, CommandNbr):
-	sql="DELETE FROM Commande_tb WHERE CommandNbr=CommandNbr"
+	sql="DELETE FROM Commande_tb WHERE CommandNbr="+CommandNbr
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Command deleted")
 
-def delete_flotte_db(mycursor):
-	sql="DROP DATABASE IF EXISTS flotte_db"
-	mycursor.execute(sql)
-	flotte_db.commit()
-	print(mycursor.rowcount,"DATABASE DESTROYED")
+
 
 

@@ -13,7 +13,6 @@ def check_Article_tb(mycursor):
 
 #	INSERT ARTICLES IN THE COMMAND DATABASE
 def insert_Article(mycursor,ArticleName, ArticlePrice, ArticleWeight):
-	#need to verify that the ArticleID is an existing Article in the Article database
 	sql="INSERT INTO Article_tb (ArticleName, ArticlePrice, ArticleWeight) VALUES(%s,%s,%s)"
 	val=(ArticleName,ArticlePrice,ArticleWeight)
 	mycursor.execute(sql,val)
@@ -39,16 +38,11 @@ def get_Article_by_name(mycursor, ArticleName):
 
 #	DELETE AN ARTICLE
 def delete_Article(mycursor, ArticleName):
-	sql="DELETE FROM Article_tb WHERE ArticleName=ArticleName"
+	sql="DELETE FROM Article_tb WHERE ArticleName="+ArticleName
 	mycursor.execute(sql)
 	command_db.commit()
 	print(mycursor.rowcount,"Article deleted")
 
-def delete_command_db(mycursor):
-	sql="DROP DATABASE command_db"
-	mycursor.execute(sql)
-	command_db.commit()
-	print(mycursor.rowcount,"DATABASE DESTROYED **explosion**")
 
 
 

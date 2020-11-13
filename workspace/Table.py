@@ -44,11 +44,6 @@ def delete_Table(mycursor, PositionID):
 	flotte_db.commit()
 	print(mycursor.rowcount,"Table deleted")
 
-def delete_flotte_db(mycursor):
-	sql="DROP DATABASE IF EXISTS flotte_db"
-	mycursor.execute(sql)
-	flotte_db.commit()
-	print(mycursor.rowcount,"DATABASE DESTROYED")
 
 
 
