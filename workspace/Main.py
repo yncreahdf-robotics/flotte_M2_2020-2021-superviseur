@@ -16,6 +16,10 @@
 
 import IHM
 import IPFinder
+import InitBDDSuperviseur
+import Robot
+import Positions
+import Type
 
 
 # Import des librairies exterieures au projet
@@ -24,6 +28,8 @@ import curses
 import time
 import threading
 import paho.mqtt.client as mqtt
+import mysql.connector
+import datetime
 
 
 ##########################
@@ -46,8 +52,6 @@ port = 1883
 
 
 iprobot = ""
-
-menu_accueil = ["Bienvenue"]
 
 
 ############
@@ -82,31 +86,69 @@ def on_message(client, userdata, msg):
 	#print("message qos=",msg.qos)
 	#print("message retain flag=",msg.retain)
 
+
+	# Topic quand un nouveau robot se connecte
 	if msg.topic == "Initialisation/Envoi":
+
 		print("Nouveau robot, mise en bdd")
 
 		iprobot = msg.payload.decode("utf-8").split("/")[0]
+		typerobot = msg.payload.decode("utf-8").split("/")[1]
 
-		### 	AJOUT D'UN ROBOT DANS LA BASE DE DONNéES
+		# On cherche le type de robot
 
-		#	Si le type de robot n'existe pas encore on l'ajoute à la base des types
+		result = Type.get_Type_if_exists(mycursor, typerobot)
 
-		#	Dans tous les cas on ajoute le robot à la liste des robots disponibles de la base de données
+		# Si le type de robot n'existe pas encore on l'ajoute à la base des types
 
+		if len(result) == 0:
+#TODO: remplacer pass
+			pass
 
+		# Si le type existe on ajoute le robot à la liste des robots disponibles de la base de données
+
+		else:
+#TODO: mettre une vraie position
+			Robot.insert_Robot(flotte_db, iprobot, typerobot, "0, 0, 0, 0", "Idle", datetime.datetime.now())
+		
+
+	# Topic quand une nouvelle commande arrive
 	if msg.topic == "Commande/Envoi":
-		print("Nouvelle commande, recherche du meilleur robot")
+		print("Nouvelle commande, recherche du meilleur robot...")
 
 		# recherche du robot dispo (+le plus proche de la destination)
 
-		global iprobot	# à retirer après avoir choppé en bdd
+		listeRobots = Robot.get_free_Robot(mycursor, "Turtlebot")
+		robotMissione = listeRobots[0]
+		print(robotMissione[0])
+
+		# For robot in listeRobot:
+			#if robotMissionne == "":
+				#if robot.isavailable:
+					#robotMissionne = robot
+		#if robotMissionne == "":
+			#publish ordre au robot
+		#else:
+			#on est dans la merde
+
+		iprobot=robotMissione[0]
+
+
+		# à retirer après avoir choppé en bdd
 		publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "ordre" , 2)
 
 
-	if msg.topic == "Ordre/Etat":
-		print("Etat du robot : " + msg.payload.decode("utf-8"))
+	if msg.topic == "Robot/Ping":
+		print("Reception d'un ping : " + msg.payload.decode("utf-8"))
+
+		result = Robot.get_all_Robot(mycursor)
+	
+		for robot in result:
+
+			if robot[3] == "Idle":
+
+				Robot.update_ping(flotte_db, robot[0])
 		
-		#	Enregistrer le temps de l'horloge dans la variable du robot dans la BDD
 		
 
 
@@ -126,6 +168,7 @@ def subscribe(ip, port, topic, qos):
 	print("subscribe to "+topic)
 
 
+
 #Appel d'une fonction qui permet d'envoyer un message
 
 def publish(ip, port, topic, message, qos):
@@ -139,74 +182,26 @@ def publish(ip, port, topic, message, qos):
 
 
 
+# Verifier que les robots en marche sont toujours en marche
+
 def pingRobots():
-	threading.Timer(20, pingRobots).start()	# Recommence toute les 20 sec
 
-	# Verifier que les robots en marche sont toujours en marche
+	threading.Timer(30, pingRobots).start()	# Recommence toute les 20 sec
 
-
-
-def main(stdscr):
+	result = Robot.get_all_Robot(mycursor)
 	
-	menu=menu_accueil
+	print("Ping des robots ...")
 
-	#turn off cursor blinking
-	curses.curs_set(0)
+	for robot in result:
 
-	#color scheme for selected row
-	curses.init_pair(1,curses.COLOR_BLACK, curses.COLOR_WHITE)
+		if (datetime.datetime.now() - robot[4]) > datetime.timedelta(seconds=30):
+			print("Robot ", robot[0], " deconnecte")
 
-	#specify the current selected row
-	current_row = 0
+	print("Ping terminé")
 
-	#print the menu
-	IHM.print_menu(stdscr, current_row, menu)
-	
-
-	#create_command_db()
-	#check_command_db()
-	#create_command_tb()
-	#check_command_tb()
-
-
-
-	while 1:
-		key=stdscr.getch()
-
-		# 	monte si la flèche du haut est pressée
-		if key == curses.KEY_UP and current_row>0:
-			current_row -= 1
-
-		elif key == curses.KEY_DOWN and current_row < len(menu)-1:
-			current_row +=1
-
-		elif key == 27:
-			break
-
-		elif key in [10,13]:
-			stdscr.clear()
-			stdscr.refresh()
-
-			#Pour chaque appui sur un choix on lance la publication d'un msg à l'aide du python mqttperso.py
-			if menu[current_row] == "Test":
-
-				AvailableIP = IPFinder.launch
-
-				for i in AvailableIP():
-					
-					try:
-						publish(i, port, "Initialisation/Feedback", my_ip, 2)
-						print(i)
-					except OSError as err:
-						print("OS error: {0}".format(err))
-					
-
-			#elif menu[current_row] == "Demonstration navigation (initialisation)":
-			#	mqttperso.publish(ip, port, "topic/Ordre", "1", 0)
+			
 		
-		IHM.print_menu(stdscr, current_row, menu)
 		
-
 
 
 
@@ -217,9 +212,43 @@ def main(stdscr):
 
 # Lancement IHM Initialisation
 
+
+###	CONNECTS TO DATABASE	### 
+flotte_db=mysql.connector.connect(
+	host='localhost',
+	database='flotte_db',
+	user='root',
+	password='L@boRobotique'
+)
+
+global mycursor
+mycursor=flotte_db.cursor()
+
+
+InitBDDSuperviseur.delete_flotte_db(flotte_db)
+
+InitBDDSuperviseur.create_flotte_db(flotte_db)
+
+InitBDDSuperviseur.create_all_tables(flotte_db)
+
+Positions.insert_Pose(flotte_db, "recharge", 0.2, 4.4, -0.1, -1)
+Positions.insert_Pose(flotte_db, "table1", 2.4, 6.6, 0.96, 0.25)
+Positions.insert_Pose(flotte_db, "table2", 1.15, 6.26, 0.76, -0.64)
+Positions.insert_Pose(flotte_db, "table3", 1.86, 8.88, 0.27, -0.96)
+Positions.insert_Pose(flotte_db, "bar", 4.5, 8.12, 0.95, -0.3)
+
+Type.insert_Type(flotte_db, "Robotino", "Service", 20000)
+Type.insert_Type(flotte_db, "Heron", "Service", 10000)
+Type.insert_Type(flotte_db, "Turtlebot", "Service", 1000)
+Type.insert_Type(flotte_db, "Caroita", "Preparateur", 500)
+Type.insert_Type(flotte_db, "Accueil", "Accueil", -1)
+
+
+
 subscribe(my_ip, port, "Initialisation/Envoi", 2)
 subscribe(my_ip, port, "Commande/Envoi", 2)
 subscribe(my_ip, port, "Ordre/Etat", 2)
+subscribe(my_ip, port, "Robot/Ping", 2)
 
 # Mode ecoute sur le topic de scan des nouveaux robots
 
@@ -246,7 +275,6 @@ subscribe(my_ip, port, "Ordre/Etat", 2)
 pingRobots()
 
 while 1:
-
 
 	time.sleep(10)
 

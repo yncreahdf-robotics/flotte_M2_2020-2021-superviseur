@@ -24,8 +24,7 @@ def get_all_Type(mycursor):
 	sql="SELECT * FROM Type_tb ORDER BY TypeName"
 	mycursor.execute(sql)
 	myresult=mycursor.fetchall()
-	for x in myresult:
-		print(x)
+	return myresult
 
 
 #	GET A TYPE BY ITS NAME
@@ -33,8 +32,16 @@ def get_Type_by_name(mycursor, TypeName):
 	sql = "SELECT * FROM Type_tb WHERE TypeName="+TypeName+" IF EXISTS"
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
-	for x in myresult:
-		print(x)
+	return myresult
+
+
+#	GET A TYPE BY ITS NAME IF EXISTS
+def get_Type_if_exists(mycursor, TypeName):
+	sql = "SELECT * FROM Type_tb WHERE TypeName=\"" + TypeName + "\""
+	mycursor.execute(sql)
+	myresult = mycursor.fetchall()
+	return myresult
+
 
 #	DELETE A TYPE
 def delete_Type(flotte_db, TypeName):
