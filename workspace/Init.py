@@ -19,6 +19,7 @@ import paho.mqtt.client as mqtt
 # Import des librairies exterieures au projet
 
 import time
+import threading
 
 
 ##########################
@@ -41,7 +42,7 @@ for line in hosts:
 		pass
 
 ###	ROBOTS VARIABLES     ###
-type_robot="Turlebot"
+type_robot="Turtlebot"
 etat_robot="libre"
 
 ######################
@@ -111,6 +112,17 @@ def publish(ip, port, topic, message, qos):
 	print("message sent on "+topic)
 
 
+def pingRobot():
+
+	threading.Timer(10, pingRobot).start()
+
+	print ("Envoi du ping")
+	
+	publish(ipsuperviseur, 1883, "Robot/Ping", my_ip, 2)
+
+
+
+
 ###################################
 ###	PROGRAMME PRINCIPAL	###
 ###################################
@@ -121,9 +133,9 @@ publish(ipsuperviseur, 1883, "Initialisation/Envoi", my_ip+"/"+type_robot , 2)
 #	subscribe to Ordre/Envo - waits for orders
 subscribe(ipsuperviseur, 1883, "Ordre/Envoi", 2)
 
+pingRobot()
+
 while(1):
-	publish(ipsuperviseur,1883, "Ordre/Etat", my_ip+"/"+etat_robot,2)
-	print(etat_robot)
 	time.sleep(10)
 
 
