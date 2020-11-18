@@ -121,7 +121,8 @@ def pingRobot():
 	publish(ipsuperviseur, 1883, "Robot/Ping", my_ip, 2)
 
 
-
+def send_etat():
+	publish(ipsuperviseur,1883,"Robot/Etat", my_ip+"/"+etat_robot,2)
 
 ###################################
 ###	PROGRAMME PRINCIPAL	###
