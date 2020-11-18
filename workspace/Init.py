@@ -12,7 +12,7 @@
 # Import des fichiers .py propre au projet
 
 #import FonctionsMQTT
-
+import mysql.connector
 import IPFinder
 import paho.mqtt.client as mqtt
 
@@ -87,7 +87,7 @@ def on_message(client, userdata, msg):
 			#on cherche les coordonnées de la position donnée
 			position=msg.payload.decode("utf-8").split("/")[2]
 			print(position)
-			pose=get_Pose_by_name(mycursor,position)
+			pose=Positions.get_Pose_by_name(mycursor,position)
 			print(pose)
 			
 			#TODO insérer code robot avec pour destination la "pose" déterminée
