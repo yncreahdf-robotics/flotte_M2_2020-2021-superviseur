@@ -59,7 +59,6 @@ iprobot = ""
 ############
 
 
-
 def on_connect(client, userdata, flags, rc):
 
 	print("Connected with result code "+str(rc))
@@ -117,25 +116,33 @@ def on_message(client, userdata, msg):
 		print("Nouvelle commande, recherche du meilleur robot...")
 
 		# recherche du robot dispo (+le plus proche de la destination)
+					
+		listeRobots=find_Robot_by_role(mycursor,"Service")
 
-		listeRobots = Robot.get_free_Robot(mycursor, "Turtlebot")
-		robotMissione = listeRobots[0]
-		print(robotMissione[0])
+		# Vérifier que la liste n'est pas vide
+		if len(listeRobots)!=0:
+			robotMissione = listeRobots[0]
+			print(robotMissione[0])
 
-		# For robot in listeRobot:
+			# For robot in listeRobot:
+				#if robotMissionne == "":
+					#if robot.isavailable:
+						#robotMissionne = robot
 			#if robotMissionne == "":
-				#if robot.isavailable:
-					#robotMissionne = robot
-		#if robotMissionne == "":
-			#publish ordre au robot
-		#else:
-			#on est dans la merde
+				#publish ordre au robot
+			#else:
+				#on est dans la merde
 
-		iprobot=robotMissione[0]
+			iprobot=robotMissione[0]
+			# à retirer après avoir choppé en bdd
+			publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "ordre" , 2)
 
 
-		# à retirer après avoir choppé en bdd
-		publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "ordre" , 2)
+		else:
+			print("Aucun Robot Disponible")
+			#	Boucler jusqu'à trouver un robot pour effectuer l'ordre
+
+		
 
 
 	if msg.topic == "Robot/Ping":
@@ -200,7 +207,12 @@ def pingRobots():
 	print("Ping terminé")
 
 			
-		
+def find_Robot_by_role(mycursor,role):
+	sql = "SELECT RobotIP FROM Robot_tb INNER JOIN Type_tb ON Robot_tb.RobotType=Type_tb.TypeName WHERE Type_tb.Role= \""+ role+"\""
+	print(sql)
+	mycursor.execute(sql)
+	myresult = mycursor.fetchall()
+	return myresult
 		
 
 

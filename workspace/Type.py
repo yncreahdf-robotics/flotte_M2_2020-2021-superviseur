@@ -35,6 +35,14 @@ def get_Type_by_name(mycursor, TypeName):
 	return myresult
 
 
+#	GET A TYPE BY ITS ROLE
+def get_Type_by_role(mycursor, Role):
+	sql = "SELECT * FROM Type_tb WHERE TypeName=\""+Role+"\" IF EXISTS"
+	mycursor.execute(sql)
+	myresult = mycursor.fetchall()
+	return myresult
+
+
 #	GET A TYPE BY ITS NAME IF EXISTS
 def get_Type_if_exists(mycursor, TypeName):
 	sql = "SELECT * FROM Type_tb WHERE TypeName=\"" + TypeName + "\""
