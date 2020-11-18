@@ -80,9 +80,13 @@ def on_message(client, userdata, msg):
 	#print("message qos=",msg.qos)
 	#print("message retain flag=",msg.retain)
 	if (msg.topic=="Ordre/Envoi" and msg.payload.decode("utf-8").split("/")[0]==my_ip):
-		global etat_robot		
+		global etat_robot		 
 		etat_robot="occupe"		
 		print("ORDRE REçU")
+		if msg.payload.decode("utf-8").split("/")[1]=="Go":
+			#on cherche les coordonnées de la position donnée
+			
+			#insérer code robot avec pour destination 
 
 #Appel d'une fonction qui permet de recevoir un message
 
