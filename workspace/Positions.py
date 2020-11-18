@@ -33,11 +33,10 @@ def get_all_Pose(mycursor):
 
 #	GET A Pose BY ITS NAME
 def get_Pose_by_name(mycursor, PoseName):
-	sql = "SELECT * FROM Pose_tb WHERE PoseName=PoseName IF EXISTS"
+	sql = "SELECT * FROM Pose_tb WHERE PoseName=\"" + PoseName + "\" IF EXISTS"
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
-	for x in myresult:
-		print(x)
+	return myresult
 
 #	DELETE A Pose
 def delete_Pose(flotte_db, PoseName):

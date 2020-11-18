@@ -20,7 +20,7 @@ import paho.mqtt.client as mqtt
 
 import time
 import threading
-
+import Positions
 
 ##########################
 ### Variables globales ###
@@ -83,10 +83,14 @@ def on_message(client, userdata, msg):
 		global etat_robot		 
 		etat_robot="occupe"		
 		print("ORDRE REçU")
-		if msg.payload.decode("utf-8").split("/")[1]=="Go":
+		if (msg.payload.decode("utf-8").split("/")[1]=="Go"):
 			#on cherche les coordonnées de la position donnée
+			position=msg.payload.decode("utf-8").split("/")[2]
+			print(position)
+			pose=get_Pose_by_name(mycursor,position)
+			print(pose)
 			
-			#insérer code robot avec pour destination 
+			#TODO insérer code robot avec pour destination la "pose" déterminée
 
 #Appel d'une fonction qui permet de recevoir un message
 
@@ -131,6 +135,18 @@ def send_etat():
 ###################################
 ###	PROGRAMME PRINCIPAL	###
 ###################################
+
+
+###	CONNECTS TO DATABASE	###
+flotte_db=mysql.connector.connect(
+	host='192.168.1.5',
+	database='flotte_db',
+	user='robot',
+	password='robot'
+)
+
+global mycursor
+mycursor=flotte_db.cursor()
 
 #	publish his IP and type separated by a / on Initialisation/Envoi
 publish(ipsuperviseur, 1883, "Initialisation/Envoi", my_ip+"/"+type_robot , 2)
