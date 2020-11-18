@@ -10,8 +10,6 @@ def create_Robot_tb(mycursor):
 #	CHECK IF THE TABLE EXISTS
 def check_Robot_tb(mycursor):	
 	mycursor.execute("SHOW TABLES")
-	for x in mycursor:
-		print(x)
 
 #	INSERT RobotS IN THE COMMAND DATABASE
 def insert_Robot(flotte_db, RobotIP, RobotType, Position, Etat, LastCheck):
@@ -21,7 +19,6 @@ def insert_Robot(flotte_db, RobotIP, RobotType, Position, Etat, LastCheck):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
 	flotte_db.commit()
-	print(mycursor.rowcount,"Robot ajouté")
 
 #	GET ALL POSSIBLE RobotS
 def get_all_Robot(mycursor):
@@ -36,8 +33,6 @@ def get_Robot_by_name(mycursor, RobotType):
 	sql = "SELECT * FROM Robot_tb WHERE RobotName= \""+ RobotName +"\" IF EXISTS"
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
-	for x in myresult:
-		print(x)
 
 
 #	GET A FREE ROBOT BY ITS FUNCTIONNALITY
@@ -64,7 +59,6 @@ def update_ping(flotte_db, RobotIP):
 	mycursor.execute(sql)
 	flotte_db.commit()
 	mycursor.execute(sql)
-	print(RobotIP)
 
 
 #	DELETE A Robot
@@ -73,6 +67,5 @@ def delete_Robot(flotte_db, RobotID):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
-	print(mycursor.rowcount,"Robot deleted")
 
 

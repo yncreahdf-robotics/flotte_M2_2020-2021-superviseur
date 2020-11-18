@@ -130,7 +130,7 @@ def on_message(client, userdata, msg):
 
 			print("PUBLISH:  Envoi d'un ordre a", iprobot)
 
-			publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "Go" + "/" + "missionnaire" , 2)
+			publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "Go" + "/" + "table1" , 2)
 
 
 		else:
