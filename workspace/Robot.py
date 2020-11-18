@@ -40,13 +40,21 @@ def get_Robot_by_name(mycursor, RobotType):
 		print(x)
 
 
-
 #	GET A FREE ROBOT BY ITS FUNCTIONNALITY
 def get_free_Robot(mycursor, RobotType):
 	sql="SELECT * FROM Robot_tb WHERE Etat = 'Idle' AND RobotType = \""+ RobotType +"\""
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	return myresult
+
+
+#	Find A ROBOT BY ROLE
+def find_Robot_by_role(mycursor,role):
+	sql = "SELECT RobotIP FROM Robot_tb INNER JOIN Type_tb ON Robot_tb.RobotType=Type_tb.TypeName WHERE Type_tb.Role= \""+ role+"\""
+	mycursor.execute(sql)
+	myresult = mycursor.fetchall()
+	return myresult
+
 
 #	UPDATE LAST CHECK OF ROBOT
 def update_ping(flotte_db, RobotIP):

@@ -32,6 +32,7 @@ import mysql.connector
 import datetime
 
 
+
 ##########################
 ### Variables globales ###
 ##########################
@@ -44,14 +45,15 @@ for line in hosts:
 		if splitted_line[1]=="supIP":
 			my_ip = splitted_line[0]
 	except IndexError:
-		pass			
-print (my_ip)		
+		pass
+
 
 # TCP port used for MQTT
 port = 1883
 
 
 iprobot = ""
+
 
 
 ############
@@ -61,12 +63,12 @@ iprobot = ""
 
 def on_connect(client, userdata, flags, rc):
 
-	print("Connected with result code "+str(rc))
+	print("MQTT:     Connected with result code "+str(rc))
 	if rc==0:
-		print("connection ok")
+		print("MQTT:     connection ok")
 		#pass
 	else:
-		print("connection no")
+		print("MQTT:     connection no")
 		#pass
 
 	
@@ -89,7 +91,7 @@ def on_message(client, userdata, msg):
 	# Topic quand un nouveau robot se connecte
 	if msg.topic == "Initialisation/Envoi":
 
-		print("Nouveau robot, mise en bdd")
+		print("MESSAGE:  Nouveau robot, mise en bdd")
 
 		iprobot = msg.payload.decode("utf-8").split("/")[0]
 		typerobot = msg.payload.decode("utf-8").split("/")[1]
@@ -113,40 +115,34 @@ def on_message(client, userdata, msg):
 
 	# Topic quand une nouvelle commande arrive
 	if msg.topic == "Commande/Envoi":
-		print("Nouvelle commande, recherche du meilleur robot...")
+		print("MESSAGE:  Nouvelle commande, recherche du meilleur robot...")
 
 		# recherche du robot dispo (+le plus proche de la destination)
 					
-		listeRobots=find_Robot_by_role(mycursor,"Service")
+		listeRobots=Robot.find_Robot_by_role(mycursor,"Service")
 
 		# Vérifier que la liste n'est pas vide
 		if len(listeRobots)!=0:
-			robotMissione = listeRobots[0]
-			print(robotMissione[0])
 
-			# For robot in listeRobot:
-				#if robotMissionne == "":
-					#if robot.isavailable:
-						#robotMissionne = robot
-			#if robotMissionne == "":
-				#publish ordre au robot
-			#else:
-				#on est dans la merde
+			robotMissione = listeRobots[0]
 
 			iprobot=robotMissione[0]
-			# à retirer après avoir choppé en bdd
-			publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "ordre" , 2)
+
+			print("PUBLISH:  Envoi d'un ordre a", iprobot)
+
+			publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "Go" + "/" + "missionnaire" , 2)
 
 
 		else:
-			print("Aucun Robot Disponible")
+#TODO: finir le else
+			print("PUBLISH:  Aucun Robot Disponible")
 			#	Boucler jusqu'à trouver un robot pour effectuer l'ordre
 
 		
 
 
 	if msg.topic == "Robot/Ping":
-		print("Reception d'un ping : " + msg.payload.decode("utf-8"))
+		print("PING:     Reception d'un ping : " + msg.payload.decode("utf-8"))
 
 		result = Robot.get_all_Robot(mycursor)
 	
@@ -172,7 +168,7 @@ def subscribe(ip, port, topic, qos):
 	client.connect(ip,port,60)
 	client.subscribe(topic, qos)
 	client.loop_start()
-	print("subscribe to "+topic)
+	print("MQTT:     subscribe to "+topic)
 
 
 
@@ -185,7 +181,7 @@ def publish(ip, port, topic, message, qos):
 	client.connect(ip,port,60)
 	client.loop_start()
 	client.publish(topic, message, qos)
-	print("message sent to "+topic)
+	print("PUBLISH:  message sent to "+topic)
 
 
 
@@ -197,22 +193,14 @@ def pingRobots():
 
 	result = Robot.get_all_Robot(mycursor)
 	
-	print("Ping des robots ...")
+	print("PING:     Ping des robots ...")
 
 	for robot in result:
 
 		if (datetime.datetime.now() - robot[4]) > datetime.timedelta(seconds=30):
-			print("Robot ", robot[0], " deconnecte")
+			print("PING:     Robot ", robot[0], " deconnecte")
 
-	print("Ping terminé")
-
-			
-def find_Robot_by_role(mycursor,role):
-	sql = "SELECT RobotIP FROM Robot_tb INNER JOIN Type_tb ON Robot_tb.RobotType=Type_tb.TypeName WHERE Type_tb.Role= \""+ role+"\""
-	print(sql)
-	mycursor.execute(sql)
-	myresult = mycursor.fetchall()
-	return myresult
+	print("PING:     Ping terminé")
 		
 
 
