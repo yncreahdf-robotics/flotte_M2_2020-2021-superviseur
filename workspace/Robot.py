@@ -62,8 +62,8 @@ def update_ping(flotte_db, RobotIP):
 
 
 #	DELETE A Robot
-def delete_Robot(flotte_db, RobotID):
-	sql="DELETE FROM Robot_tb WHERE RobotID="+RobotID
+def delete_Robot(flotte_db, RobotIP):
+	sql="DELETE FROM Robot_tb WHERE RobotIP=\""+RobotIP+"\""
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()

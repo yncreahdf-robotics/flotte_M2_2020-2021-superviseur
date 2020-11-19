@@ -17,7 +17,7 @@ def insert_Type(flotte_db, TypeName, Role, WeightCapacity):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
 	flotte_db.commit()
-	print(mycursor.rowcount,"Type ajouté")
+	print("BDD:     ", mycursor.rowcount,"Type ajouté")
 
 #	GET ALL POSSIBLE TYPES
 def get_all_Type(mycursor):

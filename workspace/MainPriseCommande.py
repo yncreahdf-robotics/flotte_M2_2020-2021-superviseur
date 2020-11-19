@@ -35,7 +35,7 @@ print (ipsuperviseur)
 port = 1883
 
 
-menu_accueil = ["Prise de commande"]
+menu_accueil = ["Prise de commande (table1)", "Prise de commande (table2)", "Prise de commande (table3)", "Prise de commande (bar)", "Prise de commande (recharge)"]
 
 ############
 ### Defs ###
@@ -145,12 +145,25 @@ def main(stdscr):
 			stdscr.refresh()
 
 			#Pour chaque appui sur un choix on lance la publication d'un msg à l'aide du python mqttperso.py
-			if menu[current_row] == "Prise de commande":
+			if menu[current_row] == "Prise de commande (table1)":
 
-				publish(ipsuperviseur, port, "Commande/Envoi", "Un coca merci", 2)
+				publish(ipsuperviseur, port, "Commande/Envoi", "table1", 2)
 
-			#elif menu[current_row] == "Demonstration navigation (initialisation)":
-			#	mqttperso.publish(ip, port, "topic/Ordre", "1", 0)
+			elif menu[current_row] == "Prise de commande (table2)":
+
+				publish(ipsuperviseur, port, "Commande/Envoi", "table2", 2)
+
+			elif menu[current_row] == "Prise de commande (table3)":
+
+				publish(ipsuperviseur, port, "Commande/Envoi", "table3", 2)
+
+			elif menu[current_row] == "Prise de commande (bar)":
+
+				publish(ipsuperviseur, port, "Commande/Envoi", "bar", 2)
+
+			elif menu[current_row] == "Prise de commande (recharge)":
+
+				publish(ipsuperviseur, port, "Commande/Envoi", "recharge", 2)
 		
 		IHM.print_menu(stdscr, current_row, menu)
 		

@@ -34,4 +34,4 @@ def delete_flotte_db(flotte_db):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
-	print(mycursor.rowcount,"DATABASE DESTROYED **explosion**")
+	print("BDD:     ", mycursor.rowcount,"DATABASE DESTROYED **explosion**")

@@ -20,7 +20,7 @@ def insert_Pose(flotte_db, PoseName, PoseX, PoseY, PoseZ, PoseW):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
 	flotte_db.commit()
-	print(mycursor.rowcount,"Pose ajoutée")
+	print("BDD:     ", mycursor.rowcount,"Pose ajoutée")
 
 #	GET ALL POSSIBLE PoseS
 def get_all_Pose(mycursor):

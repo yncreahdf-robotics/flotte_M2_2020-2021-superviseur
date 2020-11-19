@@ -130,7 +130,7 @@ def on_message(client, userdata, msg):
 
 			print("PUBLISH:  Envoi d'un ordre a", iprobot)
 
-			publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "Go" + "/" + "table1" , 2)
+			publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "Go" + "/" + msg.payload.decode("utf-8") , 2)
 
 
 		else:
@@ -142,7 +142,7 @@ def on_message(client, userdata, msg):
 
 
 	if msg.topic == "Robot/Ping":
-		print("PING:     Reception d'un ping : " + msg.payload.decode("utf-8"))
+		print("MESSAGE:  Reception d'un ping : " + msg.payload.decode("utf-8"))
 
 		result = Robot.get_all_Robot(mycursor)
 	
@@ -198,7 +198,13 @@ def pingRobots():
 	for robot in result:
 
 		if (datetime.datetime.now() - robot[4]) > datetime.timedelta(seconds=30):
-			print("PING:     Robot ", robot[0], " deconnecte")
+
+			print("PING:     Robot ", robot[1], " (", robot[0], ") ", " deconnecte")
+			Robot.delete_Robot(flotte_db, robot[0])
+
+		else:
+			print("PING:     Robot ", robot[1], " (", robot[0], ") ", " ok")
+
 
 	print("PING:     Ping terminé")
 		
@@ -216,14 +222,12 @@ def pingRobots():
 ###	CONNECTS TO DATABASE	### 
 flotte_db=mysql.connector.connect(
 	host='localhost',
-	database='flotte_db',
 	user='root',
 	password='L@boRobotique'
 )
 
 global mycursor
 mycursor=flotte_db.cursor()
-
 
 InitBDDSuperviseur.delete_flotte_db(flotte_db)
 
