@@ -106,6 +106,7 @@ def on_message(client, userdata, msg):
 #TODO: remplacer pass
 			pass
 
+
 		# Si le type existe on ajoute le robot à la liste des robots disponibles de la base de données
 
 		else:
@@ -115,23 +116,50 @@ def on_message(client, userdata, msg):
 
 	# Topic quand une nouvelle commande arrive
 	if msg.topic == "Commande/Envoi":
-		print("MESSAGE:  Nouvelle commande, recherche du meilleur robot...")
+
+		print("MESSAGE:  Nouvelle commande")
 
 		# recherche du robot dispo (+le plus proche de la destination)
 					
 		listeRobots=Robot.find_Robot_by_role(mycursor,"Service")
 
 		# Vérifier que la liste n'est pas vide
+
 		if len(listeRobots)!=0:
 
-			robotMissione = listeRobots[0]
+			# Recherche d'un preparateur disponible
 
-			iprobot=robotMissione[0]
+			listePreparateurs = Robot.find_Robot_by_role(mycursor,"Preparateur")
+	
+			# Vérifier que la liste n'est pas vide
 
-			print("PUBLISH:  Envoi d'un ordre a", iprobot)
+			if len(listePreparateurs)!=0:
 
-			publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "Go" + "/" + msg.payload.decode("utf-8") , 2)
+				robotMissione = listeRobots[0]
 
+				iprobot=robotMissione[0]
+
+				preparateurMissione = listePreparateurs[0]
+
+				ippreparateur=preparateurMissione[0]
+
+				print("PUBLISH:  Envoi d'un ordre a", iprobot)
+
+				publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "Go" + "/" + msg.payload.decode("utf-8") , 2)
+
+				print("PUBLISH:  Envoi d'un ordre a", ippreparateur)
+
+				publish(my_ip, port, "Ordre/Envoi", ippreparateur + "/" + "Prepare" + "/" + msg.payload.decode("utf-8") , 2)
+
+			# Si aucun robot n'est disponible
+
+			else:
+#TODO: finir le else
+				print("PUBLISH:  Aucun Préparateur Disponible")
+				#	Boucler jusqu'à trouver un robot pour effectuer l'ordre
+
+
+		# Si aucun robot n'est disponible
 
 		else:
 #TODO: finir le else
@@ -142,15 +170,14 @@ def on_message(client, userdata, msg):
 
 
 	if msg.topic == "Robot/Ping":
+
 		print("MESSAGE:  Reception d'un ping : " + msg.payload.decode("utf-8"))
 
 		result = Robot.get_all_Robot(mycursor)
 	
 		for robot in result:
 
-			if robot[3] == "Idle":
-
-				Robot.update_ping(flotte_db, robot[0])
+			Robot.update_ping(flotte_db, robot[0])
 		
 		
 
