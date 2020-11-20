@@ -21,6 +21,12 @@ import paho.mqtt.client as mqtt
 import time
 import threading
 import Positions
+import rospy
+import math
+import actionlib
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from actionlib_msgs.msg import GoalStatus
+from geometry_msgs.msg import Pose, Point, Quaternion
 
 ##########################
 ### Variables globales ###
@@ -31,6 +37,8 @@ my_ip=IPFinder.get_my_ip()
 
 #	TCP port used for MQTT
 port = 1883
+
+desiredPose = []
 
 #	Determines the supervisor's IP using the hosts file
 hosts = open('/etc/hosts','r')
@@ -92,6 +100,11 @@ def on_message(client, userdata, msg):
 			
 			#TODO insérer code robot avec pour destination la "pose" déterminée
 
+			global desiredPose
+                        desiredPose = pose[0]
+                        print(desiredPose)
+                        MoveToGoal()
+
 #Appel d'une fonction qui permet de recevoir un message
 
 def subscribe(ip, port, topic, qos):
@@ -132,6 +145,66 @@ def pingRobot():
 def send_etat():
 	publish(ipsuperviseur,1883,"Robot/Etat", my_ip+"/"+etat_robot,2)
 
+
+def MoveToGoal():
+	rospy.init_node('move_to_goal')
+	# Create action client
+	global client 
+	client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+	rospy.loginfo("Waiting for move_base action server...")
+	wait = client.wait_for_server(rospy.Duration(5.0))
+	if not wait:
+		rospy.logerr("Action server not available !")
+		rospy.signal_shutdown("Action server not available !")
+		return
+
+	rospy.loginfo("Connected to move base server")
+	rospy.loginfo("Start moving to " + str(desiredPose) + " ...")
+	movebase_client()
+
+def active_cb():
+	rospy.loginfo("Goal pose " + str(desiredPose) + " is now being processed by the Action Server...")
+
+def feedback_cb(feedback):
+	rospy.loginfo("Feedback for goal pose " + str(desiredPose) + " received")
+
+
+def done_cb(status, result):
+	if status == 2:
+		rospy.loginfo("Goal pose " + str(desiredPose) + " received a cancel request after it started executing, completed execution !")
+	if status == 3:
+		rospy.loginfo("Goal pose " + str(desiredPose) + " reached")
+		return
+
+	if status == 4:
+		rospy.loginfo("Goal pose " + str(desiredPose) + " was aborted by the Action Server")
+
+		rospy.signal_shutdown("Goal pose " + str(desiredPose)+" aborted, shutting down!")
+		return
+
+	if status == 5:
+		rospy.loginfo("Goal pose " + str(desiredPose) + " has been rejected by the Action Server")
+
+		rospy.signal_shutdown("Goal pose " + str(desiredPose) + " rejected, shutting down!")
+		return
+
+	if status == 8:
+		rospy.loginfo("Goal pose " + str(desiredPose) + " received a cancel request before it started executing, successfully cancelled!")
+
+def movebase_client():
+	goal = MoveBaseGoal()
+	goal.target_pose.header.frame_id = "map"
+	goal.target_pose.header.stamp = rospy.Time.now()
+	goal.target_pose.pose.position.x = desiredPose[0]
+	goal.target_pose.pose.position.y = desiredPose[1]
+	goal.target_pose.pose.orientation.z = desiredPose[2]
+	goal.target_pose.pose.orientation.w = desiredPose[3]
+	rospy.loginfo("Sending goal pose " + str(desiredPose) + " to Action Server")
+	rospy.loginfo(str(desiredPose))
+	client.send_goal(goal, done_cb, active_cb, feedback_cb)
+	#rospy.spin()
+	return
+
 ###################################
 ###	PROGRAMME PRINCIPAL	###
 ###################################
@@ -148,13 +221,13 @@ flotte_db=mysql.connector.connect(
 global mycursor
 mycursor=flotte_db.cursor()
 
+pingRobot()
+
 #	publish his IP and type separated by a / on Initialisation/Envoi
 publish(ipsuperviseur, 1883, "Initialisation/Envoi", my_ip+"/"+type_robot , 2)
 
 #	subscribe to Ordre/Envo - waits for orders
 subscribe(ipsuperviseur, 1883, "Ordre/Envoi", 2)
-
-pingRobot()
 
 while(1):
 	time.sleep(10)
