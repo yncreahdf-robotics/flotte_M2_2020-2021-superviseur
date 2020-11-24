@@ -6,7 +6,7 @@ import time
 import os
 import random as rd
 
-dirname = os.path.dirname(__file__)
+dirname = os.getcwd()
 
 window = tkinter.Tk()#Creation d'une fenetre graphique tkinter
 window.wm_title("RestoBot App for administrator") #Nom de la fenetre
