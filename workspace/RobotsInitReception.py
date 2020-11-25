@@ -111,6 +111,8 @@ def on_message(client, userdata, msg):
 	#print("message topic=",msg.topic)
 	#print("message qos=",msg.qos)
 	#print("message retain flag=",msg.retain)
+
+
 	if (msg.topic=="Ordre/Envoi" and msg.payload.decode("utf-8").split("/")[0]==my_ip):
 		global etat_robot		 
 		etat_robot="occupe"		
@@ -141,6 +143,15 @@ def on_message(client, userdata, msg):
 
 
                         MoveToGoal()
+
+
+	if (msg.topic=="Ping/Feedback" and msg.payload.decode("utf-8").split("/")[0]==my_ip):
+		print("boucle feedback")
+		if msg.payload.decode("utf-8").split("/")[1] == "No":
+			print("boucle feedback no")
+			publish(ipsuperviseur, port, "Initialisation/Envoi", my_ip+"/"+type_robot , 2)
+
+
 
 #Appel d'une fonction qui permet de recevoir un message
 
@@ -265,6 +276,7 @@ publish(ipsuperviseur, port, "Initialisation/Envoi", my_ip+"/"+type_robot , 2)
 
 #	subscribe to Ordre/Envo - waits for orders
 subscribe(ipsuperviseur, port, "Ordre/Envoi", 2)
+subscribe(ipsuperviseur, port, "Ping/Feedback", 2)
 
 while(1):
 	time.sleep(10)
