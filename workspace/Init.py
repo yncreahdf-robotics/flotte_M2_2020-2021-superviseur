@@ -62,7 +62,31 @@ etat_robot="libre"
 ### Defs ###
 ############
 
-#!/usr/bin/env python3
+f = "/home/nvidia/catkin2_ws/src/heron_isen/scripts/file/poses"
+
+def loadFile():
+    pose = dict()
+    if os.path.isfile(f):
+        if os.stat(f).st_size == 0:
+            with open(f, 'wb') as fichier:
+                pickler = pickle.Pickler(fichier)
+                pickler.dump(pose)
+
+        else:
+            with open(f, 'rb') as fichier:
+                depickler = pickle.Unpickler(fichier)
+                pose = depickler.load()
+                print(pose.keys())
+                # print(pose.items())
+    else:
+        with open(f, 'wb'):
+            pass
+    return(pose)
+
+
+
+
+
 
 def on_connect(client, userdata, flags, rc):
 
@@ -92,17 +116,30 @@ def on_message(client, userdata, msg):
 		etat_robot="occupe"		
 		print("ORDRE REçU")
 		if (msg.payload.decode("utf-8").split("/")[1]=="Go"):
-			#on cherche les coordonnées de la position donnée
-			position=msg.payload.decode("utf-8").split("/")[2]
-			print(position)
-			pose=Positions.get_Pose_by_name(mycursor,position)
-			print(pose)
-			
-			#TODO insérer code robot avec pour destination la "pose" déterminée
 
-			global desiredPose
-                        desiredPose = pose[0]
-                        print(desiredPose)
+			# On cherche les coordonnées de la position donnée avec le fichier de pose sauvegardés
+
+			pose = loadFile()
+			desiredPose = position
+			print(desiredPose)
+			time.sleep(0.5)
+			desiredPose = str(desiredPose)
+			print(pose.get(desiredPose))
+
+
+
+			# On cherche les coordonnées de la position donnée avec la bdd
+
+			#position=msg.payload.decode("utf-8").split("/")[2]
+			#print(position)
+			#pose=Positions.get_Pose_by_name(mycursor,position)
+			#print(pose)
+
+			#global desiredPose
+                        #desiredPose = pose[0]
+                        #print(desiredPose)
+
+
                         MoveToGoal()
 
 #Appel d'une fonction qui permet de recevoir un message
@@ -117,7 +154,7 @@ def subscribe(ip, port, topic, qos):
 	client.on_disconnect = on_disconnect
 	client.connect(ip,port,60)
 	client.subscribe(topic, qos)
-	client.loop_start()
+	client.loop_forever()
 	print("subscribed to "+topic)
 
 
@@ -212,7 +249,7 @@ def movebase_client():
 
 ###	CONNECTS TO DATABASE	###
 flotte_db=mysql.connector.connect(
-	host='192.168.1.5',
+	host=ipsuperviseur,
 	database='flotte_db',
 	user='robot',
 	password='robot'
@@ -224,10 +261,10 @@ mycursor=flotte_db.cursor()
 pingRobot()
 
 #	publish his IP and type separated by a / on Initialisation/Envoi
-publish(ipsuperviseur, 1883, "Initialisation/Envoi", my_ip+"/"+type_robot , 2)
+publish(ipsuperviseur, port, "Initialisation/Envoi", my_ip+"/"+type_robot , 2)
 
 #	subscribe to Ordre/Envo - waits for orders
-subscribe(ipsuperviseur, 1883, "Ordre/Envoi", 2)
+subscribe(ipsuperviseur, port, "Ordre/Envoi", 2)
 
 while(1):
 	time.sleep(10)
