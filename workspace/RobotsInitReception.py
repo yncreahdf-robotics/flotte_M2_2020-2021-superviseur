@@ -61,23 +61,23 @@ etat_robot="libre"
 f = "/home/nvidia/catkin2_ws/src/heron_isen/scripts/file/poses"
 
 def loadFile():
-    pose = dict()
-    if os.path.isfile(f):
-        if os.stat(f).st_size == 0:
-            with open(f, 'wb') as fichier:
-                pickler = pickle.Pickler(fichier)
-                pickler.dump(pose)
+	pose = dict()
+	if os.path.isfile(f):
+		if os.stat(f).st_size == 0:
+			with open(f, 'wb') as fichier:
+				pickler = pickle.Pickler(fichier)
+				pickler.dump(pose)
 
-        else:
-            with open(f, 'rb') as fichier:
-                depickler = pickle.Unpickler(fichier)
-                pose = depickler.load()
-                print(pose.keys())
-                # print(pose.items())
-    else:
-        with open(f, 'wb'):
-            pass
-    return(pose)
+		else:
+			with open(f, 'rb') as fichier:
+				depickler = pickle.Unpickler(fichier)
+				pose = depickler.load()
+				print(pose.keys())
+				# print(pose.items())
+	else:
+		with open(f, 'wb'):
+			pass
+	return(pose)
 
 
 
@@ -110,8 +110,8 @@ def on_message(client, userdata, msg):
 
 
 	if (msg.topic=="Ordre/Envoi" and msg.payload.decode("utf-8").split("/")[0]==my_ip):
-		global etat_robot		 
-		etat_robot="occupe"		
+		global etat_robot
+		etat_robot="occupe"
 		print("ORDRE REçU")
 		if (msg.payload.decode("utf-8").split("/")[1]=="Go"):
 
@@ -161,7 +161,7 @@ def subscribe(ip, port, topic, qos):
 	client.on_disconnect = on_disconnect
 	client.connect(ip,port,60)
 	client.subscribe(topic, qos)
-	client.loop_forever()
+	client.loop_start()
 	print("subscribed to "+topic)
 
 
@@ -182,7 +182,7 @@ def pingRobot():
 	threading.Timer(10, pingRobot).start()
 
 	print ("Envoi du ping")
-	
+
 	publish(ipsuperviseur, 1883, "Robot/Ping", my_ip, 2)
 
 
@@ -193,7 +193,7 @@ def send_etat():
 def MoveToGoal():
 	rospy.init_node('move_to_goal')
 	# Create action client
-	global client 
+	global client
 	client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
 	rospy.loginfo("Waiting for move_base action server...")
 	wait = client.wait_for_server(rospy.Duration(5.0))
