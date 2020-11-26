@@ -91,10 +91,10 @@ def on_message(client, userdata, msg):
 	# Topic quand un nouveau robot se connecte
 	if msg.topic == "Initialisation/Envoi":
 
-		print("MESSAGE:  Nouveau robot, mise en bdd")
-
 		iprobot = msg.payload.decode("utf-8").split("/")[0]
 		typerobot = msg.payload.decode("utf-8").split("/")[1]
+
+		print("MESSAGE:  Nouveau robot,", typerobot, " (", iprobot, "), mise en bdd")
 
 		# On cherche le type de robot
 
@@ -104,7 +104,7 @@ def on_message(client, userdata, msg):
 
 		if len(result) == 0:
 #TODO: remplacer pass
-			pass
+			print("MESSAGE:  Type de robot inexistant")
 
 
 		# Si le type existe on ajoute le robot à la liste des robots disponibles de la base de données
@@ -165,21 +165,68 @@ def on_message(client, userdata, msg):
 #TODO: finir le else
 			print("PUBLISH:  Aucun Robot Disponible")
 			#	Boucler jusqu'à trouver un robot pour effectuer l'ordre
+	# Topic quand le superviseur est notifié de la mise à jour de l'état d'une commande
+	if msg.topic == "Ordre/Status" :
 
-		
+		iprobot = msg.payload.decode("utf-8").split("/")[0]
+		typerobot = msg.payload.decode("utf-8").split("/")[1]
+		table = msg.payload.decode("utf-8").split("/")[2]
+		etat = msg.payload.decode("utf-8").split("/")[3]
+
+		#si la notification provient du préparateur :
+		if typerobot == "Preparateur" and etat == "toDeliver" :
+
+			#Recherche d'un robot de service disponible pour la livraison :
+			listeRobots=Robot.find_Robot_by_role(mycursor,"Service")
+
+			# Vérifier que la liste n'est pas vide
+
+			if len(listeRobots)!=0 :
+
+				robotMissione = listeRobots[0] #premier robot dispo dans la liste choisi
+				ipRobotMissione = robotMissione[0]
+
+				print("PUBLISH:  Envoi d'un ordre a", iprobot, " : doit aller chercher une commande faite par le préparateur")
+
+				publish(my_ip, port, "Ordre/Envoi", iprobot + "/" + "Go" + "/" + "position preparateur", 2)
+
+		if typerobot == "Preparateur" and etat == "robotChargePourLivraison" :
+
+			positionBar = get_Pose_by_name(mycursor, bar):
+			robotEnAttente = get_pending_robot_by_position(mycursor, positionBar)
+
+			#envoi ordre robot service pour livraison
 
 
-	if msg.topic == "Robot/Ping":
 
-		print("MESSAGE:  Reception d'un ping : " + msg.payload.decode("utf-8"))
+			# Recherche d'un preparateur disponible
+
+
+
+
+	if msg.topic == "Robot/Ping": 
+
+		iprobot = msg.payload.decode("utf-8")
+
+		print("MESSAGE:  Reception d'un ping : " + iprobot)
+
+		confirmation = 0
 
 		result = Robot.get_all_Robot(mycursor)
 	
 		for robot in result:
 
-			Robot.update_ping(flotte_db, robot[0])
-		
-		
+			if robot[0] == iprobot:
+
+				Robot.update_ping(flotte_db, robot[0])
+
+				confirmation = 1
+
+		if confirmation == 0:
+
+			publish(my_ip, port, "Ping/Feedback", iprobot + "/" + "No", 2)
+
+
 
 
 
@@ -267,6 +314,7 @@ Positions.insert_Pose(flotte_db, "table1", 2.4, 6.6, 0.96, 0.25)
 Positions.insert_Pose(flotte_db, "table2", 1.15, 6.26, 0.76, -0.64)
 Positions.insert_Pose(flotte_db, "table3", 1.86, 8.88, 0.27, -0.96)
 Positions.insert_Pose(flotte_db, "bar", 4.5, 8.12, 0.95, -0.3)
+Positions.insert_Pose(flotte_db, "nassima", 21.58, 26.11, -0.05, 0.99)
 
 Type.insert_Type(flotte_db, "Robotino", "Service", 20000)
 Type.insert_Type(flotte_db, "Heron", "Service", 10000)

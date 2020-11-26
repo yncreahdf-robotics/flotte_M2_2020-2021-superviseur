@@ -50,6 +50,20 @@ def find_Robot_by_role(mycursor,role):
 	myresult = mycursor.fetchall()
 	return myresult
 
+#GET A ROBOT BY ITS POSITION
+def get_pending_robot_by_position(mycursor, Position):
+	sql="SELECT * FROM Robot_tb WHERE Etat = 'Pending' AND Position = \""+ Position +"\""
+	mycursor.execute(sql)
+	myresult = mycursor.fetchall()
+	return myresult
+
+# UPDATA A ROBOT STATUS
+
+def update_status(mycursor, flotte_db, RobotIP, newStatus)
+	sql = "UPDATE Robot_tb SET Etat = \"" + newStatus + "\" WHERE RobotIP = \"" + RobotIP + "\""
+	mycursor.execute(sql)
+	flotte_db.commit()
+	mycursor.execute(sql)
 
 #	UPDATE LAST CHECK OF ROBOT
 def update_ping(flotte_db, RobotIP):

@@ -23,10 +23,6 @@ import threading
 import Positions
 import rospy
 import math
-import actionlib
-from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-from actionlib_msgs.msg import GoalStatus
-from geometry_msgs.msg import Pose, Point, Quaternion
 
 ##########################
 ### Variables globales ###
@@ -142,7 +138,7 @@ def on_message(client, userdata, msg):
                         #print(desiredPose)
 
 
-                        MoveToGoal()
+			MoveToGoal()
 
 
 	if (msg.topic=="Ping/Feedback" and msg.payload.decode("utf-8").split("/")[0]==my_ip):
