@@ -2,6 +2,9 @@ import mysql.connector
 from datetime import datetime
 
 
+#########################################
+##	Fonctions de création de la table  ##
+#########################################
 
 #	CREATE A NEW TABLE
 def create_Pose_tb(mycursor):
@@ -13,6 +16,11 @@ def check_Pose_tb(mycursor):
 	for x in mycursor:
 		print(x)
 
+
+############################################
+##  Fonctions de remplissage de la table  ##
+############################################
+
 #	INSERT POSES IN THE COMMAND DATABASE
 def insert_Pose(flotte_db, PoseName, PoseX, PoseY, PoseZ, PoseW):
 	sql="INSERT INTO Pose_tb (PoseName, PoseX, PoseY, PoseZ, PoseW) VALUES(%s,%s,%s,%s,%s)"
@@ -22,7 +30,12 @@ def insert_Pose(flotte_db, PoseName, PoseX, PoseY, PoseZ, PoseW):
 	flotte_db.commit()
 	print("BDD:     ", mycursor.rowcount,"Pose ajoutée")
 
-#	GET ALL POSSIBLE PoseS
+
+###################################
+##  Fonctions d'accès a la table ##
+###################################
+
+#	GET ALL POSSIBLE POSES
 def get_all_Pose(mycursor):
 	sql="SELECT * FROM Pose_tb ORDER BY PoseName"
 	mycursor.execute(sql)
@@ -30,13 +43,17 @@ def get_all_Pose(mycursor):
 	for x in myresult:
 		print(x)
 
-
-#	GET A Pose BY ITS NAME
+#	GET A POSE BY ITS NAME
 def get_Pose_by_name(mycursor, PoseName):
-	sql = "SELECT PoseX, PoseY, PoseZ, PoseW FROM Pose_tb WHERE PoseName=\"" + PoseName + "\""
+	sql = "SELECT * FROM Pose_tb WHERE PoseName=\"" + PoseName + "\""
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	return myresult
+
+
+###############################
+##  Fonction de suppression  ##
+###############################
 
 #	DELETE A Pose
 def delete_Pose(flotte_db, PoseName):
@@ -44,7 +61,7 @@ def delete_Pose(flotte_db, PoseName):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
-	print(mycursor.rowcount,"Pose deleted")
+	print("BDD:		", mycursor.rowcount,"Pose deleted")
 
 
 

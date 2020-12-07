@@ -1,5 +1,10 @@
 import mysql.connector
 
+
+#########################################
+##  Fonctions de création de la table  ##
+#########################################
+
 #	CREATE A NEW TABLE
 def create_Type_tb(mycursor):
 	mycursor.execute("CREATE TABLE IF NOT EXISTS Type_tb (TypeID INT AUTO_INCREMENT, TypeName VARCHAR(30), Role VARCHAR(30), WeightCapacity INT, CONSTRAINT TypeID_pk PRIMARY KEY (TypeID))" ) 
@@ -10,6 +15,10 @@ def check_Type_tb(mycursor):
 	for x in mycursor:
 		print(x)
 
+############################################
+##  Fonctions de remplissage de la table  ##
+############################################
+
 #	INSERT TYPES IN THE COMMAND DATABASE
 def insert_Type(flotte_db, TypeName, Role, WeightCapacity):
 	sql="INSERT INTO Type_tb (TypeName, Role, WeightCapacity) VALUES(%s,%s,%s)"
@@ -19,6 +28,10 @@ def insert_Type(flotte_db, TypeName, Role, WeightCapacity):
 	flotte_db.commit()
 	print("BDD:     ", mycursor.rowcount,"Type ajouté")
 
+####################################
+##  Fonctions d'accès à la table  ##
+####################################
+
 #	GET ALL POSSIBLE TYPES
 def get_all_Type(mycursor):
 	sql="SELECT * FROM Type_tb ORDER BY TypeName"
@@ -26,30 +39,18 @@ def get_all_Type(mycursor):
 	myresult=mycursor.fetchall()
 	return myresult
 
-
-#	GET A TYPE BY ITS NAME
-def get_Type_by_name(mycursor, TypeName):
-	sql = "SELECT * FROM Type_tb WHERE TypeName="+TypeName+" IF EXISTS"
-	mycursor.execute(sql)
-	myresult = mycursor.fetchall()
-	return myresult
-
-
-#	GET A TYPE BY ITS ROLE
-def get_Type_by_role(mycursor, Role):
-	sql = "SELECT * FROM Type_tb WHERE TypeName=\""+Role+"\" IF EXISTS"
-	mycursor.execute(sql)
-	myresult = mycursor.fetchall()
-	return myresult
-
-
 #	GET A TYPE BY ITS NAME IF EXISTS
-def get_Type_if_exists(mycursor, TypeName):
+def Type_exists(mycursor, TypeName):
 	sql = "SELECT * FROM Type_tb WHERE TypeName=\"" + TypeName + "\""
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
-	return myresult
+	if len(myresult)!=0:
+		return True
+	return False
 
+################################
+##  Fonctions de suppression  ##
+################################
 
 #	DELETE A TYPE
 def delete_Type(flotte_db, TypeName):

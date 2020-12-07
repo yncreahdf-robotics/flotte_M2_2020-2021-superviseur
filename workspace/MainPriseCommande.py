@@ -35,7 +35,7 @@ print (ipsuperviseur)
 port = 1883
 
 
-menu_accueil = ["Prise de commande (table1)", "Prise de commande (table2)", "Prise de commande (table3)", "Prise de commande (bar)", "Prise de commande (recharge)"]
+menu_accueil = ["Prise de commande (table1)", "Prise de commande (table2)", "Prise de commande (table3)", "Prise de commande (bar)", "Prise de commande (recharge)", "seb"]
 
 ############
 ### Defs ###
@@ -164,6 +164,10 @@ def main(stdscr):
 			elif menu[current_row] == "Prise de commande (recharge)":
 
 				publish(ipsuperviseur, port, "Commande/Envoi", "recharge", 2)
+
+			elif menu[current_row] == "seb":
+
+				publish(ipsuperviseur, port, "Commande/Charge", "recharge", 2)
 		
 		IHM.print_menu(stdscr, current_row, menu)
 		
