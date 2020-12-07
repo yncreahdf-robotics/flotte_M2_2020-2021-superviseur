@@ -42,16 +42,23 @@ def get_Commande(mycursor, CommandNbr):
 
 #	GET ARTICLES IN A COMMAND WITH A PARTICULAR STATUS
 def get_Commande_with_status_and_commandNbr(mycursor, CommandNbr, Status):
-	sql = sql = "SELECT * FROM Commande_tb WHERE CommandNbr=\""+CommandNbr+"\" AND Etat=\"" + Status +"\""
+	sql = "SELECT * FROM Commande_tb WHERE CommandNbr=\""+CommandNbr+"\" AND Etat=\"" + Status +"\""
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	return myresult
 
 #	GET ARTICLES OF A GIVEN COMMAND WITH A GIVEN STATUS
 def get_CommandNbr_with_status(mycursor, Status):
-	sql = sql = "SELECT CommandNbr FROM Commande_tb WHERE Etat=\"" + Status +"\""
+	sql = "SELECT CommandNbr FROM Commande_tb WHERE Etat=\"" + Status +"\""
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
+	return myresult
+
+#	GET QUANITIES FOR A GIVEN ARTICLE
+def get_Bouteille(mycursor, CommandID):
+	sql = "SELECT Bouteille1, Bouteille2, Bouteille3, Bouteille4, Bouteille5, Bouteille6 FROM Article_tb INNER JOIN Command_tb ON Article_tb.ArticleID=Commande_tb.ArticleID WHERE CommandID=\"" + CommandID + "\""
+	mycursor.execute(sql)
+	myresult=mycursor.fetchall()
 	return myresult
 
 ############################################

@@ -254,9 +254,8 @@ def on_message(client, userdata, msg):
 		else: 
 			print("MESSAGE: COMMANDE PRETE - ATTENTE D'UN ROBOT") 
 
-			#TODO Robot préparateur en "Pending"
+			#	Robot préparateur en "Pending"
 			Robot.update_status(mycursor, preparateur, "Pending")
-			#TODO Commande en "Prepared"
 
 		# 	Commande en "Prepared"
 		Commande.update_status(mycursor, CommandNbr, "Prepared")
@@ -409,7 +408,7 @@ def pingRobots():
 # Lancement IHM Initialisation
 
 
-###	CONNECTS TO DATABASE	### 
+##	CONNECTS TO DATABASE  ## 
 flotte_db=mysql.connector.connect(
 	host='localhost',
 	user='root',
