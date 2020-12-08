@@ -45,7 +45,7 @@ def get_all_Pose(mycursor):
 
 #	GET A POSE BY ITS NAME
 def get_Pose_by_name(mycursor, PoseName):
-	sql = "SELECT * FROM Pose_tb WHERE PoseName=\"" + PoseName + "\""
+	sql = "SELECT PoseID FROM Pose_tb WHERE PoseName=\"" + PoseName + "\""
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	return myresult

@@ -20,10 +20,12 @@ def check_Table_tb(mycursor):
 ############################################
 
 #	INSERT ARTICLES IN THE TABLE DATABASE
-def insert_Table(mycursor, CommandNbr, PositionID, Place, Etat, Prix):
+def insert_Table(flotte_db, CommandNbr, PositionID, Place, Etat, Prix):
 	sql="INSERT INTO Table_tb (CommandNbr, PositionID, Place, Etat, Prix) VALUES(%s,%s,%s,%s,%s)"
 	val=(CommandNbr, PositionID, Place, Etat, Prix)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
+	flotte_db.commit()
 	print("BDD: 	Table ajoutée")
 
 ####################################

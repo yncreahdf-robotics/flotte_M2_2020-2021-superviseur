@@ -19,7 +19,7 @@ def check_Article_tb(mycursor):
 ############################################
 
 #	INSERT ARTICLES IN THE COMMAND DATABASE
-def insert_Article(flotte_db,ArticleName, ArticlePrice, ArticleWeight):
+def insert_Article(flotte_db,ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6):
 	sql="INSERT INTO Article_tb (ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 	val=(ArticleName,ArticlePrice,ArticleWeight,Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6)
 	mycursor=flotte_db.cursor()
@@ -46,6 +46,8 @@ def get_Article_by_name(mycursor, ArticleID):
 	myresult = mycursor.fetchall()
 	for x in myresult:
 		print(x)
+
+
 
 ########################################################
 ##  Fonctions de suppression d'un article de la base  ##

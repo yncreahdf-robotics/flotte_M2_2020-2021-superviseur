@@ -7,7 +7,7 @@ from datetime import datetime
 
 #	CREATE A NEW TABLE
 def create_Robot_tb(mycursor):
-	mycursor.execute("CREATE TABLE IF NOT EXISTS Robot_tb (RobotIP VARCHAR(30) NOT NULL PRIMARY KEY, RobotType VARCHAR(30), Position VARCHAR(30), Etat VARCHAR(30), LastCheck DATETIME)" ) 
+	mycursor.execute("CREATE TABLE IF NOT EXISTS Robot_tb (RobotIP VARCHAR(30) NOT NULL PRIMARY KEY, RobotType VARCHAR(30), Position VARCHAR(30), Etat VARCHAR(30), ActiveCommandNbr INT, LastCheck DATETIME)" ) 
 
 #	CHECK IF THE TABLE EXISTS
 def check_Robot_tb(mycursor):	
@@ -18,12 +18,13 @@ def check_Robot_tb(mycursor):
 ###########################################
 
 #	INSERT RobotS IN THE COMMAND DATABASE
-def insert_Robot(mycursor, flotte_db, RobotIP, RobotType, Position, Etat, LastCheck):
+def insert_Robot(flotte_db, RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck):
 	#need to verify that the RobotType is an existing Type in the  Type database
-	sql="INSERT INTO Robot_tb (RobotIP, RobotType, Position, Etat, LastCheck) VALUES(%s,%s,%s,%s,%s)"
-	val=(RobotIP, RobotType, Position, Etat, LastCheck)
+	sql="INSERT INTO Robot_tb (RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck) VALUES(%s,%s,%s,%s,%s,%s)"
+	val=(RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
-	#flotte_db.commit()
+	flotte_db.commit()
 
 ####################################
 ##	Fonctions d'accès à la table  ##
@@ -59,9 +60,16 @@ def find_robot_by_role_status_and_position(mycursor, role, position, status):
 
 #GET A ROBOTS DATA BY ITS IP
 def get_robot_data(mycursor, RobotIP):
-	sql="SELECT * FROM Robot_tb INNER JOIN Type_tb ON Robot_tb.RobotType=Type_tb.TypeName WHERE RobotIP=\""+ RobotIP + "\""
+	sql="SELECT * FROM Robot_tb WHERE RobotIP=\""+ RobotIP + "\""
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
+	return myresult
+
+#	GET A ROBOT BY ITS ACTIVE COMMAND NUMBER
+def get_robot_by_ActiveCommand(mycursor,ActiveCommandNbr):
+	sql= "SELECT RobotIP FROM Robot_tb WHERE ActiveCommandNbr= \"" + ActiveCommandNbr + "\""
+	mycursor.execute(sql)
+	myresult=mycursor.fetchall()
 	return myresult
 
 
@@ -70,14 +78,18 @@ def get_robot_data(mycursor, RobotIP):
 ############################################
 
 # UPDATE A ROBOT STATUS
-def update_status(mycursor, RobotIP, newStatus):
+def update_status(flotte_db, RobotIP, newStatus):
 	sql = "UPDATE Robot_tb SET Etat = \"" + newStatus + "\" WHERE RobotIP = \"" + str(RobotIP) + "\""
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
-	#flotte_db.commit()
+	flotte_db.commit()
 	
-def update_position(mycursor, RobotIP, newPosition):
+#	UPDATE A ROBOT'S LAST POSITION
+def update_position(flotte_db, RobotIP, newPosition):
 	sql = "UPDATE Robot_tb SET Position = \"" + newPosition + "\" WHERE RobotIP = \"" + str(RobotIP) + "\""
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
+	flotte_db.commit()
 
 #	UPDATE LAST CHECK OF ROBOT
 def update_ping(flotte_db, RobotIP):
@@ -85,7 +97,14 @@ def update_ping(flotte_db, RobotIP):
 	val=datetime.now()
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
-	#flotte_db.commit()
+	flotte_db.commit()
+
+#	UPDATE THE COMMAND THE ROBOT IS WORKING ON
+def update_command(flotte_db,RobotIP, newCommandNbr):
+	sql = "UPDATE Robot_tb SET ActiveCommandNbr= \"" + str(newCommandNbr) + "\" WHERE RobotIP = \"" + RobotIP + "\""
+	mycursor=flotte_db.cursor()
+	mycursor.execute(sql)
+	flotte_db.commit()
 
 #########################################################
 ##	Fonctions de suppression d'éléments dans la table  ##

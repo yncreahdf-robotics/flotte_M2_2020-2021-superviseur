@@ -4,16 +4,26 @@
 ### Imports ###
 ###############
 
-
 # Import des fichiers .py propre au projet
 
 import IHM
+import Robot
+import Positions
+import Type
+import Table
+import Commande
+import Article
+import InitBDDSuperviseur
+import IPFinder
 
 # Import des librairies exterieures au projet
 
 import curses
 import time
 import paho.mqtt.client as mqtt
+import mysql.connector
+import threading
+import datetime
 
 
 ##########################
@@ -35,7 +45,9 @@ print (ipsuperviseur)
 port = 1883
 
 
-menu_accueil = ["Prise de commande (table1)", "Prise de commande (table2)", "Prise de commande (table3)", "Prise de commande (bar)", "Prise de commande (recharge)", "seb"]
+menu_accueil = ["Prise de commande (table1)", "Prise de commande (table2)", "Prise de commande (table3)", "Prise de commande", "Prise de commande (recharge)", "seb"]
+
+
 
 ############
 ### Defs ###
@@ -101,7 +113,17 @@ def publish(ip, port, topic, message, qos):
 
 
 def main(stdscr):
-	
+	global CommandNbr
+	CommandNbr=1
+
+	flotte_db=mysql.connector.connect(
+		host='localhost',
+		user='root',
+		password='L@boRobotique'
+	)	
+
+	InitBDDSuperviseur.use_db(flotte_db)
+
 	menu=menu_accueil
 
 	#turn off cursor blinking
@@ -157,17 +179,20 @@ def main(stdscr):
 
 				publish(ipsuperviseur, port, "Commande/Envoi", "table3", 2)
 
-			elif menu[current_row] == "Prise de commande (bar)":
+			elif menu[current_row] == "Prise de commande":
+				
+				Commande.insert_Commande(flotte_db, 1, 1, "Pending")
+				publish(ipsuperviseur, port, "Commande/Envoi", "rien", 2)
+				CommandNbr+=1
 
-				publish(ipsuperviseur, port, "Commande/Envoi", "bar", 2)
 
 			elif menu[current_row] == "Prise de commande (recharge)":
 
 				publish(ipsuperviseur, port, "Commande/Envoi", "recharge", 2)
 
 			elif menu[current_row] == "seb":
-
-				publish(ipsuperviseur, port, "Commande/Charge", "recharge", 2)
+				ippreparateur="192.168.1.8"
+				publish(ipsuperviseur, port, "Preparateur/Prepare",ippreparateur + "/1", 2)
 		
 		IHM.print_menu(stdscr, current_row, menu)
 		

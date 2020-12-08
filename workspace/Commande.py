@@ -15,19 +15,19 @@ def check_Commande_tb(mycursor):
 	for x in mycursor:
 		print(x)
 
+
 ############################################
 ##  Fonctions de remplissage de la table  ##
 ############################################
 
 #	INSERT ARTICLES IN THE COMMAND DATABASE
-def insert_Commande(flotte_db, CommandNbr,ArticleID,Etat):
-	#need to verify that the articleID is an existing article in the article database
-	sql="INSERT INTO Commande_tb (CommandNbr, ArticleID, Etat) VALUES(%s,%s,%s)"
-	val=(CommandNbr,ArticleID,Etat)
+def insert_Commande(flotte_db, CommandNbr, ArticleID, Etat):
+	sql="INSERT INTO Commande_tb (CommandNbr, ArticleID,Etat) VALUES(%s,%s,%s)"
+	val=(CommandNbr, ArticleID, Etat)
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
 	flotte_db.commit()
-	print(mycursor.rowcount,"article ajouté à la commande")
+	print("BDD:     ", mycursor.rowcount,"Article Ajouté à la commande")
 
 ####################################
 ##  Fonctions d'accès à la table  ##
@@ -42,16 +42,18 @@ def get_Commande(mycursor, CommandNbr):
 
 #	GET ARTICLES IN A COMMAND WITH A PARTICULAR STATUS
 def get_Commande_with_status_and_commandNbr(mycursor, CommandNbr, Status):
-	sql = "SELECT * FROM Commande_tb WHERE CommandNbr=\""+CommandNbr+"\" AND Etat=\"" + Status +"\""
+	sql = "SELECT * FROM Commande_tb WHERE CommandNbr=\""+ str(CommandNbr)+"\" AND Etat=\"" + Status +"\""
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	return myresult
 
-#	GET ARTICLES OF A GIVEN COMMAND WITH A GIVEN STATUS
-def get_CommandNbr_with_status(mycursor, Status):
-	sql = "SELECT CommandNbr FROM Commande_tb WHERE Etat=\"" + Status +"\""
+#	GET ARTICLES OF A COMMAND WITH A GIVEN STATUS
+def get_CommandNbr_with_status(flotte_db, Status):
+	sql = "SELECT CommandNbr FROM Commande_tb WHERE Etat= \"" + Status +"\""
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
+	flotte_db.commit()
 	return myresult
 
 #	GET QUANITIES FOR A GIVEN ARTICLE
@@ -61,13 +63,14 @@ def get_Bouteille(mycursor, CommandID):
 	myresult=mycursor.fetchall()
 	return myresult
 
+
 ############################################
 ##	Fonctions de mise à jour de la table  ##
 ############################################
 
 #	UPDATE ALL ARTICLES IN A COMMAND TO A GIVEN STATUS
-def update_Commande_status(mycursor, CommandNbr, Status):
-	sql = "UPDATE Commande_tb SET Etat = \"" + Status + "\" WHERE CommandNbr = \'" + CommandNbr + "\""
+def update_status(mycursor, CommandNbr, Status):
+	sql = "UPDATE Commande_tb SET Etat = \"" + Status + "\" WHERE CommandNbr = \"" + str(CommandNbr) + "\""
 	mycursor.execute(sql)
 
 #	UPDATE A GIVEN ORDERED ARTICLE TO A GIVEN STATUS
