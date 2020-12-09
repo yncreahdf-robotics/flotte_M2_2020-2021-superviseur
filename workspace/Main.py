@@ -99,9 +99,9 @@ def on_message(client, userdata, msg):
 		print("MESSAGE:  Nouveau robot,", typerobot, " (", iprobot, "), mise en bdd")
 
 		# Si le type existe on ajoute le robot à la liste des robots disponibles de la base de données
-		if Type.Type_exists(mycursor, typerobot):
+		if Type.Type_exists(flotte_db, typerobot):
 			#TODO: mettre la position initiale du robot
-			Robot.insert_Robot(flotte_db, iprobot, typerobot, Positions.get_Pose_by_name(mycursor,"recharge")[0][0], "Idle", 0, datetime.datetime.now()) 
+			Robot.insert_Robot(flotte_db, iprobot, typerobot, Positions.get_Pose_by_name(flotte_db,"recharge")[0][0], "Idle", 0, datetime.datetime.now()) 
 
 		# Si le type de robot n'existe pas encore on l'ajoute à la base des types
 		else:
@@ -120,7 +120,7 @@ def on_message(client, userdata, msg):
 
 		confirmation = 0
 
-		result = Robot.get_all_Robot(mycursor)
+		result = Robot.get_all_Robot(flotte_db)
 	
 		for robot in result:
 
@@ -143,17 +143,17 @@ def on_message(client, userdata, msg):
 		NbrClient=msg.payload.decode("utf-8")[0]
 
 		#	Mise à jour de la table accueillant les clients
-		tablesLibres=Table.get_Table_Nbr_and_Status(mycursor, NbrClient, "Free")
+		tablesLibres=Table.get_Table_Nbr_and_Status(flotte_db, NbrClient, "Free")
 
 		if len(tablesLibres)!=0:
-			Table.update_Table_status(mycursor, tableLibres[0], Occupied)
+			Table.update_Table_status(flotte_db, tableLibres[0], Occupied)
 
 			#	Assigne un robot pour guider les clients à la table choisie
-			service=Robot.get_robot_by_role_and_status(mycursor, "Service", "Idle")
+			service=Robot.get_robot_by_role_and_status(flotte_db, "Service", "Idle")
 
 			if len(service)!=0:
 				#	On dit au robot de service choisi de guider les clients jusqu'à leur table
-				Robot.update_status(mycursor,service,"Occupied")
+				Robot.update_status(flotte_db,service,"Occupied")
 				publish(my_ip, port, "Service/Guide", str(service) , 2)
 
 			else:
@@ -183,8 +183,8 @@ def on_message(client, userdata, msg):
 		preparateur = msg.payload.decode("utf-8")[0]
 
 		#	On cherche la position du préparateur pour chercher le robot qui s'y trouve
-		position = Robot.get_robot_data(mycursor,ippreparateur)[2]
-		listeRobots = Robot.find_Robot_by_role_status_and_position(mycursor, "Service", "Pending", position)
+		position = Robot.get_robot_data(flotte_db,ippreparateur)[2]
+		listeRobots = Robot.find_Robot_by_role_status_and_position(flotte_db, "Service", "Pending", position)
 		
 		# Vérifier que la liste n'est pas vide
 		if len(listeRobots)!=0 :
@@ -195,30 +195,30 @@ def on_message(client, userdata, msg):
 			publish(my_ip, port, "Preparateur/Charge", str(ippreparateur) , 2)
 
 			# 	Robot préparateur en "Occupied"
-			Robot.update_status(mycursor, preparateur,"Occupied")
+			Robot.update_status(flotte_db, preparateur,"Occupied")
 
 		#	Sinon on attend un robot 
 		else: 
 			print("MESSAGE: COMMANDE PRETE - ATTENTE D'UN ROBOT") 
 
 			#	Robot préparateur en "Pending"
-			Robot.update_status(mycursor, preparateur, "Pending")
+			Robot.update_status(flotte_db, preparateur, "Pending")
 
 		# 	Commande en "Prepared"
-		Commande.update_status(mycursor, CommandNbr, "Prepared")
+		Commande.update_status(flotte_db, CommandNbr, "Prepared")
  	
  	# Quand le preparateur a fini de charger 
 	if msg.topic == "Preparateur/Charged":
 
 		preparateur=msg.payload.decode("utf-8")[0]
 		CommandNbr=msg.payload.decode("utf-8")[1]
-		remaining_articles=Commande.get_Commande_with_status_and_commandNbr(mycursor, CommandNbr, "Prepared")
+		remaining_articles=Commande.get_Commande_with_status_and_commandNbr(flotte_db, CommandNbr, "Prepared")
 		
 		# 	Commande en "Charged"
-		Commande.update_status_by_article(mycursor, remaining_articles[0], "Charged" )
+		Commande.update_Commande_status_by_article(flotte_db, remaining_articles[0], "Charged" )
 
 		#	Recherche des articles restant à charger
-		remaining_articles=Commande.get_Commande_with_status_and_commandNbr(mycursor, CommandNbr, "Prepared")
+		remaining_articles=Commande.get_Commande_with_status_and_commandNbr(flotte_db, CommandNbr, "Prepared")
 
 		#	Si l'article est le dernier de la commande on envoie le départ du robot
 		if remaining_articles==0:
@@ -227,7 +227,7 @@ def on_message(client, userdata, msg):
 			robot=listeRobot[0]
 
 			#	robot en "Occupied"
-			Robot.update_status(mycursor, robot, "Occupied")
+			Robot.update_status(flotte_db, robot, "Occupied")
 
 			publish(my_ip, port, "Service/Go/Table", robot + "/" + CommandNbr,2)
 		
@@ -250,17 +250,17 @@ def on_message(client, userdata, msg):
 
 		#	Si la commande est prête le préparateur est en attente
 		#	On utilise la position du robot qui nous envoie le message pour déterminer le préparateur utilisé
-		preparateur=Robot.find_Robot_by_role_status_and_position(mycursor, "Preparateur", "Pending", Robot.get_robot_data(mycursor, robot)[2])
+		preparateur=Robot.find_Robot_by_role_status_and_position(flotte_db, "Preparateur", "Pending", Robot.get_robot_data(flotte_db, robot)[2])
 		
 		if Robot.get_robot_data(preparateur)[3]=="Pending":
 			#On lance le chargement de la commande
-			Robot.update_status(mycursor,preparateur[0],"Occupied")
+			Robot.update_status(flotte_db,preparateur[0],"Occupied")
 			publish(my_ip, port, "Commande/Charge", preparateur[0] , 2)
 
 		else:
 	 		#	On fait attendre le robot jusqu'à ce que la commande soit prête
-	 		robot=Robot.find_Robot_by_role_status_and_position(mycursor, "Service", "Occupied", Robot.get_robot_data(preparateur)[2])
-	 		Robot.update_status(mycursor,robot[0], "Pending")
+	 		robot=Robot.find_Robot_by_role_status_and_position(flotte_db, "Service", "Occupied", Robot.get_robot_data(preparateur)[2])
+	 		Robot.update_status(flotte_db,robot[0], "Pending")
 
 	#Quand le robot de service a livré
 	if msg.topic == "Service/Arrived/Table":
@@ -276,10 +276,10 @@ def on_message(client, userdata, msg):
 		publish(my_ip, port, "Service/Go/Base", robot + "recharge",2)
 		
 		#	robot en "Idle"
-		Robot.update_status(mycursor, robot, "Idle")
+		Robot.update_status(flotte_db, robot, "Idle")
 
 		#	Command en "Delivered"
-		Command.update_status(mycursor, CommandNbr, "Delivered")
+		Command.update_status(flotte_db, CommandNbr, "Delivered")
 
 		#TODO:	Calcul du prix total de la table et mise en base de données
 
@@ -290,7 +290,7 @@ def on_message(client, userdata, msg):
 
 		#	On libère le robot et on lui dit de retourner à sa base de recharge
 		publish(my_ip, port, "Service/Go/Base", robot, "recharge",2)
-		Robot.update_status(mycursor, robot, "Idle")
+		Robot.update_status(flotte_db, robot, "Idle")
 
 
 
@@ -303,7 +303,7 @@ def subscribe(ip, port, topic, qos):
 	client.on_connect = on_connect
 	client.on_message = on_message
 	client.on_disconnect = on_disconnect
-	client.connect(ip,port,60)
+	client.connect(ip,port,65535)
 	client.subscribe(topic, qos)
 	client.loop_start()
 	print("MQTT:     subscribe to "+topic)
@@ -316,7 +316,7 @@ def publish(ip, port, topic, message, qos):
 
 	client = mqtt.Client()
 
-	client.connect(ip,port,60)
+	client.connect(ip,port,65535)
 	client.loop_start()
 	client.publish(topic, message, qos)
 	print("PUBLISH:  message sent to "+topic)
@@ -329,7 +329,7 @@ def pingRobots():
 
 	threading.Timer(30, pingRobots).start()	# Recommence toute les 20 sec
 
-	result = Robot.get_all_Robot(mycursor)
+	result = Robot.get_all_Robot(flotte_db)
 	
 	print("PING:     Ping des robots ...")
 
@@ -349,20 +349,20 @@ def pingRobots():
 def command_loop():
 	
 	print("Nombre de commande:"+ str(len(Commande.get_CommandNbr_with_status(flotte_db,"Pending"))))
-	print("Nombre de robots de services libres:"+ str(len(Robot.find_robot_by_role_and_status(mycursor,"Service","Idle"))))
-	print("Nombre de préparateurs libres:"+ str(len(Robot.find_robot_by_role_and_status(mycursor,"Preparateur","Idle"))))
+	print("Nombre de robots de services libres:"+ str(len(Robot.find_robot_by_role_and_status(flotte_db,"Service","Idle"))))
+	print("Nombre de préparateurs libres:"+ str(len(Robot.find_robot_by_role_and_status(flotte_db,"Preparateur","Idle"))))
 	
 	#	Si une commande est en attente et qu'un robot de service et un préparateur sont libres, lancer la commande
-	if(len(Commande.get_CommandNbr_with_status(flotte_db,"Pending"))!=0 and len(Robot.find_robot_by_role_and_status(mycursor, "Service", "Idle"))!=0 and len(Robot.find_robot_by_role_and_status(mycursor, "Preparateur", "Idle"))!=0):
+	if(len(Commande.get_CommandNbr_with_status(flotte_db,"Pending"))!=0 and len(Robot.find_robot_by_role_and_status(flotte_db, "Service", "Idle"))!=0 and len(Robot.find_robot_by_role_and_status(flotte_db, "Preparateur", "Idle"))!=0):
 		
 		print("MESSAGE: Une commande est en préparation")
 
 		commande=Commande.get_CommandNbr_with_status(flotte_db,"Pending")[0][0]
 		print(commande)
-		Commande.update_status(mycursor, commande, "Ordered")
+		Commande.update_status(flotte_db, commande, "Ordered")
 
-		listeRobots=Robot.find_robot_by_role_and_status(mycursor,"Service", "Idle")
-		listePreparateurs = Robot.find_robot_by_role_and_status(mycursor,"Preparateur", "Idle")
+		listeRobots=Robot.find_robot_by_role_and_status(flotte_db,"Service", "Idle")
+		listePreparateurs = Robot.find_robot_by_role_and_status(flotte_db,"Preparateur", "Idle")
 
 		#TODO: choisir un robot avec des critères plus poussés?
 		#	On choisit le robot de service qui va effectuer la commande 
@@ -378,8 +378,8 @@ def command_loop():
 		Robot.update_command(flotte_db, iprobot,commande)
 		Robot.update_status(flotte_db, ippreparateur, "Occupied")
 
-		destination=Positions.get_Pose_by_name(mycursor,"bar")[0][0] 
-		#Robot.get_robot_data(mycursor,ippreparateur)[0][2]
+		destination=Positions.get_Pose_by_name(flotte_db,"bar")[0][0] 
+		#Robot.get_robot_data(flotte_db,ippreparateur)[0][2]
 
 		print("PUBLISH:  Envoi d'un ordre a", iprobot)
 		publish(my_ip, port, "Service/Go/Bar", iprobot + "/" + str(destination), 2)
@@ -406,8 +406,6 @@ flotte_db=mysql.connector.connect(
 	password='L@boRobotique'
 )
 
-global mycursor
-mycursor=flotte_db.cursor()
 
 InitBDDSuperviseur.delete_flotte_db(flotte_db)
 
@@ -428,9 +426,9 @@ Type.insert_Type(flotte_db, "Turtlebot", "Service", 1000)
 Type.insert_Type(flotte_db, "Caroita", "Preparateur", 500)
 Type.insert_Type(flotte_db, "Accueil", "Accueil", -1)
 
-Table.insert_Table(flotte_db, 0, Positions.get_Pose_by_name(mycursor, "table1")[0][0], 2, "Free", 0)
-Table.insert_Table(flotte_db, 0, Positions.get_Pose_by_name(mycursor, "table2")[0][0], 2, "Free", 0)
-Table.insert_Table(flotte_db, 0, Positions.get_Pose_by_name(mycursor, "table3")[0][0], 2, "Free", 0)
+Table.insert_Table(flotte_db, 0, Positions.get_Pose_by_name(flotte_db, "table1")[0][0], 2, "Free", 0)
+Table.insert_Table(flotte_db, 0, Positions.get_Pose_by_name(flotte_db, "table2")[0][0], 2, "Free", 0)
+Table.insert_Table(flotte_db, 0, Positions.get_Pose_by_name(flotte_db, "table3")[0][0], 2, "Free", 0)
 
 Article.insert_Article(flotte_db,"Coca", 1, 33, 4, 0, 0, 0, 0, 0)
 Article.insert_Article(flotte_db,"Wisky", 1, 33, 0, 1, 0, 0, 0, 0)
@@ -482,13 +480,13 @@ while 1:
 		CommandNbr=msg.payload.decode("utf-8")[0]
 
 		# recherche du robot dispo (+le plus proche de la destination si possible)			
-		listeRobots=Robot.find_robot_by_role_and_status(mycursor,"Service", "Idle")
+		listeRobots=Robot.find_robot_by_role_and_status(flotte_db,"Service", "Idle")
 
 		# Vérifier qu'il y a des robots de service disponibles
 		if len(listeRobots)!=0:
 
 			# Recherche d'un preparateur disponible
-			listePreparateurs = Robot.find_robot_by_role_and_status(mycursor,"Preparateur", "Idle")
+			listePreparateurs = Robot.find_robot_by_role_and_status(flotte_db,"Preparateur", "Idle")
 
 			# Vérifier que la liste n'est pas vide
 			if len(listePreparateurs)!=0:
@@ -496,21 +494,21 @@ while 1:
 				print("MESSAGE: Commande en cours de préparation"
 					)
 				#	Commande Etat="Ordered"
-				Commande.update_status(mycursor,CommandNbr,"Ordered")
+				Commande.update_status(flotte_db,CommandNbr,"Ordered")
 
 				#TODO: choisir un robot avec des critères plus poussés?
 				#	On choisit le robot de service qui va effectuer la commande 
 				robotMissione = listeRobots[0]
 				iprobot=robotMissione[0]
-				Robot.update_status(mycursor, iprobot, "Occupied")
+				Robot.update_status(flotte_db, iprobot, "Occupied")
 
 				#TODO: choisir un préparateur avec des critères plus poussés?
 				#	On choisit le préparateur qui va effectuer la commande
 				preparateurMissione = listePreparateurs[0]
 				ippreparateur=preparateurMissione[0]
-				Robot.update_status(mycursor, ippreparateur, "Occupied")
+				Robot.update_status(flotte_db, ippreparateur, "Occupied")
 
-				destination=Robot.get_robot_data(mycursor,ippreparateur)[0][2]
+				destination=Robot.get_robot_data(flotte_db,ippreparateur)[0][2]
 
 				print("PUBLISH:  Envoi d'un ordre a", iprobot)
 				publish(my_ip, port, "Service/Go/Bar", iprobot + "/" + CommandNbr, 2)
@@ -522,13 +520,13 @@ while 1:
 			else:
 			#	Commande - Etat="Pending"
 				print("MESSAGE: Commande en attente - Préparateur Indisponible")
-				Commande.update_status(mycursor,CommandNbr,"Pending")
+				Commande.update_status(flotte_db,CommandNbr,"Pending")
 
 		# Si aucun robot de service n'est disponible
 		else:
 		#TODO: METTRE LA COMMANDE EN ATTENTE: Entrer la commande dans la base de données Etat="Pending"
 			print("MESSAGE: Commande en attente - Préparateur Indisponible")
-			Commande.update_status(mycursor,CommandNbr,"Pending")
+			Commande.update_status(flotte_db,CommandNbr,"Pending")
 
 	## Fin Commande/Envoi
 	'''

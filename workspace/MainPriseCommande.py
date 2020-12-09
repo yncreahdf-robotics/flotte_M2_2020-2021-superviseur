@@ -45,7 +45,7 @@ print (ipsuperviseur)
 port = 1883
 
 
-menu_accueil = ["Prise de commande (table1)", "Prise de commande (table2)", "Prise de commande (table3)", "Prise de commande", "Prise de commande (recharge)", "seb"]
+menu_accueil = ["Preparateur/Prepare", "Preparateur/Charge", "Service/Go/Bar", "Service/Go/Table", "Commande", "Free Dobby"]
 
 
 
@@ -94,7 +94,7 @@ def subscribe(ip, port, topic, qos):
 	client.on_connect = on_connect
 	client.on_message = on_message
 	client.on_disconnect = on_disconnect
-	client.connect(ip,port,60)
+	client.connect(ip,port,65535)
 	client.subscribe(topic, qos)
 	client.loop_start()
 	print("subscribed to "+topic)
@@ -106,7 +106,7 @@ def publish(ip, port, topic, message, qos):
 
 	client = mqtt.Client()
 
-	client.connect(ip,port,60)
+	client.connect(ip,port,65535)
 	client.loop_start()
 	client.publish(topic, message, qos)
 	print("message sent to "+topic)
@@ -123,7 +123,7 @@ def main(stdscr):
 	)	
 
 	InitBDDSuperviseur.use_db(flotte_db)
-
+          
 	menu=menu_accueil
 
 	#turn off cursor blinking
@@ -167,36 +167,43 @@ def main(stdscr):
 			stdscr.refresh()
 
 			#Pour chaque appui sur un choix on lance la publication d'un msg à l'aide du python mqttperso.py
-			if menu[current_row] == "Prise de commande (table1)":
+			if menu[current_row] == "Preparateur/Prepare":
+				ippreparateur="192.168.1.8"
+				publish(ipsuperviseur, port, "Preparateur/Prepare",ippreparateur + "/1", 2)
 
-				publish(ipsuperviseur, port, "Commande/Envoi", "table1", 2)
+			elif menu[current_row] == "Preparateur/Charge":
+				ippreparateur="192.168.1.8"
+				publish(ipsuperviseur, port, "Preparateur/Charge",ippreparateur + "/1", 2)
 
-			elif menu[current_row] == "Prise de commande (table2)":
+			elif menu[current_row] == "Service/Go/Bar":
+				iprobot="192.168.1.103"
+				destination=Positions.get_Pose_by_name(flotte_db,"bar")[0][0]
+				publish(ipsuperviseur, port, "Service/Go/Bar", iprobot + "/" + str(destination), 2)
 
-				publish(ipsuperviseur, port, "Commande/Envoi", "table2", 2)
-
-			elif menu[current_row] == "Prise de commande (table3)":
-
-				publish(ipsuperviseur, port, "Commande/Envoi", "table3", 2)
-
-			elif menu[current_row] == "Prise de commande":
+			elif menu[current_row] == "Service/Go/Table":
+				iprobot="192.168.1.103"
+				destination=Positions.get_Pose_by_name(flotte_db,"table2")[0][0]
+				publish(ipsuperviseur, port, "Service/Go/Table", iprobot + "/" + str(destination), 2)
 				
+			elif menu[current_row] == "Commande":
 				Commande.insert_Commande(flotte_db, 1, 1, "Pending")
 				publish(ipsuperviseur, port, "Commande/Envoi", "rien", 2)
 				CommandNbr+=1
+				
+			elif menu[current_row] == "Free Dobby":
+				listerobots=Robot.get_all_Robot(flotte_db)
+				for i in listerobots:
+					Robot.update_status(flotte_db, i[0], "Idle")
 
 
-			elif menu[current_row] == "Prise de commande (recharge)":
-
-				publish(ipsuperviseur, port, "Commande/Envoi", "recharge", 2)
-
-			elif menu[current_row] == "seb":
-				ippreparateur="192.168.1.8"
-				publish(ipsuperviseur, port, "Preparateur/Prepare",ippreparateur + "/1", 2)
-		
 		IHM.print_menu(stdscr, current_row, menu)
 		
-
+'''
+			elif menu[current_row] == "Service/Go/Base":
+				iprobot="192.168.1.103"
+				destination=Positions.get_Pose_by_name(flotte_db,"recharge")[0][0]
+				publish(ipsuperviseur, port, "Service/Go/Base", iprobot+ "/" + str(destination), 2)
+			'''		
 
 
 

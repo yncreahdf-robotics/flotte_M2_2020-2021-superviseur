@@ -2,26 +2,33 @@ import mysql.connector
 
 
 #	CREATE A NEW DATABASE
-def create_flotte_db():	
+def create_flotte_db(flotte_db):	
 	mycursor=flotte_db.cursor()
 	mycursor.execute("CREATE DATABASE IF NOT EXISTS flotte_db")
 	mycursor.execute("USE flotte_db")
+	mycursor.close()
 
 #	Check if database exists
-def check_flotte_db():
-	mycursor.execute("SHOW DATABASES")
-	for x in mycursor:
-		print(x)
+def check_flotte_db(flotte_db):
+	mycursor=flotte_db.cursor()
+	myresult=mycursor.execute("SHOW DATABASES")
+	mycursor.close()
+	return myresult
+
 
 #	CREATE A NEW TABLE
-def create_Ordre_tb():
+def create_Ordre_tb(flotte_db):
+	mycursor=flotte_db.cursor()
 	mycursor.execute("CREATE TABLE IF NOT EXISTS Ordre_tb (OrdreID INT AUTO_INCREMENT, OrdreName VARCHAR(30), CONSTRAINT OrdreID_pk PRIMARY KEY (OrdreID))" ) 
+	mycursor.close()
 
 #	CHECK IF THE TABLE EXISTS
-def check_Ordre_tb():	
-	mycursor.execute("SHOW TABLES")
-	for x in mycursor:
-		print(x)
+def check_Ordre_tb(flotte_db):	
+	mycursor=flotte_db.cursor()
+	myresult=mycursor.execute("SHOW TABLES")
+	mycursor.close()
+	return myresult
+
 
 #	INSERT ARTICLES IN THE Ordre DATABASE
 def insert_Ordre(flotte_db, CommandNbr, PositionID, Prix):
@@ -32,23 +39,27 @@ def insert_Ordre(flotte_db, CommandNbr, PositionID, Prix):
 	mycursor.execute(sql,val)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Ordre ajouté à la Table")
+	mycursor.close()
 
 #	GET ALL POSSIBLE ARTICLES
 
 #	GET ALL TABLES
-def get_Ordres():
+def get_Ordres(flotte_db):
 	sql = "SELECT * FROM Ordre_tb"
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
-	for x in myresult:
-		print(x)
+	mycursor.close()
+	return myresult
 
-def get_Ordre(OrdreID):
+
+def get_Ordre(flotte_db, OrdreID):
 	sql = "SELECT * FROM Ordre_tb WHERE OrdreID="+str(OrdreID)
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
-	for x in myresult:
-		print(x)
+	mycursor.close()
+	return myresult
 
 #	DELETE A Ordre
 def delete_Ordre(flotte_db, OrdreID):
@@ -57,12 +68,15 @@ def delete_Ordre(flotte_db, OrdreID):
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Ordre deleted")
+	mycursor.close()
 
-def delete_flotte_db():
+def delete_flotte_db(flotte_db):
 	sql="DROP DATABASE IF EXISTS flotte_db"
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"DATABASE DESTROYED")
+	mycursor.close()
 
 if __name__ == '__main__':
 

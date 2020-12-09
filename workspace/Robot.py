@@ -6,12 +6,16 @@ from datetime import datetime
 #########################################
 
 #	CREATE A NEW TABLE
-def create_Robot_tb(mycursor):
-	mycursor.execute("CREATE TABLE IF NOT EXISTS Robot_tb (RobotIP VARCHAR(30) NOT NULL PRIMARY KEY, RobotType VARCHAR(30), Position VARCHAR(30), Etat VARCHAR(30), ActiveCommandNbr INT, LastCheck DATETIME)" ) 
+def create_Robot_tb(flotte_db):
+	mycursor=flotte_db.cursor()
+	mycursor.execute("CREATE TABLE IF NOT EXISTS Robot_tb (RobotIP VARCHAR(30) NOT NULL PRIMARY KEY, RobotType VARCHAR(30), Position INT, Etat VARCHAR(30), ActiveCommandNbr INT, LastCheck DATETIME)" ) 
+	mycursor.close()
 
 #	CHECK IF THE TABLE EXISTS
-def check_Robot_tb(mycursor):	
+def check_Robot_tb(flotte_db):	
+	mycursor=flotte_db.cursor()
 	mycursor.execute("SHOW TABLES")
+	mycursor.close()
 
 ###########################################
 ##	Fonctions de remplissage de la table ##
@@ -31,45 +35,57 @@ def insert_Robot(flotte_db, RobotIP, RobotType, Position, Etat, ActiveCommandNbr
 ####################################
 
 #	GET ALL ROBOTS
-def get_all_Robot(mycursor):
+def get_all_Robot(flotte_db):
 	sql="SELECT * FROM Robot_tb ORDER BY RobotType"
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	myresult=mycursor.fetchall()
+	mycursor.close()
 	return myresult 
 
 #	GET A LIST OF ROBOTS BY ROLE
-def find_robot_by_role(mycursor,role):
+def find_robot_by_role(flotte_db,role):
 	sql = "SELECT RobotIP FROM Robot_tb INNER JOIN Type_tb ON Robot_tb.RobotType=Type_tb.TypeName WHERE Type_tb.Role= \""+ role+"\""
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
+	mycursor.close()
 	return myresult
 
 #	GET A LIST OF ROBOT BY ROLE AND STATUS
-def find_robot_by_role_and_status(mycursor, role, status):
+def find_robot_by_role_and_status(flotte_db, role, status):
 	sql="SELECT RobotIP FROM Robot_tb INNER JOIN Type_tb ON Robot_tb.RobotType=Type_tb.TypeName WHERE Type_tb.Role = \""+ role + "\" AND Etat = \"" + status + "\""
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
+	mycursor.close()
 	return myresult
 
 #GET A ROBOT BY ITS ROLE AND STATUS TO A CERTAIN POSITION
-def find_robot_by_role_status_and_position(mycursor, role, position, status):
+def find_robot_by_role_status_and_position(flotte_db, role, position, status):
 	sql="SELECT RobotIP FROM Robot_tb INNER JOIN Type_tb ON Robot_tb.RobotType=Type_tb.TypeName WHERE Type_tb.Role= \""+ role+ "\" AND Etat = \"" + status + "\" AND Position = \"" + position + "\""
+	mycursor=flotte_db.cursor()	
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
+	mycursor.close()
 	return myresult 
 
 #GET A ROBOTS DATA BY ITS IP
-def get_robot_data(mycursor, RobotIP):
+def get_robot_data(flotte_db, RobotIP):
 	sql="SELECT * FROM Robot_tb WHERE RobotIP=\""+ RobotIP + "\""
+	mycursor=flotte_db.cursor()	
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
+	mycursor.close()
 	return myresult
 
 #	GET A ROBOT BY ITS ACTIVE COMMAND NUMBER
-def get_robot_by_ActiveCommand(mycursor,ActiveCommandNbr):
+def get_robot_by_ActiveCommand(flotte_db,ActiveCommandNbr):
 	sql= "SELECT RobotIP FROM Robot_tb WHERE ActiveCommandNbr= \"" + ActiveCommandNbr + "\""
+	mycursor=flotte_db.cursor()	
 	mycursor.execute(sql)
 	myresult=mycursor.fetchall()
+	mycursor.close()
 	return myresult
 
 
@@ -83,6 +99,7 @@ def update_status(flotte_db, RobotIP, newStatus):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
+	mycursor.close()
 	
 #	UPDATE A ROBOT'S LAST POSITION
 def update_position(flotte_db, RobotIP, newPosition):
@@ -90,6 +107,7 @@ def update_position(flotte_db, RobotIP, newPosition):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
+	mycursor.close()
 
 #	UPDATE LAST CHECK OF ROBOT
 def update_ping(flotte_db, RobotIP):
@@ -98,6 +116,7 @@ def update_ping(flotte_db, RobotIP):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
+	mycursor.close()
 
 #	UPDATE THE COMMAND THE ROBOT IS WORKING ON
 def update_command(flotte_db,RobotIP, newCommandNbr):
@@ -105,6 +124,7 @@ def update_command(flotte_db,RobotIP, newCommandNbr):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
+	mycursor.close()
 
 #########################################################
 ##	Fonctions de suppression d'éléments dans la table  ##
@@ -116,5 +136,6 @@ def delete_Robot(flotte_db, RobotIP):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
+	mycursor.close()
 
 

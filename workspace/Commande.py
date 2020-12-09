@@ -5,15 +5,19 @@ import mysql.connector
 #########################################
 
 #	CREATE A NEW TABLE
-def create_Commande_tb(mycursor):
+def create_Commande_tb(flotte_db):
 	#	Etat can be Pending, Ordered, Prepared, Charged, Delivered 
+	mycursor=flotte_db.cursor()
 	mycursor.execute("CREATE TABLE IF NOT EXISTS Commande_tb (CommandID INT AUTO_INCREMENT, CommandNbr INT, ArticleID INT, Etat VARCHAR(30), CONSTRAINT CommandID_pk PRIMARY KEY (CommandID))" ) 
+	mycursor.close()
 
 #	CHECK IF THE TABLE EXISTS
-def check_Commande_tb(mycursor):	
+def check_Commande_tb(flotte_db):	
+	mycursor=flotte_db.cursor()
 	mycursor.execute("SHOW TABLES")
 	for x in mycursor:
 		print(x)
+	mycursor.close()
 
 
 ############################################
@@ -27,6 +31,7 @@ def insert_Commande(flotte_db, CommandNbr, ArticleID, Etat):
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql,val)
 	flotte_db.commit()
+	mycursor.close()
 	print("BDD:     ", mycursor.rowcount,"Article Ajouté à la commande")
 
 ####################################
@@ -34,17 +39,21 @@ def insert_Commande(flotte_db, CommandNbr, ArticleID, Etat):
 ####################################
 
 #	GET ALL ARTICLES LINKED TO A COMMAND
-def get_Commande(mycursor, CommandNbr):
-	sql = "SELECT * FROM Commande_tb WHERE CommandNbr=\""+CommandNbr+"\""
+def get_Commande(flotte_db, CommandNbr):
+	sql = "SELECT CommandID FROM Commande_tb WHERE CommandNbr=\""+CommandNbr+"\""
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
+	mycursor.close()
 	return myresult 
 
 #	GET ARTICLES IN A COMMAND WITH A PARTICULAR STATUS
-def get_Commande_with_status_and_commandNbr(mycursor, CommandNbr, Status):
-	sql = "SELECT * FROM Commande_tb WHERE CommandNbr=\""+ str(CommandNbr)+"\" AND Etat=\"" + Status +"\""
+def get_Commande_with_status_and_commandNbr(flotte_db, CommandNbr, Status):
+	sql = "SELECT CommandID FROM Commande_tb WHERE CommandNbr=\""+ str(CommandNbr)+"\" AND Etat=\"" + Status +"\""
+	mycursor=flotte_db.cursor()	
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
+	mycursor.close()
 	return myresult
 
 #	GET ARTICLES OF A COMMAND WITH A GIVEN STATUS
@@ -54,13 +63,16 @@ def get_CommandNbr_with_status(flotte_db, Status):
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
 	flotte_db.commit()
+	mycursor.close()
 	return myresult
 
 #	GET QUANITIES FOR A GIVEN ARTICLE
-def get_Bouteille(mycursor, CommandID):
+def get_Bouteille(flotte_db, CommandID):
 	sql = "SELECT Bouteille1, Bouteille2, Bouteille3, Bouteille4, Bouteille5, Bouteille6 FROM Article_tb INNER JOIN Command_tb ON Article_tb.ArticleID=Commande_tb.ArticleID WHERE CommandID=\"" + CommandID + "\""
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	myresult=mycursor.fetchall()
+	mycursor.close()
 	return myresult
 
 
@@ -69,14 +81,18 @@ def get_Bouteille(mycursor, CommandID):
 ############################################
 
 #	UPDATE ALL ARTICLES IN A COMMAND TO A GIVEN STATUS
-def update_status(mycursor, CommandNbr, Status):
+def update_status(flotte_db, CommandNbr, Status):
 	sql = "UPDATE Commande_tb SET Etat = \"" + Status + "\" WHERE CommandNbr = \"" + str(CommandNbr) + "\""
+	mycursor=flotte_db.cursor()	
 	mycursor.execute(sql)
+	mycursor.close()
 
 #	UPDATE A GIVEN ORDERED ARTICLE TO A GIVEN STATUS
-def update_Commande_status_by_article(mycursor, CommandID ,Status):
+def update_Commande_status_by_article(flotte_db, CommandID ,Status):
 	sql = "UPDATE Commande_tb SET Etat = \"" + Status + "\" WHERE CommandID = \"" + CommandID + "\""
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
+	mycursor.close()
 
 ########################################################
 ##  Fonction de suppression d'un élément de la table  ##
@@ -84,11 +100,12 @@ def update_Commande_status_by_article(mycursor, CommandID ,Status):
 
 #	DELETE A COMMAND
 def delete_Commande(flotte_db, CommandNbr):
-	sql="DELETE FROM Commande_tb WHERE CommandNbr="+CommandNbr
+	sql="DELETE FROM Commande_tb WHERE CommandNbr=\""+ CommandNbr + "\""
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Command deleted")
+	mycursor.close()
 
 
 

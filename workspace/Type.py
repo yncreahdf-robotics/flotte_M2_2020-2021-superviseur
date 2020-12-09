@@ -6,14 +6,17 @@ import mysql.connector
 #########################################
 
 #	CREATE A NEW TABLE
-def create_Type_tb(mycursor):
+def create_Type_tb(flotte_db):
+	mycursor=flotte_db.cursor()
 	mycursor.execute("CREATE TABLE IF NOT EXISTS Type_tb (TypeID INT AUTO_INCREMENT, TypeName VARCHAR(30), Role VARCHAR(30), WeightCapacity INT, CONSTRAINT TypeID_pk PRIMARY KEY (TypeID))" ) 
+	mycursor.close()
 
 #	CHECK IF THE TABLE EXISTS
-def check_Type_tb(mycursor):	
-	mycursor.execute("SHOW TABLES")
-	for x in mycursor:
-		print(x)
+def check_Type_tb(flotte_db):
+	mycursor=flotte_db.cursor()	
+	myresult=mycursor.execute("SHOW TABLES")
+	mycursor.close()
+	return myresult
 
 ############################################
 ##  Fonctions de remplissage de la table  ##
@@ -27,23 +30,28 @@ def insert_Type(flotte_db, TypeName, Role, WeightCapacity):
 	mycursor.execute(sql,val)
 	flotte_db.commit()
 	print("BDD:     ", mycursor.rowcount,"Type ajouté")
+	mycursor.close()
 
 ####################################
 ##  Fonctions d'accès à la table  ##
 ####################################
 
 #	GET ALL POSSIBLE TYPES
-def get_all_Type(mycursor):
+def get_all_Type(flotte_db):
 	sql="SELECT * FROM Type_tb ORDER BY TypeName"
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	myresult=mycursor.fetchall()
+	mycursor.close()
 	return myresult
 
 #	GET A TYPE BY ITS NAME IF EXISTS
-def Type_exists(mycursor, TypeName):
+def Type_exists(flotte_db, TypeName):
 	sql = "SELECT * FROM Type_tb WHERE TypeName=\"" + TypeName + "\""
+	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	myresult = mycursor.fetchall()
+	mycursor.close()
 	if len(myresult)!=0:
 		return True
 	return False
@@ -59,6 +67,7 @@ def delete_Type(flotte_db, TypeName):
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print(mycursor.rowcount,"Type deleted")
+	mycursor.close()
 
 
 
