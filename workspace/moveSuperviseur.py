@@ -3,11 +3,13 @@
 import time
 import rospy
 import math
+import tf
 
 import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from actionlib_msgs.msg import GoalStatus
-from geometry_msgs.msg import Pose, Point, Quaternion
+from geometry_msgs.msg import Pose, Quaternion
+from tf.transformations import quaternion_from_euler
 
 ############################################################
 ### Programme principal à lancer pour démarrer le projet ###
@@ -34,7 +36,7 @@ import Positions
 def MoveToGoal():
     rospy.init_node('move_to_goal')
     # Create action client
-    global client 
+    global client
     client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
     rospy.loginfo("Waiting for move_base action server...")
     wait = client.wait_for_server(rospy.Duration(5.0))
@@ -56,12 +58,18 @@ def feedback_cb(feedback):
                   str(desiredPose) + " received")
 
 def done_cb(status, result):
+    global derniertopic
+    print("c'est dans la boucle")
     if status == 2:
         rospy.loginfo("Goal pose " + str(desiredPose) +
                       " received a cancel request after it started executing, completed execution !")
 
     if status == 3:
+        global position
         rospy.loginfo("Goal pose " + str(desiredPose) + " reached")
+
+        publish(ipsuperviseur, port, "Service/" + derniertopic, my_ip + "/" + position, 2)
+
         return
 
     if status == 4:
@@ -126,6 +134,13 @@ my_ip=IPFinder.get_my_ip()
 #	TCP port used for MQTT
 port = 1883
 desiredPose = []
+position = ""
+
+derniertopic=""
+
+turnAngle = 45
+turnAngle = Quaternion(*(quaternion_from_euler(0, 0, turnAngle*math.pi/180, axes='sxyz')))
+
 #	Determines the supervisor's IP using the hosts file
 hosts = open('/etc/hosts','r')
 for line in hosts:
@@ -164,7 +179,11 @@ def on_disconnect(client, userdata, rc):
 
 def on_message(client, userdata, msg):
 
-	#print("Yes! i receive the message :" , str(msg.payload))
+	global position
+	global desiredPose
+	global derniertopic
+
+	print("Yes! i receive the message :" , str(msg.payload))
 	#print("message received ", msg.payload.decode("utf-8"))
         #with open('data.json', 'w') as f:
         #json.dumps(msg.payload.decode("utf-8"))
@@ -173,22 +192,47 @@ def on_message(client, userdata, msg):
 	#print("message retain flag=",msg.retain)
 
 
-	if (msg.topic=="Ordre/Envoi" and msg.payload.decode("utf-8").split("/")[0]==my_ip):
-		global etat_robot		 
-		etat_robot="occupe"		
+	if (msg.topic.split("/")[0]=="Service" and msg.payload.decode("utf-8").split("/")[0]==my_ip):
+		global etat_robot
+		global mycursor
+		etat_robot="occupe"
 		print("ORDRE REçU")
-		if (msg.payload.decode("utf-8").split("/")[1]=="Go"):
+		if (msg.topic.split("/")[1]=="Go"):
+
+			position = msg.payload.decode("utf-8").split("/")[1]
 
 			#on cherche les coordonnées de la position donnée
 
-			position=msg.payload.decode("utf-8").split("/")[2]
 			print(position)
-			pose=Positions.get_Pose_by_name(mycursor,position)
+			pose=Positions.get_Pose(flotte_db,position)
 			print(pose)
-			
-			#TODO insérer code robot avec pour destination la "pose" déterminée
-			global desiredPose
+
 			desiredPose = pose[0]
+			print(desiredPose)
+			MoveToGoal()
+
+
+		if (msg.topic.split("/")[1]=="Turn"):
+			rospy.init_node('move_to_goal')
+
+			pose = (0, 0, 0, 0)
+
+			currentPose = tf.TransformListener()
+
+			rate = rospy.Rate(1.0)
+			count = 0
+			while count < 1:
+				try:
+					(linear, rotation) = currentPose.lookupTransform('/map', '/base_link', rospy.Time(0))
+					pose = (linear[0], linear[1], rotation[2] + turnAngle.z, rotation[3] + turnAngle.w)
+				except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+					continue
+				count += 1
+				rate.sleep()
+
+			#on cherche les coordonnées de la position donnée
+
+			desiredPose = pose
 			print(desiredPose)
 			MoveToGoal()
 
@@ -197,7 +241,17 @@ def on_message(client, userdata, msg):
 		print("boucle feedback")
 		if msg.payload.decode("utf-8").split("/")[1] == "No":
 			print("boucle feedback no")
-			publish(ipsuperviseur, port, "Initialisation/Envoi", my_ip+"/"+type_robot , 2)
+			publish(ipsuperviseur, port, "Initialisation/Envoi", my_ip + "/" + type_robot, 2)
+
+
+			flotte_db=mysql.connector.connect(
+			        host=ipsuperviseur,
+			        database='flotte_db',
+			        user='robot',
+		        	password='robot'
+			)
+
+
 
 
 #Appel d'une fonction qui permet de recevoir un message
@@ -210,7 +264,7 @@ def subscribe(ip, port, topic, qos):
 	client.on_connect = on_connect
 	client.on_message = on_message
 	client.on_disconnect = on_disconnect
-	client.connect(ip,port,60)
+	client.connect(ip,port,65535)
 	client.subscribe(topic, qos)
 	client.loop_start()
 	print("subscribed to "+topic)
@@ -222,7 +276,7 @@ def publish(ip, port, topic, message, qos):
 
 	client2 = mqtt.Client()
 
-	client2.connect(ip,port,60)
+	client2.connect(ip,port,65535)
 	client2.loop_start()
 	client2.publish(topic, message, qos)
 	print("message sent on "+topic)
@@ -233,12 +287,12 @@ def pingRobot():
 	threading.Timer(10, pingRobot).start()
 
 	print ("Envoi du ping")
-	
-	publish(ipsuperviseur, 1883, "Robot/Ping", my_ip, 2)
+
+	publish(ipsuperviseur, port, "Robot/Ping", my_ip, 2)
 
 
 def send_etat():
-	publish(ipsuperviseur,1883,"Robot/Etat", my_ip+"/"+etat_robot,2)
+	publish(ipsuperviseur,port,"Robot/Etat", my_ip+"/"+etat_robot,2)
 
 ###################################
 ###	PROGRAMME PRINCIPAL	###
@@ -246,6 +300,7 @@ def send_etat():
 
 
 ###	CONNECTS TO DATABASE	###
+
 flotte_db=mysql.connector.connect(
 	host=ipsuperviseur,
 	database='flotte_db',
@@ -253,17 +308,25 @@ flotte_db=mysql.connector.connect(
 	password='robot'
 )
 
-global mycursor
-mycursor=flotte_db.cursor()
-
 #	publish his IP and type separated by a / on Initialisation/Envoi
-publish(ipsuperviseur, 1883, "Initialisation/Envoi", my_ip+"/"+type_robot , 2)
+publish(ipsuperviseur, port, "Initialisation/Envoi", my_ip + "/" + type_robot, 2)
 
 pingRobot()
 
 #	subscribe to Ordre/Envo - waits for orders
-subscribe(ipsuperviseur, 1883, "Ordre/Envoi", 2)
 subscribe(ipsuperviseur, port, "Ping/Feedback", 2)
+
+
+client2 = mqtt.Client()
+
+client2.on_connect = on_connect
+client2.on_message = on_message
+client2.on_disconnect = on_disconnect
+client2.connect(ipsuperviseur,port,60)
+client2.subscribe("Service/#", 2)
+client2.loop_forever()
+print("subscribed to "+"Service/#")
+
 
 
 while(1):
