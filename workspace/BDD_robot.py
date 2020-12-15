@@ -9,10 +9,12 @@ import Positions
 
 #	Check if database exists
 def check_flotte_db(mycursor):
-	mycursor.execute("SHOW DATABASES")
-	for x in mycursor:
+	try:	
+		mycursor.execute("SHOW DATABASES")
+		for x in mycursor:
 		print(x)
-
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
 
 #	Initialisation
 

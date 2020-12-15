@@ -169,49 +169,68 @@ def on_message(client, userdata, msg):
 
 
 
+	if msg.topic == "Accueil/GelLow":
+		print("MESSAGE: Niveau de gel bas")
+
+
+	if msg.topic == "RobotCharles":
+
+		print(msg.payload.decode("utf-8"))
+
+
+
+
 	#########################
 	##	Topic Préparateur  ##
 	#########################
 
 	#	Quand le préparateur a fini de préparer une commande
 	if msg.topic == "Preparateur/Prepared":
+		print(msg.payload.decode("utf-8"))
+		print("=======MESSAGE: COMMANDE PRETE========")
 
-		print("MESSAGE: COMMANDE PRETE")
-
-		CommandNbr = msg.payload.decode("utf-8")[1]
 		#	On récupère l'IP du préparateur ayant terminé sa préparation
 		preparateur = msg.payload.decode("utf-8")[0]
 
-		#	On cherche la position du préparateur pour chercher le robot qui s'y trouve
-		position = Robot.get_robot_data(flotte_db,ippreparateur)[2]
-		listeRobots = Robot.find_Robot_by_role_status_and_position(flotte_db, "Service", "Pending", position)
-		
-		# Vérifier que la liste n'est pas vide
-		if len(listeRobots)!=0 :
-			print("MESSAGE: Robot trouve")
-			robotMissione = listeRobots[0] #premier robot dispo dans la liste choisi
-			ipRobotMissione = robotMissione[0]
+		print(Robot.get_robot_data(flotte_db,preparateur))
+		#	On cherche le numéro de la commande prête
+		CommandNbr= Robot.get_robot_data(flotte_db, preparateur)[4]	
 
+		# 	Commande en "Prepared"
+		Commande.update_status(flotte_db, CommandNbr, "Prepared")
+
+		
+		print("Commande: "+ get_robot_data(flotte_db, preparateur))
+	
+
+
+
+		#	On cherche le robot de service qui s'occupe de la commande
+		robot = Robot.find_robot_by_ActiveCommand(flotte_db, CommandNbr)
+		
+		# Vérifier que le robot est pret à être chargé (en attente)
+		if Robot.get_robot_data(flotte_db, robot)[3] == "Idle" :
+			#	Dire au préparateur de charger la commande
 			publish(my_ip, port, "Preparateur/Charge", str(ippreparateur) , 2)
 
 			# 	Robot préparateur en "Occupied"
 			Robot.update_status(flotte_db, preparateur,"Occupied")
 
-		#	Sinon on attend un robot 
+		#	Sinon on attend que le robot soit pret
 		else: 
-			print("MESSAGE: COMMANDE PRETE - ATTENTE D'UN ROBOT") 
+			print("MESSAGE: COMMANDE PRETE - ATTENTE DU ROBOT") 
 
 			#	Robot préparateur en "Pending"
 			Robot.update_status(flotte_db, preparateur, "Pending")
+#SELECT * FROM Commande_tb;
 
-		# 	Commande en "Prepared"
-		Commande.update_status(flotte_db, CommandNbr, "Prepared")
+		
  	
  	# Quand le preparateur a fini de charger 
 	if msg.topic == "Preparateur/Charged":
 
 		preparateur=msg.payload.decode("utf-8")[0]
-		CommandNbr=msg.payload.decode("utf-8")[1]
+		CommandNbr= Robot.find_robot_data(flotte_db,preparateur)[4]
 		remaining_articles=Commande.get_Commande_with_status_and_commandNbr(flotte_db, CommandNbr, "Prepared")
 		
 		# 	Commande en "Charged"
@@ -223,8 +242,7 @@ def on_message(client, userdata, msg):
 		#	Si l'article est le dernier de la commande on envoie le départ du robot
 		if remaining_articles==0:
 			print("MESSAGE: Commande chargée")
-			listeRobot=Robot.find_Robot_by_role_status_and_position("Service","Pending",Robot.get_robot_data[2])
-			robot=listeRobot[0]
+			robot=Robot.find_robot_by_ActiveCommand(flotte_db, CommandNbr)[0]
 
 			#	robot en "Occupied"
 			Robot.update_status(flotte_db, robot, "Occupied")
@@ -407,7 +425,7 @@ flotte_db=mysql.connector.connect(
 )
 
 
-InitBDDSuperviseur.delete_flotte_db(flotte_db)
+InitBDDSuperviseur.-+
 
 InitBDDSuperviseur.create_flotte_db(flotte_db)
 
@@ -442,6 +460,7 @@ subscribe(my_ip, port, "Service/#", 2)
 subscribe(my_ip, port, "Preparateur/#",2)
 subscribe(my_ip, port, "Robot/Ping",2)
 subscribe(my_ip, port, "Accueil/#",2)
+subscribe(my_ip, port, "RobotCharles",2)
 
 ############
 ### Main ###

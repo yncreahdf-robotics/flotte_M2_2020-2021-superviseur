@@ -45,7 +45,10 @@ print (ipsuperviseur)
 port = 1883
 
 
-menu_accueil = ["Preparateur/Prepare", "Preparateur/Charge", "Service/Go/Bar", "Service/Go/Table", "Commande", "Free Dobby"]
+menu_accueil = ["Preparateur", "Service", "Commande", "Free Dobby", "Return Trip", "Delete BDD"]
+menu_preparateur = ["Preparateur/Prepare", "Preparateur/Charge", "Back"]
+menu_service = ["Service/Go/Bar", "Service/Go/Table", "Back"]
+menu_returntrip = ["Service/ReturnTrip", "Back"]
 
 
 
@@ -169,19 +172,21 @@ def main(stdscr):
 			#Pour chaque appui sur un choix on lance la publication d'un msg à l'aide du python mqttperso.py
 			if menu[current_row] == "Preparateur/Prepare":
 				ippreparateur="192.168.1.8"
+				Commande.update_status(flotte_db, 1, "Ordered")
 				publish(ipsuperviseur, port, "Preparateur/Prepare",ippreparateur + "/1", 2)
+
 
 			elif menu[current_row] == "Preparateur/Charge":
 				ippreparateur="192.168.1.8"
 				publish(ipsuperviseur, port, "Preparateur/Charge",ippreparateur + "/1", 2)
 
 			elif menu[current_row] == "Service/Go/Bar":
-				iprobot="192.168.1.103"
+				iprobot="192.168.1.11"
 				destination=Positions.get_Pose_by_name(flotte_db,"bar")[0][0]
 				publish(ipsuperviseur, port, "Service/Go/Bar", iprobot + "/" + str(destination), 2)
 
 			elif menu[current_row] == "Service/Go/Table":
-				iprobot="192.168.1.103"
+				iprobot="192.168.1.11"
 				destination=Positions.get_Pose_by_name(flotte_db,"table2")[0][0]
 				publish(ipsuperviseur, port, "Service/Go/Table", iprobot + "/" + str(destination), 2)
 				
@@ -194,6 +199,32 @@ def main(stdscr):
 				listerobots=Robot.get_all_Robot(flotte_db)
 				for i in listerobots:
 					Robot.update_status(flotte_db, i[0], "Idle")
+
+
+			elif menu[current_row] == "Return Trip":
+				menu = menu_returntrip
+				current_row = 0
+
+
+			elif menu[current_row] == "Preparateur":
+				menu = menu_preparateur
+				current_row = 0
+
+
+			elif menu[current_row] == "Service":
+				menu = menu_service
+				current_row = 0
+
+			elif menu[current_row] == "Back":
+				menu = menu_accueil
+				current_row = 0
+
+			elif menu[current_row] == "Service/ReturnTrip":
+				publish(ipsuperviseur, port, "Service/ReturnTrip", "table3", 2)
+
+			elif menu[current_row] == "Delete BDD":
+				InitBDDSuperviseur.delete_flotte_db(flotte_db)
+
 
 
 		IHM.print_menu(stdscr, current_row, menu)
