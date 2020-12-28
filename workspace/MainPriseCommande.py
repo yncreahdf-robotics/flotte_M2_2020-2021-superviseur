@@ -261,9 +261,9 @@ def main(stdscr):
 
 
 			elif menu[current_row] == "Commande":
-				Commande.insert_Commande(1, 1, "Pending")
+				Commande.insert_Commande(2, 2, "Pending")
 				Table.update_Table_status(2,"Pending")
-				Table.update_Table_commandNbr(2, 1)
+				Table.update_Table_commandNbr(2, 2)
 				publish(ipsuperviseur, port, "Commande/Envoi", "rien", 2)
 
 				
