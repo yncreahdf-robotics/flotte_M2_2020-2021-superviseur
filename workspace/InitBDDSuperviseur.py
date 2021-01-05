@@ -4,44 +4,68 @@ import Table
 import Type
 import Robot
 import Positions
+import mysql.connector
 
 
 #	CREATE A NEW DATABASE
-def create_flotte_db(flotte_db):
+def create_flotte_db():
+	flotte_db=mysql.connector.connect(
+		host='localhost',
+		user='root',
+		password='L@boRobotique'
+	)
 	mycursor=flotte_db.cursor()	
 	mycursor.execute("CREATE DATABASE IF NOT EXISTS flotte_db")
 	mycursor.execute("USE flotte_db")
 	mycursor.close()
+	flotte_db.close()
 
 #	Check if database exists
-def check_flotte_db(flotte_db):
+def check_flotte_db():	
+	flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+	)	
 	mycursor=flotte_db.cursor()
 	mycursor.execute("SHOW DATABASES")
 	for x in mycursor:
 		print(x)
 	mycursor.close()
+	flotte_db.close()
 
 #	CREATE ALL TABLES
-def create_all_tables(flotte_db):
-	mycursor=flotte_db.cursor()
-	Article.create_Article_tb(flotte_db)
-	Commande.create_Commande_tb(flotte_db)
-	Table.create_Table_tb(flotte_db)
-	Type.create_Type_tb(flotte_db)
-	Robot.create_Robot_tb(flotte_db)
-	Positions.create_Pose_tb(flotte_db)
-	mycursor.close()
+def create_all_tables():
+	Article.create_Article_tb()
+	Commande.create_Commande_tb()
+	Table.create_Table_tb()
+	Type.create_Type_tb()
+	Robot.create_Robot_tb()
+	Positions.create_Pose_tb()
+
 
 #	DELETE DATABASE
-def delete_flotte_db(flotte_db):
+def delete_flotte_db():
+	flotte_db=mysql.connector.connect(
+		host='localhost',
+		user='root',
+		password='L@boRobotique'
+	)
 	sql="DROP DATABASE IF EXISTS flotte_db"
 	mycursor=flotte_db.cursor()
 	mycursor.execute(sql)
 	flotte_db.commit()
 	print("BDD:     ", mycursor.rowcount,"DATABASE DESTROYED **explosion**")
 	mycursor.close()
+	flotte_db.close()
 
-def use_db(flotte_db):
+def use_db():
+	flotte_db=mysql.connector.connect(
+		host='localhost',
+		user='root',
+		password='L@boRobotique'
+	)
 	mycursor=flotte_db.cursor()
 	mycursor.execute("USE flotte_db")
 	mycursor.close()
+	flotte_db.close()

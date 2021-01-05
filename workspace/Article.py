@@ -5,22 +5,36 @@ import mysql.connector
 #########################################
 
 #	CREATE A NEW TABLE
-def create_Article_tb(flotte_db):
+def create_Article_tb():
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute("CREATE TABLE IF NOT EXISTS Article_tb (ArticleID INT AUTO_INCREMENT, ArticleName VARCHAR(30), ArticlePrice INT, ArticleWeight INT, Bouteille1 INT, Bouteille2 INT, Bouteille3 INT, Bouteille4 INT, Bouteille5 INT,  Bouteille6 INT,CONSTRAINT ArticleID_pk PRIMARY KEY (ArticleID))" ) 
 		mycursor.close()
+		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
 #	CHECK IF THE TABLE EXISTS
-def check_Article_tb(flotte_db):	
+def check_Article_tb():	
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute("SHOW TABLES")
 		for x in mycursor:
 			print(x)
 		mycursor.close()
+		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
@@ -29,15 +43,22 @@ def check_Article_tb(flotte_db):
 ############################################
 
 #	INSERT ARTICLES IN THE COMMAND DATABASE
-def insert_Article(flotte_db,ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6):
+def insert_Article(ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6):
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		sql="INSERT INTO Article_tb (ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 		val=(ArticleName,ArticlePrice,ArticleWeight,Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6)
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql,val)
 		flotte_db.commit()
 		print(mycursor.rowcount,"Article ajouté au menu")
 		mycursor.close()
+		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 ###################################
@@ -45,28 +66,42 @@ def insert_Article(flotte_db,ArticleName, ArticlePrice, ArticleWeight, Bouteille
 ###################################
 
 #	GET ALL POSSIBLE ARTICLES
-def get_all_Articles(flotte_db):
+def get_all_Articles():
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		sql="SELECT ArticleID FROM Article_tb ORDER BY ArticleName"
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)
 		myresult=mycursor.fetchall()
 		for x in myresult:
 			print(x)
 		mycursor.close()
+		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
 #	GET AN ARTICLE BY ITS NAME
-def get_Article_by_name(flotte_db, ArticleID):
-	try:	
+def get_Article_by_name(ArticleID):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)	
 		sql = "SELECT * FROM Article_tb WHERE ArticleID= \"" + ArticleID + "\""
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)
 		myresult = mycursor.fetchall()
 		for x in myresult:
 			print(x)
 		mycursor.close()
+		flotte_db.close()
 
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
@@ -77,14 +112,21 @@ def get_Article_by_name(flotte_db, ArticleID):
 ########################################################
 
 #	DELETE AN ARTICLE
-def delete_Article(flotte_db, ArticleID): 
-	try:	
+def delete_Article(ArticleID): 
+	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)	
 		sql="DELETE FROM Article_tb WHERE ArticleID=" + ArticleID + "\""
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)
 		flotte_db.commit()
 		print(mycursor.rowcount,"Article deleted")
 		mycursor.close()
+		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 

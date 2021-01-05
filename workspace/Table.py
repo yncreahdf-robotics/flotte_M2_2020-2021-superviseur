@@ -5,22 +5,35 @@ import mysql.connector
 #########################################
 
 #	CREATE A NEW TABLE
-def create_Table_tb(flotte_db):
+def create_Table_tb():
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		#Etat can be Free/Occupied
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute("CREATE TABLE IF NOT EXISTS Table_tb (TableID INT AUTO_INCREMENT, CommandNbr INT, PositionID INT, Place INT, Etat VARCHAR(30),Prix FLOAT, CONSTRAINT TableID_pk PRIMARY KEY (TableID))" ) 
 		mycursor.close()
+		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
 #	CHECK IF THE TABLE EXISTS
-def check_Table_tb(flotte_db):	
+def check_Table_tb():	
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		mycursor.execute("SHOW TABLES")
 		for x in mycursor:
 			print(x)
 		mycursor.close()
+		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
@@ -29,14 +42,21 @@ def check_Table_tb(flotte_db):
 ############################################
 
 #	INSERT ARTICLES IN THE TABLE DATABASE
-def insert_Table(flotte_db, CommandNbr, PositionID, Place, Etat, Prix):
+def insert_Table(CommandNbr, PositionID, Place, Etat, Prix):
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		sql="INSERT INTO Table_tb (CommandNbr, PositionID, Place, Etat, Prix) VALUES(%s,%s,%s,%s,%s)"
 		val=(CommandNbr, PositionID, Place, Etat, Prix)
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql,val)
 		flotte_db.commit()
 		mycursor.close()
+		flotte_db.close()
 		print("BDD: 	Table ajoutée")
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
@@ -46,51 +66,98 @@ def insert_Table(flotte_db, CommandNbr, PositionID, Place, Etat, Prix):
 ####################################
 
 #	GET ALL TABLES
-def get__all_Table(flotte_db):
+def get__all_Table():
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		sql = "SELECT * FROM Table_tb"
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)
 		myresult = mycursor.fetchall()
 		mycursor.close()
+		flotte_db.close()
 		return myresult
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
 # 	GET A TABLE BY ID
-def get_Table_data(flotte_db, TableID):
+def get_Table_data(TableID):
 	try:
-		sql = "SELECT * FROM Table_tb WHERE TableID=\"" + TableID + "\""
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
+		sql = "SELECT * FROM Table_tb WHERE TableID=\"" + str(TableID) + "\""
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)
 		myresult = mycursor.fetchall()
 		mycursor.close()
+		flotte_db.close()
 		return myresult
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
 #	GET A TABLE BY NUMBER OF PLACES AND STATUS
-def get_Table_Nbr_and_Status(flotte_db, Place, Status):
+def get_Table_Nbr_and_Status(Place, Status):
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		sql = "SELECT TableID FROM Table_tb WHERE Place <= \"" + Place + "\" AND Etat = \"" + Status + "\""
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)
 		myresult = mycursor.fetchall()
 		mycursor.close()
+		flotte_db.close()
 		return myresult
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
 #	GET THE NUMBER OF ARTICLE TO BE CHARGED
-def get_remaining_charge_Table(flotte_db, TableID):
+def get_remaining_charge_Table(TableID):
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		#	On cherche le nombre d'articles à charger 
 		sql = "SELECT CommandNbr FROM Commande_tb INNER JOIN Table_tb ON Commande_tb.CommandNbr=Table_tb.CommandNbr WHERE Command_tb.Etat= \"Prepared\" AND Table_tb.TableID=\""+TableID+"\""
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)
 		myresult = mycursor.fetchall()
 		mycursor.close()
+		flotte_db.close()
 		return len(myresult)
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
+
+#	GET A TABLE BY NUMBER OF PLACES AND STATUS
+def get_Table_by_CommandNbr(CommandNbr):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
+		sql = "SELECT TableID FROM Table_tb WHERE CommandNbr = \"" + str(CommandNbr) + "\""
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
+		mycursor.execute(sql)
+		myresult = mycursor.fetchall()
+		mycursor.close()
+		flotte_db.close()
+		return myresult
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
@@ -99,30 +166,55 @@ def get_remaining_charge_Table(flotte_db, TableID):
 ##	Fonctions de mise à jour de la table  ##
 ############################################
 
-def update_Table_commandNbr(flotte_db, TableID, CommandNbr):
+def update_Table_commandNbr(TableID, CommandNbr):
 	try:
-		sql = "UPDATE Table_tb SET CommandNbr = \"" + CommandNbr + "\" WHERE TableID = \'" + TableID + "\""
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
+		sql = "UPDATE Table_tb SET CommandNbr = %s WHERE TableID = %s "
+		val = (CommandNbr,TableID)
 		mycursor=flotte_db.cursor()
-		mycursor.execute(sql)
+		mycursor.execute("USE flotte_db")
+		mycursor.execute(sql,val)
 		mycursor.close()
+		flotte_db.commit()
+		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
-def update_Table_price(flotte_db, TableID, Prix):
+def update_Table_price(TableID, Prix):
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		sql = "UPDATE Table_tb SET Prix = \"" + Prix + "\" WHERE TableID = \'" + TableID + "\""
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)
 		mycursor.close()
+		flotte_db.commit()
+		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
-def update_Table_status(flotte_db, TableID, Status):
+def update_Table_status(TableID, Status):
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		sql = "UPDATE Table_tb SET Etat = \"" + Status + "\" WHERE TableID = \'" + TableID + "\""
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)
 		mycursor.close()
+		flotte_db.commit()
+		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
@@ -131,14 +223,21 @@ def update_Table_status(flotte_db, TableID, Status):
 ############################################
 
 #	DELETE A TABLE
-def delete_Table(flotte_db, TableID):
+def delete_Table(TableID):
 	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
 		sql="DELETE FROM Table_tb WHERE TableID=\"" + TableID + "\""
 		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)
 		flotte_db.commit()
 		print(mycursor.rowcount,"Table deleted")
 		mycursor.close()
+		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 

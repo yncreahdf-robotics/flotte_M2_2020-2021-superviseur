@@ -45,10 +45,10 @@ print (ipsuperviseur)
 port = 1883
 
 
-menu_accueil = ["Preparateur", "Service", "Commande", "Free Dobby", "Return Trip", "Delete BDD"]
+menu_accueil = ["Preparateur", "Service", "Commande", "Free Dobby", "Return Trip", "CASSE TOI"]
 menu_preparateur = ["Preparateur/Prepare", "Preparateur/Charge", "Back"]
-menu_service = ["Service/Go/Bar", "Service/Go/Table", "Back"]
-menu_returntrip = ["Service/ReturnTrip", "Back"]
+menu_service = ["Service/Go/Bar", "Service/Go/Table", "Service/Turn", "Service/Nassima", "Back"]
+menu_returntrip = ["ReturnTrip Table1", "ReturnTrip Table2", "ReturnTrip Table3", "Back"]
 
 
 
@@ -119,13 +119,7 @@ def main(stdscr):
 	global CommandNbr
 	CommandNbr=1
 
-	flotte_db=mysql.connector.connect(
-		host='localhost',
-		user='root',
-		password='L@boRobotique'
-	)	
-
-	InitBDDSuperviseur.use_db(flotte_db)
+	InitBDDSuperviseur.use_db()
           
 	menu=menu_accueil
 
@@ -172,7 +166,7 @@ def main(stdscr):
 			#Pour chaque appui sur un choix on lance la publication d'un msg à l'aide du python mqttperso.py
 			if menu[current_row] == "Preparateur/Prepare":
 				ippreparateur="192.168.1.8"
-				Commande.update_status(flotte_db, 1, "Ordered")
+				Commande.update_status(1, "Ordered")
 				publish(ipsuperviseur, port, "Preparateur/Prepare",ippreparateur + "/1", 2)
 
 
@@ -182,23 +176,33 @@ def main(stdscr):
 
 			elif menu[current_row] == "Service/Go/Bar":
 				iprobot="192.168.1.11"
-				destination=Positions.get_Pose_by_name(flotte_db,"bar")[0][0]
+				destination=Positions.get_Pose_by_name("bar")[0][0]
 				publish(ipsuperviseur, port, "Service/Go/Bar", iprobot + "/" + str(destination), 2)
 
 			elif menu[current_row] == "Service/Go/Table":
-				iprobot="192.168.1.11"
-				destination=Positions.get_Pose_by_name(flotte_db,"table2")[0][0]
+				iprobot="192.168.1.103"
+				destination=Positions.get_Pose_by_name("table2")[0][0]
 				publish(ipsuperviseur, port, "Service/Go/Table", iprobot + "/" + str(destination), 2)
+
+			elif menu[current_row] == "Service/Nassima":
+				iprobot="192.168.1.10"
+				destination=Positions.get_Pose_by_name("recharge")
+				publish(ipsuperviseur, port, "Service/ReturnTrip", iprobot + "/" + str(destination[0][0]), 2)
+
+			elif menu[current_row] == "Service/Turn":
+				iprobot="192.168.1.103"
+				publish(ipsuperviseur, port, "Service/Turn", iprobot, 2)
 				
 			elif menu[current_row] == "Commande":
-				Commande.insert_Commande(flotte_db, 1, 1, "Pending")
+				Commande.insert_Commande(1, 1, "Pending")
 				publish(ipsuperviseur, port, "Commande/Envoi", "rien", 2)
+				Table.update_Table_commandNbr(2, 1)
 				CommandNbr+=1
 				
 			elif menu[current_row] == "Free Dobby":
-				listerobots=Robot.get_all_Robot(flotte_db)
+				listerobots=Robot.get_all_Robot()
 				for i in listerobots:
-					Robot.update_status(flotte_db, i[0], "Idle")
+					Robot.update_status(i[0], "Idle")
 
 
 			elif menu[current_row] == "Return Trip":
@@ -219,11 +223,17 @@ def main(stdscr):
 				menu = menu_accueil
 				current_row = 0
 
-			elif menu[current_row] == "Service/ReturnTrip":
+			elif menu[current_row] == "ReturnTrip Table1":
+				publish(ipsuperviseur, port, "Service/ReturnTrip", "table1", 2)
+
+			elif menu[current_row] == "ReturnTrip Table2":
+				publish(ipsuperviseur, port, "Service/ReturnTrip", "table2", 2)
+
+			elif menu[current_row] == "ReturnTrip Table3":
 				publish(ipsuperviseur, port, "Service/ReturnTrip", "table3", 2)
 
-			elif menu[current_row] == "Delete BDD":
-				InitBDDSuperviseur.delete_flotte_db(flotte_db)
+			elif menu[current_row] == "CASSE TOI":
+				Robot.update_status("192.168.1.10", "Occupied")
 
 
 
@@ -232,7 +242,7 @@ def main(stdscr):
 '''
 			elif menu[current_row] == "Service/Go/Base":
 				iprobot="192.168.1.103"
-				destination=Positions.get_Pose_by_name(flotte_db,"recharge")[0][0]
+				destination=Positions.get_Pose_by_name("recharge")[0][0]
 				publish(ipsuperviseur, port, "Service/Go/Base", iprobot+ "/" + str(destination), 2)
 			'''		
 
