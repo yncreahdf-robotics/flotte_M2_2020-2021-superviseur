@@ -45,10 +45,11 @@ print (ipsuperviseur)
 port = 1883
 
 
-menu_accueil = ["Preparateur", "Service", "Commande", "Free Dobby", "Return Trip", "CASSE TOI"]
+menu_accueil = ["Preparateur", "Service", "Commande", "Return Trip", "Free Dobby", "CASSE TOI", "Choix Robot"]
 menu_preparateur = ["Preparateur/Prepare", "Preparateur/Charge", "Back"]
-menu_service = ["Service/Go/Bar", "Service/Go/Table", "Service/Turn", "Service/Nassima", "Back"]
+menu_service = ["Service/Go/Accueil", "Service/Go/Table1", "Service/Turn", "Service/Go/Bar", "Service/Go/Recharge", "Back"]
 menu_returntrip = ["ReturnTrip Table1", "ReturnTrip Table2", "ReturnTrip Table3", "Back"]
+menu_choix_robot = ["Robotino", "Kobuki"]
 
 
 
@@ -123,6 +124,12 @@ def main(stdscr):
           
 	menu=menu_accueil
 
+	titre_menu = "MENU ACCUEIL (Robotino / 192.168.1.103)"
+
+	robot_choisi = "Robotino"
+
+	ip_choisie = "192.168.1.103"
+
 	#turn off cursor blinking
 	curses.curs_set(0)
 
@@ -133,7 +140,7 @@ def main(stdscr):
 	current_row = 0
 
 	#print the menu
-	IHM.print_menu(stdscr, current_row, menu)
+	IHM.print_menu(stdscr, current_row, menu, "MENU ACCUEIL (Robotino / 192.168.1.103)")
 	
 
 	#create_command_db()
@@ -163,8 +170,18 @@ def main(stdscr):
 			stdscr.clear()
 			stdscr.refresh()
 
-			#Pour chaque appui sur un choix on lance la publication d'un msg à l'aide du python mqttperso.py
-			if menu[current_row] == "Preparateur/Prepare":
+
+
+
+#### Preparateur ####
+
+
+			if menu[current_row] == "Preparateur":
+				menu = menu_preparateur
+				current_row = 0
+
+
+			elif menu[current_row] == "Preparateur/Prepare":
 				ippreparateur="192.168.1.8"
 				Commande.update_status(1, "Ordered")
 				publish(ipsuperviseur, port, "Preparateur/Prepare",ippreparateur + "/1", 2)
@@ -174,25 +191,68 @@ def main(stdscr):
 				ippreparateur="192.168.1.8"
 				publish(ipsuperviseur, port, "Preparateur/Charge",ippreparateur + "/1", 2)
 
+
+
+
+#### Service ####
+
+
+			elif menu[current_row] == "Service":
+				menu = menu_service
+				current_row = 0
+
+
+			elif menu[current_row] == "Service/Go/Accueil":
+				destination=Positions.get_Pose_by_name("accueil")[0][0]
+				publish(ipsuperviseur, port, "Service/Go/Accueil", ip_choisie + "/" + str(destination), 2)
+
+
+			elif menu[current_row] == "Service/Go/Table1":
+				destination=Positions.get_Pose_by_name("table1")[0][0]
+				publish(ipsuperviseur, port, "Service/ReturnTrip", ip_choisie + "/" + str(destination), 2)
+
+
 			elif menu[current_row] == "Service/Go/Bar":
-				iprobot="192.168.1.11"
 				destination=Positions.get_Pose_by_name("bar")[0][0]
-				publish(ipsuperviseur, port, "Service/Go/Bar", iprobot + "/" + str(destination), 2)
+				publish(ipsuperviseur, port, "Service/Go/Bar", ip_choisie + "/" + str(destination), 2)
 
-			elif menu[current_row] == "Service/Go/Table":
-				iprobot="192.168.1.103"
-				destination=Positions.get_Pose_by_name("table2")[0][0]
-				publish(ipsuperviseur, port, "Service/Go/Table", iprobot + "/" + str(destination), 2)
 
-			elif menu[current_row] == "Service/Nassima":
-				iprobot="192.168.1.10"
-				destination=Positions.get_Pose_by_name("recharge")
-				publish(ipsuperviseur, port, "Service/ReturnTrip", iprobot + "/" + str(destination[0][0]), 2)
+			elif menu[current_row] == "Service/Go/Recharge":
+				destination=Positions.get_Pose_by_name("recharge")[0][0]
+				publish(ipsuperviseur, port, "Service/Go/Recharge", ip_choisie + "/" + str(destination), 2)
+
 
 			elif menu[current_row] == "Service/Turn":
-				iprobot="192.168.1.103"
-				publish(ipsuperviseur, port, "Service/Turn", iprobot, 2)
+				publish(ipsuperviseur, port, "Service/Turn", ip_choisie, 2)
 				
+
+
+
+#### Return Trip ####
+
+
+			elif menu[current_row] == "Return Trip":
+				menu = menu_returntrip
+				current_row = 0
+
+
+			elif menu[current_row] == "ReturnTrip Table1":
+				publish(ipsuperviseur, port, "Service/ReturnTrip", "table1", 2)
+
+
+			elif menu[current_row] == "ReturnTrip Table2":
+				publish(ipsuperviseur, port, "Service/ReturnTrip", "table2", 2)
+
+
+			elif menu[current_row] == "ReturnTrip Table3":
+				publish(ipsuperviseur, port, "Service/ReturnTrip", "table3", 2)
+
+
+
+
+#### Divers ####
+
+
 			elif menu[current_row] == "Commande":
 				Commande.insert_Commande(1, 1, "Pending")
 				publish(ipsuperviseur, port, "Commande/Envoi", "rien", 2)
@@ -204,40 +264,40 @@ def main(stdscr):
 				for i in listerobots:
 					Robot.update_status(i[0], "Idle")
 
-
-			elif menu[current_row] == "Return Trip":
-				menu = menu_returntrip
-				current_row = 0
-
-
-			elif menu[current_row] == "Preparateur":
-				menu = menu_preparateur
-				current_row = 0
-
-
-			elif menu[current_row] == "Service":
-				menu = menu_service
-				current_row = 0
-
-			elif menu[current_row] == "Back":
-				menu = menu_accueil
-				current_row = 0
-
-			elif menu[current_row] == "ReturnTrip Table1":
-				publish(ipsuperviseur, port, "Service/ReturnTrip", "table1", 2)
-
-			elif menu[current_row] == "ReturnTrip Table2":
-				publish(ipsuperviseur, port, "Service/ReturnTrip", "table2", 2)
-
-			elif menu[current_row] == "ReturnTrip Table3":
-				publish(ipsuperviseur, port, "Service/ReturnTrip", "table3", 2)
-
 			elif menu[current_row] == "CASSE TOI":
 				Robot.update_status("192.168.1.10", "Occupied")
 
 
 
-		IHM.print_menu(stdscr, current_row, menu)
+
+#### Autre ####
+
+
+			elif menu[current_row] == "Back":
+				menu = menu_accueil
+				current_row = 0
+
+			elif menu[current_row] == "Choix Robot":
+				menu = menu_choix_robot
+				current_row = 0
+
+			elif menu[current_row] == "Robotino":
+				titre_menu = "MENU ACCUEIL (Robotino / 192.168.1.103)"
+				robot_choisi = "Robotino"
+				ip_choisie = "192.168.1.103"
+				menu = menu_accueil
+				current_row = 0
+
+			elif menu[current_row] == "Kobuki":
+				titre_menu = "MENU ACCUEIL (Kobuki / 192.168.1.10)"
+				robot_choisi = "Kobuki"
+				ip_choisie = "192.168.1.10"
+				menu = menu_accueil
+				current_row = 0
+
+
+
+		IHM.print_menu(stdscr, current_row, menu, titre_menu)
 		
 '''
 			elif menu[current_row] == "Service/Go/Base":
