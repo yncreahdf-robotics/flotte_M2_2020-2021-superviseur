@@ -4,10 +4,10 @@
 import curses
 
 
-def print_menu(stdscr, selected_row_idx, menu):
+def print_menu(stdscr, selected_row_idx, menu, titre):
 	stdscr.clear()
 	h,w=stdscr.getmaxyx() 	#	get the size of the screen height and width
-	stdscr.addstr(h//2-len(menu)//2, w//2 - len("MENU FLOTTE")//2,"MENU FLOTTE")
+	stdscr.addstr(h//2-len(menu)//2, w//2 - len(titre)//2,titre)
 	#consigne = "Use ARROWS to navigate and ENTER to validate - ESC to leave:"
 	for idx,row in enumerate(menu):
 		x=w//2-len(row)//2
