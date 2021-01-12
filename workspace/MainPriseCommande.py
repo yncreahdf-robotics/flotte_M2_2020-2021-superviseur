@@ -48,7 +48,7 @@ port = 1883
 menu_accueil = ["Preparateur", "Service", "Commande", "Return Trip", "Free Dobby", "CASSE TOI", "Choix Robot"]
 menu_preparateur = ["Preparateur/Prepare", "Preparateur/Charge", "Back"]
 menu_service = ["Service/Go/Accueil", "Service/Go/Table1", "Service/Turn", "Service/Go/Bar", "Service/Go/Recharge", "Back"]
-menu_returntrip = ["ReturnTrip Table1", "ReturnTrip Table2", "ReturnTrip Table3", "Back"]
+menu_returntrip = ["ReturnTrip Table1", "ReturnTrip Table2", "ReturnTrip Table3", "ReturnTrip Recharge", "Back"]
 menu_choix_robot = ["Robotino", "Kobuki"]
 
 
@@ -183,12 +183,13 @@ def main(stdscr):
 
 			elif menu[current_row] == "Preparateur/Prepare":
 				ippreparateur="192.168.1.8"
-				Commande.update_status(1, "Ordered")
-				publish(ipsuperviseur, port, "Preparateur/Prepare",ippreparateur + "/1", 2)
+				Commande.update_status(1, "Prepared")
+				#publish(ipsuperviseur, port, "Preparateur/Prepare",ippreparateur + "/1", 2)
 
 
 			elif menu[current_row] == "Preparateur/Charge":
 				ippreparateur="192.168.1.8"
+				Commande.update_status(1, "Prepared")
 				publish(ipsuperviseur, port, "Preparateur/Charge",ippreparateur + "/1", 2)
 
 
@@ -209,7 +210,7 @@ def main(stdscr):
 
 			elif menu[current_row] == "Service/Go/Table1":
 				destination=Positions.get_Pose_by_name("table1")[0][0]
-				publish(ipsuperviseur, port, "Service/ReturnTrip", ip_choisie + "/" + str(destination), 2)
+				publish(ipsuperviseur, port, "Service/Go/Table", ip_choisie + "/" + str(destination), 2)
 
 
 			elif menu[current_row] == "Service/Go/Bar":
@@ -237,16 +238,22 @@ def main(stdscr):
 
 
 			elif menu[current_row] == "ReturnTrip Table1":
-				publish(ipsuperviseur, port, "Service/ReturnTrip", "table1", 2)
+				destination=Positions.get_Pose_by_name("table1")[0][0]
+				publish(ipsuperviseur, port, "Service/ReturnTrip", ip_choisie + "/" + str(destination), 2)
 
 
 			elif menu[current_row] == "ReturnTrip Table2":
-				publish(ipsuperviseur, port, "Service/ReturnTrip", "table2", 2)
+				destination=Positions.get_Pose_by_name("table2")[0][0]
+				publish(ipsuperviseur, port, "Service/ReturnTrip", ip_choisie + "/" + str(destination), 2)
 
 
 			elif menu[current_row] == "ReturnTrip Table3":
-				publish(ipsuperviseur, port, "Service/ReturnTrip", "table3", 2)
+				destination=Positions.get_Pose_by_name("table3")[0][0]
+				publish(ipsuperviseur, port, "Service/ReturnTrip", ip_choisie + "/" + str(destination), 2)
 
+			elif menu[current_row] == "ReturnTrip Recharge":
+				destination=Positions.get_Pose_by_name("recharge")[0][0]
+				publish(ipsuperviseur, port, "Service/ReturnTrip", ip_choisie + "/" + str(destination), 2)
 
 
 
@@ -255,9 +262,10 @@ def main(stdscr):
 
 			elif menu[current_row] == "Commande":
 				Commande.insert_Commande(1, 1, "Pending")
-				publish(ipsuperviseur, port, "Commande/Envoi", "rien", 2)
+				Table.update_Table_status(2,"Pending")
 				Table.update_Table_commandNbr(2, 1)
-				CommandNbr+=1
+				publish(ipsuperviseur, port, "Commande/Envoi", "rien", 2)
+
 				
 			elif menu[current_row] == "Free Dobby":
 				listerobots=Robot.get_all_Robot()

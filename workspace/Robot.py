@@ -2,7 +2,7 @@ import mysql.connector
 from datetime import datetime
 
 #########################################
-##	Fonctions de Création de la table  ##
+##	Fonctions de Creation de la table  ##
 #########################################
 
 #	CREATE A NEW TABLE
@@ -61,7 +61,7 @@ def insert_Robot(RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck
 		print("Something went wrong: {}".format(err))
 
 ####################################
-##	Fonctions d'accès à la table  ##
+##	Fonctions d'acces a la table  ##
 ####################################
 
 #	GET ALL ROBOTS
@@ -180,7 +180,7 @@ def get_robot_by_ActiveCommand_and_type(ActiveCommandNbr, role):
 		print("Something went wrong: {}".format(err))
 
 ############################################
-##	Fonctions de mise à jour de la table  ##
+##	Fonctions de mise a jour de la table  ##
 ############################################
 
 # UPDATE A ROBOT STATUS
@@ -257,7 +257,7 @@ def update_command(RobotIP, newCommandNbr):
 		print("Something went wrong: {}".format(err))
 
 #########################################################
-##	Fonctions de suppression d'éléments dans la table  ##
+##	Fonctions de suppression d'elements dans la table  ##
 #########################################################
 
 #	DELETE A Robot 

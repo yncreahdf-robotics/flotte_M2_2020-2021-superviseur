@@ -15,6 +15,7 @@ def create_Type_tb():
 		) 
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
+		#	Role can be: Preparateur, Service, Accueil, Guide 
 		mycursor.execute("CREATE TABLE IF NOT EXISTS Type_tb (TypeID INT AUTO_INCREMENT, TypeName VARCHAR(30), Role VARCHAR(30), WeightCapacity INT, CONSTRAINT TypeID_pk PRIMARY KEY (TypeID))" ) 
 		mycursor.close()
 		flotte_db.close()
@@ -75,6 +76,25 @@ def get_all_Type():
 			password='L@boRobotique'
 		)
 		sql="SELECT * FROM Type_tb ORDER BY TypeName"
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
+		mycursor.execute(sql)
+		myresult=mycursor.fetchall()
+		mycursor.close()
+		flotte_db.close()
+		return myresult
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
+
+#get a type by its name
+def get_Type(TypeName):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
+		sql="SELECT * FROM Type_tb WHERE TypeName=\""+ TypeName +"\""
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)

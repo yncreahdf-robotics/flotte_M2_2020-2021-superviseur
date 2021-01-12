@@ -12,7 +12,7 @@ def create_Table_tb():
 			user='root',
 			password='L@boRobotique'
 		)
-		#Etat can be Free/Occupied
+		#Etat can be Free/Pending/Ordered/Prepared/Charged as a group of article (commande)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
 		mycursor.execute("CREATE TABLE IF NOT EXISTS Table_tb (TableID INT AUTO_INCREMENT, CommandNbr INT, PositionID INT, Place INT, Etat VARCHAR(30),Prix FLOAT, CONSTRAINT TableID_pk PRIMARY KEY (TableID))" ) 
@@ -102,6 +102,27 @@ def get_Table_data(TableID):
 		return myresult
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
+
+
+#	GET A TABLE BY STATUS
+def get_Table_by_Status(Status):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='localhost',
+			user='root',
+			password='L@boRobotique'
+		)
+		sql = "SELECT TableID FROM Table_tb WHERE Etat = \"" + Status + "\""
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
+		mycursor.execute(sql)
+		myresult = mycursor.fetchall()
+		mycursor.close()
+		flotte_db.close()
+		return myresult
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
+
 
 #	GET A TABLE BY NUMBER OF PLACES AND STATUS
 def get_Table_Nbr_and_Status(Place, Status):
@@ -208,10 +229,11 @@ def update_Table_status(TableID, Status):
 			user='root',
 			password='L@boRobotique'
 		)
-		sql = "UPDATE Table_tb SET Etat = \"" + Status + "\" WHERE TableID = \'" + TableID + "\""
+		sql = "UPDATE Table_tb SET Etat = %s WHERE TableID = %s "
+		val = (Status,TableID)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
-		mycursor.execute(sql)
+		mycursor.execute(sql,val)
 		mycursor.close()
 		flotte_db.commit()
 		flotte_db.close()

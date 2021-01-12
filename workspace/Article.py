@@ -56,7 +56,7 @@ def insert_Article(ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteill
 		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql,val)
 		flotte_db.commit()
-		print(mycursor.rowcount,"Article ajouté au menu")
+		print("BDD:	",mycursor.rowcount,"Article ajouté au menu")
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:
