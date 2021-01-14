@@ -6,7 +6,7 @@ services:
     depends_on: [db]
     volumes:
       - type: bind
-        source: /home/user/Projet M2/flotte_M2_2020-2021-superviseur/workspace/IHM # Relative path to the root of your php source code.
+        source: ./IHM # Relative path to the root of your php source code.
         target: /var/www/html
 
 #       To expose the logs, create the relevant folders/files and uncomment the below section.
