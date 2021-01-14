@@ -16,7 +16,7 @@ def create_Type_tb():
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
 		#	Role can be: Preparateur, Service, Accueil, Guide 
-		mycursor.execute("CREATE TABLE IF NOT EXISTS Type_tb (TypeID INT AUTO_INCREMENT, TypeName VARCHAR(30), Role VARCHAR(30), WeightCapacity INT, CONSTRAINT TypeID_pk PRIMARY KEY (TypeID))" ) 
+		mycursor.execute("CREATE TABLE IF NOT EXISTS Type_tb (TypeID INT AUTO_INCREMENT, TypeName VARCHAR(30) UNIQUE, Role VARCHAR(30), WeightCapacity INT, CONSTRAINT TypeID_pk PRIMARY KEY (TypeID))" ) 
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:

@@ -19,6 +19,7 @@ def create_Robot_tb():
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:
+		print(err)
 		print("Something went wrong: {}".format(err))
 
 #	CHECK IF THE TABLE EXISTS

@@ -15,7 +15,7 @@ def create_Table_tb():
 		#Etat can be Free/Pending/Ordered/Prepared/Charged as a group of article (commande)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
-		mycursor.execute("CREATE TABLE IF NOT EXISTS Table_tb (TableID INT AUTO_INCREMENT, CommandNbr INT, PositionID INT, Place INT, Etat VARCHAR(30),Prix FLOAT, CONSTRAINT TableID_pk PRIMARY KEY (TableID))" ) 
+		mycursor.execute("CREATE TABLE IF NOT EXISTS Table_tb (TableID INT AUTO_INCREMENT, CommandNbr INT, PositionID INT UNIQUE, Place INT, Etat VARCHAR(30),Prix FLOAT, CONSTRAINT TableID_pk PRIMARY KEY (TableID))" ) 
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:
@@ -49,7 +49,7 @@ def insert_Table(CommandNbr, PositionID, Place, Etat, Prix):
 			user='root',
 			password='L@boRobotique'
 		)
-		sql="INSERT INTO Table_tb (CommandNbr, PositionID, Place, Etat, Prix) VALUES(%s,%s,%s,%s,%s)"
+		sql="INSERT IGNORE INTO Table_tb (CommandNbr, PositionID, Place, Etat, Prix) VALUES(%s,%s,%s,%s,%s)"
 		val=(CommandNbr, PositionID, Place, Etat, Prix)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
