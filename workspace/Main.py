@@ -515,7 +515,7 @@ InitBDDSuperviseur.create_flotte_db()
 
 InitBDDSuperviseur.create_all_tables()
 
-Positions.insert_Pose("recharge", 0.0771479708922038, 0.3639684060492877, -0.23, 0.97)
+Positions.insert_Pose("recharge", 0.42, 0.70, 0.98, 0.18)
 Positions.insert_Pose("table1", 2.9226691810219827, 0.7380693324419132, 0.79, 0.6)
 Positions.insert_Pose("table2", 2.001872215066296, 1.1748824989062503, -0.83, 0.56)
 Positions.insert_Pose("table3", 3.508061809231884, 2.9028496618974104, -0.56, 0.83)
