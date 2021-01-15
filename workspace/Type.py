@@ -9,9 +9,9 @@ import mysql.connector
 def create_Type_tb():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		) 
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
@@ -26,9 +26,9 @@ def create_Type_tb():
 def check_Type_tb():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")	
@@ -47,9 +47,9 @@ def check_Type_tb():
 def insert_Type(TypeName, Role, WeightCapacity):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="INSERT INTO Type_tb (TypeName, Role, WeightCapacity) VALUES(%s,%s,%s)"
 		val=(TypeName, Role, WeightCapacity)
@@ -71,9 +71,9 @@ def insert_Type(TypeName, Role, WeightCapacity):
 def get_all_Type():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="SELECT * FROM Type_tb ORDER BY TypeName"
 		mycursor=flotte_db.cursor()
@@ -90,9 +90,9 @@ def get_all_Type():
 def get_Type(TypeName):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="SELECT * FROM Type_tb WHERE TypeName=\""+ TypeName +"\""
 		mycursor=flotte_db.cursor()
@@ -109,9 +109,9 @@ def get_Type(TypeName):
 def Type_exists(TypeName):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "SELECT * FROM Type_tb WHERE TypeName=\"" + TypeName + "\""
 		mycursor=flotte_db.cursor()
@@ -134,9 +134,9 @@ def Type_exists(TypeName):
 def delete_Type(TypeName):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="DELETE FROM Type_tb WHERE TypeName="+TypeName
 		mycursor=flotte_db.cursor()

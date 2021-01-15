@@ -8,9 +8,9 @@ import mysql.connector
 def create_Article_tb():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
@@ -24,9 +24,9 @@ def create_Article_tb():
 def check_Article_tb():	
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
@@ -46,9 +46,9 @@ def check_Article_tb():
 def insert_Article(ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="INSERT INTO Article_tb (ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 		val=(ArticleName,ArticlePrice,ArticleWeight,Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6)
@@ -69,9 +69,9 @@ def insert_Article(ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteill
 def get_all_Articles():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="SELECT ArticleID FROM Article_tb ORDER BY ArticleName"
 		mycursor=flotte_db.cursor()
@@ -89,9 +89,9 @@ def get_all_Articles():
 def get_Article_by_name(ArticleID):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)	
 		sql = "SELECT * FROM Article_tb WHERE ArticleID= \"" + ArticleID + "\""
 		mycursor=flotte_db.cursor()
@@ -115,9 +115,9 @@ def get_Article_by_name(ArticleID):
 def delete_Article(ArticleID): 
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)	
 		sql="DELETE FROM Article_tb WHERE ArticleID=" + ArticleID + "\""
 		mycursor=flotte_db.cursor()

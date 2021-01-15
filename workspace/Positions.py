@@ -10,9 +10,9 @@ from datetime import datetime
 def create_Pose_tb():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
@@ -26,9 +26,9 @@ def create_Pose_tb():
 def check_Pose_tb():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")	
@@ -48,9 +48,9 @@ def check_Pose_tb():
 def insert_Pose(PoseName, PoseX, PoseY, PoseZ, PoseW):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="INSERT INTO Pose_tb (PoseName, PoseX, PoseY, PoseZ, PoseW) VALUES(%s,%s,%s,%s,%s)"
 		val=(PoseName, PoseX, PoseY, PoseZ, PoseW)
@@ -72,9 +72,9 @@ def insert_Pose(PoseName, PoseX, PoseY, PoseZ, PoseW):
 def get_all_Pose():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="SELECT * FROM Pose_tb ORDER BY PoseName"
 		mycursor=flotte_db.cursor()
@@ -92,9 +92,9 @@ def get_all_Pose():
 def get_Pose_by_name(PoseName):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "SELECT PoseID FROM Pose_tb WHERE PoseName=\"" + PoseName + "\""
 		mycursor=flotte_db.cursor()
@@ -111,9 +111,9 @@ def get_Pose_by_name(PoseName):
 def get_Pose(PoseID):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="SELECT PoseX, PoseY, PoseZ, PoseW FROM Pose_tb WHERE PoseID = \"" + str(PoseID) + "\""
 		mycursor=flotte_db.cursor()
@@ -135,9 +135,9 @@ def get_Pose(PoseID):
 def delete_Pose(PoseName):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="DELETE FROM Pose_tb WHERE PoseName=" + PoseName
 		mycursor=flotte_db.cursor()

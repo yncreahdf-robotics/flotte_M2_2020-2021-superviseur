@@ -8,9 +8,9 @@ import mysql.connector
 def create_Commande_tb():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		#	Etat can be Pending, Ordered, Prepared, Charged, Delivered 
 		mycursor=flotte_db.cursor()
@@ -25,9 +25,9 @@ def create_Commande_tb():
 def check_Commande_tb():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)	
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
@@ -48,9 +48,9 @@ def check_Commande_tb():
 def insert_Commande(CommandNbr, ArticleID, Etat):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="INSERT INTO Commande_tb (CommandNbr, ArticleID,Etat) VALUES(%s,%s,%s)"
 		val=(CommandNbr, ArticleID, Etat)
@@ -72,9 +72,9 @@ def insert_Commande(CommandNbr, ArticleID, Etat):
 def get_Commande(CommandNbr):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "SELECT CommandID FROM Commande_tb WHERE CommandNbr=\""+str(CommandNbr)+"\""
 		mycursor=flotte_db.cursor()
@@ -91,9 +91,9 @@ def get_Commande(CommandNbr):
 def get_Commande_with_status_and_commandNbr(CommandNbr, Status):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "SELECT CommandID FROM Commande_tb WHERE CommandNbr=\""+ str(CommandNbr)+"\" AND Etat=\"" + Status +"\""
 		mycursor=flotte_db.cursor()
@@ -110,9 +110,9 @@ def get_Commande_with_status_and_commandNbr(CommandNbr, Status):
 def get_CommandNbr_with_status(Status):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "SELECT CommandNbr FROM Commande_tb WHERE Etat= \"" + Status +"\""
 		mycursor=flotte_db.cursor()
@@ -130,9 +130,9 @@ def get_CommandNbr_with_status(Status):
 def get_Bouteille(CommandID):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "SELECT Bouteille1, Bouteille2, Bouteille3, Bouteille4, Bouteille5, Bouteille6 FROM Article_tb INNER JOIN Command_tb ON Article_tb.ArticleID=Commande_tb.ArticleID WHERE CommandID=\"" + CommandID + "\""
 		mycursor=flotte_db.cursor()
@@ -154,9 +154,9 @@ def get_Bouteille(CommandID):
 def update_status(CommandNbr, Status):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "UPDATE Commande_tb SET Etat = \"" + Status + "\" WHERE CommandNbr = \"" + str(CommandNbr) + "\""
 		mycursor=flotte_db.cursor()
@@ -172,9 +172,9 @@ def update_status(CommandNbr, Status):
 def update_Commande_status_by_article(CommandID ,Status):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "UPDATE Commande_tb SET Etat = \"" + Status + "\" WHERE CommandID = \"" + str(CommandID) + "\""
 		mycursor=flotte_db.cursor()
@@ -195,9 +195,9 @@ def update_Commande_status_by_article(CommandID ,Status):
 def delete_Commande(CommandNbr):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="DELETE FROM Commande_tb WHERE CommandNbr=\""+ CommandNbr + "\""
 		mycursor=flotte_db.cursor()

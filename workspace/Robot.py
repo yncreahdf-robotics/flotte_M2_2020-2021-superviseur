@@ -9,9 +9,9 @@ from datetime import datetime
 def create_Robot_tb():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
@@ -25,9 +25,9 @@ def create_Robot_tb():
 def check_Robot_tb():	
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
@@ -45,9 +45,9 @@ def check_Robot_tb():
 def insert_Robot(RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		#need to verify that the RobotType is an existing Type in the  Type database
 		sql="INSERT INTO Robot_tb (RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck) VALUES(%s,%s,%s,%s,%s,%s)"
@@ -68,9 +68,9 @@ def insert_Robot(RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck
 def get_all_Robot():
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="SELECT * FROM Robot_tb ORDER BY RobotType"
 		mycursor=flotte_db.cursor()
@@ -87,9 +87,9 @@ def get_all_Robot():
 def find_robot_by_role(role):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "SELECT RobotIP FROM Robot_tb INNER JOIN Type_tb ON Robot_tb.RobotType=Type_tb.TypeName WHERE Type_tb.Role= \""+ role+"\""
 		mycursor=flotte_db.cursor()
@@ -106,9 +106,9 @@ def find_robot_by_role(role):
 def find_robot_by_role_and_status(role, status):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="SELECT RobotIP FROM Robot_tb INNER JOIN Type_tb ON Robot_tb.RobotType=Type_tb.TypeName WHERE Type_tb.Role = \""+ role + "\" AND Etat = \"" + status + "\""
 		mycursor=flotte_db.cursor()
@@ -125,9 +125,9 @@ def find_robot_by_role_and_status(role, status):
 def find_robot_by_role_status_and_position(role, position, status):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="SELECT RobotIP FROM Robot_tb INNER JOIN Type_tb ON Robot_tb.RobotType=Type_tb.TypeName WHERE Type_tb.Role= \""+ role+ "\" AND Etat = \"" + status + "\" AND Position = \"" + position + "\""
 		mycursor=flotte_db.cursor()
@@ -144,9 +144,9 @@ def find_robot_by_role_status_and_position(role, position, status):
 def get_robot_data(RobotIP):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="SELECT * FROM Robot_tb WHERE RobotIP=\""+ RobotIP + "\""
 		mycursor=flotte_db.cursor()
@@ -164,9 +164,9 @@ def get_robot_by_ActiveCommand_and_type(ActiveCommandNbr, role):
 	
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql= "SELECT RobotIP FROM Robot_tb INNER JOIN Type_tb ON Robot_tb.RobotType=Type_tb.TypeName WHERE Robot_tb.ActiveCommandNbr= \"" + str(ActiveCommandNbr) + "\" AND Type_tb.Role= \"" + role + "\""
 		mycursor=flotte_db.cursor()
@@ -187,9 +187,9 @@ def get_robot_by_ActiveCommand_and_type(ActiveCommandNbr, role):
 def update_status(RobotIP, newStatus):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "UPDATE Robot_tb SET Etat = \"" + newStatus + "\" WHERE RobotIP = \"" + str(RobotIP) + "\""
 		mycursor=flotte_db.cursor()
@@ -205,9 +205,9 @@ def update_status(RobotIP, newStatus):
 def update_position(RobotIP, newPosition):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "UPDATE Robot_tb SET Position = \"" + newPosition + "\" WHERE RobotIP = \"" + str(RobotIP) + "\""
 		mycursor=flotte_db.cursor()
@@ -223,9 +223,9 @@ def update_position(RobotIP, newPosition):
 def update_ping(RobotIP):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "UPDATE Robot_tb SET LastCheck = \"" + str(datetime.now()) + "\" WHERE RobotIP = \"" + RobotIP + "\""
 		val=datetime.now()
@@ -242,9 +242,9 @@ def update_ping(RobotIP):
 def update_command(RobotIP, newCommandNbr):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql = "UPDATE Robot_tb SET ActiveCommandNbr= \"" + str(newCommandNbr) + "\" WHERE RobotIP = \"" + RobotIP + "\""
 		mycursor=flotte_db.cursor()
@@ -264,9 +264,9 @@ def update_command(RobotIP, newCommandNbr):
 def delete_Robot(RobotIP):
 	try:
 		flotte_db=mysql.connector.connect(
-			host='localhost',
+			host='172.19.0.3',
 			user='root',
-			password='L@boRobotique'
+			password='root'
 		)
 		sql="DELETE FROM Robot_tb WHERE RobotIP=\""+RobotIP+"\""
 		mycursor=flotte_db.cursor()
