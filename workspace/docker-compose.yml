@@ -1,4 +1,4 @@
-version: "3.7"
+version: "2.4"
 services:
   web:
     build: .
@@ -13,7 +13,7 @@ services:
 #       - type: bind
 #         source: ./logs/httpd
 #         target: /var/log/httpd
-#       - type: bind
+#       - type: binds
 #         source: ./logs/php_errors.log
 #         target: /var/log/php_errors.log
 
@@ -27,7 +27,11 @@ services:
     image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
     environment:
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=root  
+    ports: 
+       - "3306:3306"
+    networks:
+       - test
     volumes:
       - ./BDD:/var/lib/mysql
 #       To expose the logs, create the relevant folders/files and uncomment the below section.
@@ -50,5 +54,8 @@ services:
     image: adminer:latest
     ports:
       - "8080:8080"
+networks:
+   test:
+    driver: host
     
    

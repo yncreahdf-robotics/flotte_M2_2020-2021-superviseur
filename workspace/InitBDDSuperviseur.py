@@ -10,7 +10,7 @@ import mysql.connector
 #	CREATE A NEW DATABASE
 def create_flotte_db():
 	flotte_db=mysql.connector.connect(
-		host='172.19.0.2',
+		host='192.168.1.5',
 		user='root',
 		password='root'
 	)
@@ -23,7 +23,7 @@ def create_flotte_db():
 #	Check if database exists
 def check_flotte_db():	
 	flotte_db=mysql.connector.connect(
-			host='172.19.0.2',
+			host='192.168.1.5',
 			user='root',
 			password='root'
 	)	
@@ -47,7 +47,7 @@ def create_all_tables():
 #	DELETE DATABASE
 def delete_flotte_db():
 	flotte_db=mysql.connector.connect(
-		host='172.19.0.2',
+		host='192.168.1.5',
 		user='root',
 		password='root'
 	)
@@ -61,7 +61,7 @@ def delete_flotte_db():
 
 def use_db():
 	flotte_db=mysql.connector.connect(
-		host='172.19.0.2',
+		host='192.168.1.5',
 		user='root',
 		password='root'
 	)
