@@ -24,7 +24,7 @@ def create_Pose_tb():
 		)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
-		mycursor.execute("CREATE TABLE IF NOT EXISTS Pose_tb (PoseID INT AUTO_INCREMENT, PoseName VARCHAR(30), PoseX FLOAT, PoseY FLOAT, PoseZ FLOAT, PoseW FLOAT, CONSTRAINT PoseID_pk PRIMARY KEY (PoseID))" ) 
+		mycursor.execute("CREATE TABLE IF NOT EXISTS Pose_tb (PoseID INT AUTO_INCREMENT, PoseName VARCHAR(30) UNIQUE, PoseX FLOAT, PoseY FLOAT, PoseZ FLOAT, PoseW FLOAT, CONSTRAINT PoseID_pk PRIMARY KEY (PoseID))" ) 
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:
@@ -70,7 +70,10 @@ def insert_Pose(PoseName, PoseX, PoseY, PoseZ, PoseW):
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:
-		print("Something went wrong: {}".format(err))
+		if (format(err).split()[0]=="1062"):
+			pass
+		else:
+			print("Something went wrong: {}".format(err))
 
 ###################################
 ##  Fonctions d'accès a la table ##

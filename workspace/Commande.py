@@ -152,6 +152,24 @@ def get_Bouteille(CommandID):
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))	
 
+#GET A COMMAND DATA BY ITS ID
+def get_commande_data(CommandID):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='172.19.0.3',
+			user='root',
+			password='root'
+		)
+		sql="SELECT * FROM Commande_tb WHERE CommandID=\""+ CommandID + "\""
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")	
+		mycursor.execute(sql)
+		myresult = mycursor.fetchall()
+		mycursor.close()
+		flotte_db.close()
+		return myresult
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
 
 ############################################
 ##	Fonctions de mise à jour de la table  ##

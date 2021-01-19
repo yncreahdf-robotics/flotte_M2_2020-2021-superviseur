@@ -24,10 +24,11 @@ def create_Type_tb():
 		mycursor.execute("USE flotte_db")
 		#	Role can be: Preparateur, Service, Accueil, Guide 
 		mycursor.execute("CREATE TABLE IF NOT EXISTS Type_tb (TypeID INT AUTO_INCREMENT, TypeName VARCHAR(30) UNIQUE, Role VARCHAR(30), WeightCapacity INT, CONSTRAINT TypeID_pk PRIMARY KEY (TypeID))" ) 
+		#mycursor.execute(requete)
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:
-		print("Something went wrong: {}".format(err))
+			print("Something went wrong: {}".format(err))
 
 #	CHECK IF THE TABLE EXISTS
 def check_Type_tb():
@@ -68,7 +69,10 @@ def insert_Type(TypeName, Role, WeightCapacity):
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:
-		print("Something went wrong: {}".format(err))
+		if (format(err).split()[0]=="1062"):
+			pass
+		else:
+			print("Something went wrong: {}".format(err))
 
 ####################################
 ##  Fonctions d'accès à la table  ##

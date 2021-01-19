@@ -22,7 +22,7 @@ def create_Article_tb():
 		)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
-		mycursor.execute("CREATE TABLE IF NOT EXISTS Article_tb (ArticleID INT AUTO_INCREMENT, ArticleName VARCHAR(30), ArticlePrice INT, ArticleWeight INT, Bouteille1 INT, Bouteille2 INT, Bouteille3 INT, Bouteille4 INT, Bouteille5 INT,  Bouteille6 INT,CONSTRAINT ArticleID_pk PRIMARY KEY (ArticleID))" ) 
+		mycursor.execute("CREATE TABLE IF NOT EXISTS Article_tb (ArticleID INT AUTO_INCREMENT, ArticleName VARCHAR(30) UNIQUE, ArticlePrice INT, ArticleWeight INT, Bouteille1 INT, Bouteille2 INT, Bouteille3 INT, Bouteille4 INT, Bouteille5 INT,  Bouteille6 INT,CONSTRAINT ArticleID_pk PRIMARY KEY (ArticleID))" ) 
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:
@@ -68,7 +68,10 @@ def insert_Article(ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteill
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:
-		print("Something went wrong: {}".format(err))
+		if (format(err).split()[0]=="1062"):
+			pass
+		else:
+			print("Something went wrong: {}".format(err))
 ###################################
 ##	Fonctions d'accès à la table ##
 ###################################

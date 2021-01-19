@@ -27,6 +27,7 @@ def create_flotte_db():
 	mycursor.execute("USE flotte_db")
 	mycursor.close()
 	flotte_db.close()
+	print("BDD:	Base de données créée")
 
 #	Check if database exists
 def check_flotte_db():	
