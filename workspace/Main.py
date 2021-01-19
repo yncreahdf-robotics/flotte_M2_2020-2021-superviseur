@@ -100,6 +100,7 @@ def on_message(client, userdata, msg):
 
 		# Si le type existe on ajoute le robot à la liste des robots disponibles de la base de données
 		if Type.Type_exists(typerobot):
+			add_robot_user(iprobot)
 			#TODO: mettre la position initiale du robot 
 			if(Type.get_Type(typerobot)[0][2]=="Preparateur"):
 				Robot.insert_Robot(iprobot+"/1", typerobot+"/Melangeur", Positions.get_Pose_by_name("bar")[0][0], "Idle", 0, datetime.datetime.now())
@@ -403,6 +404,28 @@ def pingRobots():
 
 	#print("PING:     Ping terminé")
 		
+# creer un utilisateur pour le robot pour qu'il se connecte à la base de données
+def add_robot_user(iprobot):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='172.19.0.3',
+			user='root',
+			password='root'
+		)
+		mycursor=flotte_db.cursor()
+		
+		requete1="CREATE USER IF NOT EXISTS'robot'@'"+iprobot+"' IDENTIFIED WITH mysql_native_password BY 'robot'" # WITH mysql_native_password 
+		requete2="GRANT SELECT ON flotte_db.* TO 'robot'@'"+ iprobot+ "'"
+		mycursor.execute("USE flotte_db")
+		mycursor.execute(requete1)
+		mycursor.execute(requete2)
+		mycursor.close()
+		flotte_db.close()
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
+
+
+
 def command_loop():
 	#Calcul des différentes données permettant la prise de décision
 	Pending=Table.get_Table_by_Status("Pending")
