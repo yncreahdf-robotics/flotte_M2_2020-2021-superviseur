@@ -7,3 +7,6 @@ RUN apk add mosquitto-clients
 RUN pip install paho-mqtt
 RUN pip install mysql-connector-python
 
+
+WORKDIR Superviseur
+
