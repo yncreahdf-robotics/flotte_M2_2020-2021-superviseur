@@ -182,9 +182,12 @@ def main(stdscr):
 
 
 			elif menu[current_row] == "Preparateur/Prepare":
-				ippreparateur="192.168.1.8"
-				Commande.update_status(1, "Prepared")
-				#publish(ipsuperviseur, port, "Preparateur/Prepare",ippreparateur + "/1", 2)
+				ippreparateur="192.168.1.130"
+				#Commande.update_status(1, "Ordered")
+				Robot.update_status(ippreparateur+"/1","Occupied")
+				Robot.update_command(ippreparateur+"/1",2)
+				publish(ipsuperviseur, port, "Preparateur/Prepare",ippreparateur + "/2", 2)
+
 
 
 			elif menu[current_row] == "Preparateur/Charge":

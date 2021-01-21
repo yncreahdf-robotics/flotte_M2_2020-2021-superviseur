@@ -23,6 +23,7 @@ def create_Robot_tb():
 		)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
+		#status can be : Idle, Occupied, Pending, Maintenance
 		mycursor.execute("CREATE TABLE IF NOT EXISTS Robot_tb (RobotIP VARCHAR(30) NOT NULL PRIMARY KEY, RobotType VARCHAR(30), Position INT, Etat VARCHAR(30), ActiveCommandNbr INT, LastCheck DATETIME)" ) 
 		mycursor.close()
 		flotte_db.close()

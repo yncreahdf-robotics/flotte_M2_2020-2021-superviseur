@@ -39,7 +39,7 @@ import datetime
 ##########################
 ### Variables globales ###
 ##########################
-
+tentative = 0
 timer=None
 #	gets the supervisor's IP using the host file
 hosts = open('/etc/hosts','r')
@@ -124,9 +124,9 @@ def on_message(client, userdata, msg):
 
 		iprobot = msg.payload.decode("utf-8").split("/")[0]
 
-		if (len(msg.payload.decode('utf-8'))!=1):
-			battery=msg.payload.decode('utf-8').split("/")[1]
-			charge_status=msg.payload.decode('utf-8').split("/")[2]
+		if (len(msg.payload.decode("utf-8").split("/"))>1):
+			battery=msg.payload.decode("utf-8").split("/")[1]
+			charge_status=msg.payload.decode("utf-8").split("/")[2]
 			#print("Battery:"+battery+"% - "+ charge_status)
 			if (float(battery)<10 and charge_status=="Unpluged" and Robot.get_robot_data(iprobot)[0][3]=="Idle"):
 				publish(my_ip, port, "Service/Go/Base", iprobot, str(Positions.get_Pose_by_name("recharge")[0][0]), 2)
@@ -203,6 +203,7 @@ def on_message(client, userdata, msg):
 
 	#	Quand le préparateur a fini de préparer une commande
 	if msg.topic == "Preparateur/Prepared":
+		tentative = 0
 		#time.sleep(5)
 
 		#	On récupère l'IP du préparateur ayant terminé sa préparation
@@ -216,7 +217,9 @@ def on_message(client, userdata, msg):
 		Commande.update_Commande_status_by_article(ArticleID, "Prepared")
 	
 		#	On regarde si la commande complète est prête
-		if (len(Commande.get_Commande_with_status_and_commandNbr(CommandNbr, "Ordered"))!=0):
+		CommandeIDlist=Commande.get_Commande_with_status_and_commandNbr(CommandNbr, "Ordered")
+		print(str(len(CommandeIDlist)))
+		if (len(CommandIDlist)!=0):
 			#Si tous les articles ne sont pas prêts on continue de préparer la commande
 			publish(my_ip, port, "Preparateur/Prepare", str(preparateur) + "/" + str(CommandNbr) , 2)
 
@@ -305,6 +308,38 @@ def on_message(client, userdata, msg):
 				publish(my_ip , port, "Service/Turn", str(robot), 2)
 			#On dit au préparateur de charger l'article suivant
 			publish(my_ip , port, "Preparateur/Charge", str(preparateur)+"/"+str(CommandNbr), 2)
+
+
+	if msg.topic=="Preparateur/Error":
+		preparateur=msg.payload.decode("utf-8").split("/")[0]
+		melangeur=preparateur+"/1"
+		CommandNbr=Robot.get_robot_data(melangeur)[0][4]
+		print("AZAAHAHHHAHAHAH ERREEUR MES COUILLES")
+
+		
+		codeError=int(msg.payload.decode("utf-8").split("/")[1])
+		if(codeError==1):	#obstable gobelet
+			print("Erreur 1 : obstacle gobelet")
+			tentative+=1
+			if (tentative <3):
+				publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
+			else : 
+				robot.update_status(preparateur+"/1","Maintenance")
+
+			
+		if(codeError==2):	#gobelet absent
+			print("Erreur 2 : absence gobelet")
+			tentative+=1
+			if (tentative <3):
+				publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
+			else : 
+				robot.update_status(preparateur+"/1","Maintenance")
+
+
+
+		if(codeError==4):
+			robot.update_status(preparateur+"/1","Maintenance")	
+			print("Erreur 4 : mise en maintenance")
 
  	##############################
  	##	Topic Service et Guide  ##
@@ -423,7 +458,7 @@ def pingRobots():
 
 	for robot in result:
 
-		if (datetime.datetime.now() - robot[5]) > datetime.timedelta(seconds=30):
+		if (datetime.datetime.now() - robot[5]) > datetime.timedelta(seconds=90):
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 			print("ROBOT:     Robot ", robot[1], " (", robot[0], ") ", " deconnecte")
 			Robot.delete_Robot(robot[0])
