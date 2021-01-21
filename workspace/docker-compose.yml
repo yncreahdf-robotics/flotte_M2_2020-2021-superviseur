@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   web:
-    build: .
+    build: ./Apache
     working_dir: /var/www/html
     depends_on: [db]
     volumes:
@@ -57,6 +57,21 @@ services:
      - bdd
     ports:
       - "8080:8080"
+  superviseur:
+    build: ./Superviseur
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    networks:
+     - bdd
+    ports: 
+     - "1883:1883"
+    extra_hosts:
+     - "supIP:192.168.1.5"
+    command: mosquitto -p 1883
+    volumes:
+     - ./Superviseur:/Superviseur
+    depends_on: [web]
+   
 networks:
   bdd:
     driver: bridge
