@@ -39,7 +39,8 @@ import datetime
 ##########################
 ### Variables globales ###
 ##########################
-tentative = 0
+#global tentative
+#tentative = 0
 timer=None
 #	gets the supervisor's IP using the host file
 hosts = open('/etc/hosts','r')
@@ -127,7 +128,7 @@ def on_message(client, userdata, msg):
 		if (len(msg.payload.decode("utf-8").split("/"))>1):
 			battery=msg.payload.decode("utf-8").split("/")[1]
 			charge_status=msg.payload.decode("utf-8").split("/")[2]
-			#print("Battery:"+battery+"% - "+ charge_status)
+			#print(msg.payload.decode("utf-8"))
 			if (float(battery)<10 and charge_status=="Unpluged" and Robot.get_robot_data(iprobot)[0][3]=="Idle"):
 				publish(my_ip, port, "Service/Go/Base", iprobot, str(Positions.get_Pose_by_name("recharge")[0][0]), 2)
 				publish(my_ip, port, "Guide/Go/Base", iprobot, str(Positions.get_Pose_by_name("recharge")[0][0]), 2)
@@ -187,7 +188,8 @@ def on_message(client, userdata, msg):
 
 
 	if msg.topic == "Accueil/GelLow":
-		print("MESSAGE: Niveau de gel bas")
+		#print("MESSAGE: Niveau de gel bas")
+		pass
 
 
 	#if msg.topic == "RobotCharles":
@@ -200,12 +202,15 @@ def on_message(client, userdata, msg):
 	#########################
 	##	Topic Préparateur  ##
 	#########################
+	if msg.topic == "Commande/Reset":
+		Commande.update_status(1,"Pending")
+		Table.update_Table_status(2,"Pending")
 
 	#	Quand le préparateur a fini de préparer une commande
 	if msg.topic == "Preparateur/Prepared":
-		tentative = 0
+		#tentative = 0
 		#time.sleep(5)
-
+		print("MESSAGE:	ARTICLE PREPARE")
 		#	On récupère l'IP du préparateur ayant terminé sa préparation
 		preparateur = msg.payload.decode("utf-8")
 
@@ -219,13 +224,13 @@ def on_message(client, userdata, msg):
 		#	On regarde si la commande complète est prête
 		CommandeIDlist=Commande.get_Commande_with_status_and_commandNbr(CommandNbr, "Ordered")
 		print(str(len(CommandeIDlist)))
-		if (len(CommandIDlist)!=0):
+		if (len(CommandeIDlist)!=0):
 			#Si tous les articles ne sont pas prêts on continue de préparer la commande
 			publish(my_ip, port, "Preparateur/Prepare", str(preparateur) + "/" + str(CommandNbr) , 2)
 
 		#	Si tous les articles sont prets on charge le robot ou on l'attend
 		else:
-			print("MESSAGE:	COMMANDE PRETE: " + CommandNbr)
+			print("MESSAGE:	COMMANDE PRETE: " + str(CommandNbr))
 			#On met la Commande en préparée
 			Table.update_Table_status(Table.get_Table_by_CommandNbr(CommandNbr)[0][0],"Prepared")
 			#	Le préparateur peut préparer une autre commande
@@ -236,27 +241,28 @@ def on_message(client, userdata, msg):
 			Robot.update_command(preparateur+"/2", CommandNbr)
 
 			#	On cherche le robot de service qui s'occupe de la commande
-			robot = Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service")[0][0]
+			print(Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service"))
+			if (len(Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service"))!=0):
+				#On détermine le robot en charge de la commande
+				robot = Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service")[0][0]
 			
-			# Si il y a un robot en charge de cette commande et que ce robot est déjà pret à être chargé (en attente)
-			if (len(robot)!=0 and Robot.get_robot_data(robot)[0][3] == "Pending") :
-				#	Dire au préparateur de charger la commande
-				publish(my_ip, port, "Preparateur/Charge", str(preparateur)+"/"+str(CommandNbr) , 2)
+				# Si le robot est déjà pret à être chargé (en attente)
+				if (len(robot)!=0 and Robot.get_robot_data(robot)[0][3] == "Pending") :
+					#	Dire au préparateur de charger la commande
+					publish(my_ip, port, "Preparateur/Charge", str(preparateur)+"/"+str(CommandNbr) , 2)
 
-			# 	Sinon si aucun robot n'est attribué à la commande
-			elif(len(robot)==0):
+				#	Sinon = Si un robot est attribué à la commande  mais n'est pas encore arrivé
+				else: 
+					print("MESSAGE:	COMMANDE PRETE: "+ str(CommandNbr) + " - ATTENTE DU ROBOT") 
+					#TODO: refaire les changements d'état du préparateur pour plusieurs commandes
+					#	Robot préparateur en "Pending"
+					Robot.update_status(preparateur+"/2", "Pending")
+				#SELECT * FROM Commande_tb;
+	 
+			else: 
+				# 	Si aucun robot de service ne se charge de la commande on attend qu'un robot soit attribué
 				print("MESSAGE:	COMMANDE PRETE - AUCUN ROBOT DISPONIBLE")
 				Robot.update_status(preparateur+"/2", "Pending")
-
-			#	Si un robot est attribué à la commande  mais n'est pas encore arrivé
-			else: 
-				print("MESSAGE:	COMMANDE PRETE: "+ str(CommandNbr) + " - ATTENTE DU ROBOT") 
-				#TODO: refaire les changements d'état du préparateur pour plusieurs commandes
-				#	Robot préparateur en "Pending"
-				Robot.update_status(preparateur+"/2", "Pending")
-			#SELECT * FROM Commande_tb;
- 
-
 		
  	
  	# Quand le preparateur a fini de charger 
@@ -265,9 +271,10 @@ def on_message(client, userdata, msg):
 
 		#récupération de l'ip du préparateur
 		preparateur=msg.payload.decode("utf-8")
-
+		print(Robot.get_robot_data(preparateur+"/2"))
 		#récupération du numéro de commande dont s'occupe le préparateur
-		CommandNbr= Robot.get_robot_data(preparateur)[0][4]
+		CommandNbr= Robot.get_robot_data(preparateur+"/2")[0][4]
+
 		#recherche des articles non chargés de la commande
 		remaining_articles=Commande.get_Commande_with_status_and_commandNbr(CommandNbr, "Prepared")
 		#mise du premier article de la liste en chargé
@@ -293,19 +300,19 @@ def on_message(client, userdata, msg):
 			Robot.update_status(preparateur+"/2","Idle")
 			Robot.update_command(preparateur+"/2",0)
 			# 	Commande en "Charged"
-			Table.update_status(tableID,"Charged")
+			Table.update_Table_status(tableID,"Charged")
 
 			#	envoi de l'ordre au robot de livrer la commande à la table séléctionnée
 			publish(my_ip, port, "Service/Go/Table", str(robot) + "/" + str(poseID),2)
 		
 		#	Sinon on continue de charger et on demande au robot de tourner d'un 8e de tour
 		else:
-			article_count+=1
+			#article_count+=1
 			print("MESSAGE: Chargement de l'article suivant")
 			#On dit au robot de service sur lequel on charge la commande de tourner 
 			#TODO: voir si on tourne à chaque fois ou si on tourne une fois sur deux dans le cas de l'utilisation des 2 Nyrio pour charger le robot
-			if(article_count%2==0):
-				publish(my_ip , port, "Service/Turn", str(robot), 2)
+			#if(article_count%2==0):
+			publish(my_ip , port, "Service/Turn", str(robot), 2)
 			#On dit au préparateur de charger l'article suivant
 			publish(my_ip , port, "Preparateur/Charge", str(preparateur)+"/"+str(CommandNbr), 2)
 
@@ -314,26 +321,25 @@ def on_message(client, userdata, msg):
 		preparateur=msg.payload.decode("utf-8").split("/")[0]
 		melangeur=preparateur+"/1"
 		CommandNbr=Robot.get_robot_data(melangeur)[0][4]
-		print("AZAAHAHHHAHAHAH ERREEUR MES COUILLES")
+		print("!!!!!!!	ERREUR	!!!!!!!!!")
 
-		
 		codeError=int(msg.payload.decode("utf-8").split("/")[1])
 		if(codeError==1):	#obstable gobelet
 			print("Erreur 1 : obstacle gobelet")
-			tentative+=1
-			if (tentative <3):
-				publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
-			else : 
-				robot.update_status(preparateur+"/1","Maintenance")
+			#tentative = tentative+1
+			#if (tentative <3):
+			publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
+			#else : 
+			#robot.update_status(preparateur+"/1","Maintenance")
 
 			
 		if(codeError==2):	#gobelet absent
 			print("Erreur 2 : absence gobelet")
-			tentative+=1
-			if (tentative <3):
-				publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
-			else : 
-				robot.update_status(preparateur+"/1","Maintenance")
+			#tentative = tentative+1
+			#if (tentative <3):
+			publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
+			#else : 
+			#robot.update_status(preparateur+"/1","Maintenance")
 
 
 
@@ -355,20 +361,20 @@ def on_message(client, userdata, msg):
 		#Quand le robot arrive à la base de chargement des commandes
 		if msg.topic == "Service/Arrived/Bar":
 			
-			print("MESSAGE: ROBOT ARRIVE A LA BASE DE CHARGEMENT")
+			print("MESSAGE: ROBOT ARRIVE AU BAR")
 			#print("ip: " + str(msg.payload.decode("utf-8")))
 			CommandNbr=Robot.get_robot_data(robot)[0][4]
 			print("Commande: "+ str(CommandNbr))
 
-			#	Si la commande est prête le préparateur est en attente
-			#	On utilise la position du robot qui nous envoie le message pour déterminer le préparateur utilisé
-			preparateur=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Preparateur/Manipulateur")[0][0]
-			
-			print("status: "+Robot.get_robot_data(preparateur)[0][3])
-			if Robot.get_robot_data(preparateur)[0][3]=="Pending":
+			#preparateur=Robot.find_robot_by_CommandNbr_and_position(CommandNbr,position)[0][0]
+
+			if (len(Robot.find_robot_by_CommandNbr_and_status(CommandNbr,"Pending"))!=0):
 				#On lance le chargement de la commande
-				Robot.update_status(preparateur[0],"Occupied")
-				publish(my_ip, port, "Preparateur/Charge", preparateur[0] , 2)
+				print("MESSAGE: DEBUT CHARGEMENT")
+				manipulateur=Robot.find_robot_by_CommandNbr_and_status(CommandNbr,"Pending")
+				print(manipulateur)
+				Robot.update_status(manipulateur,"Occupied")
+				publish(my_ip, port, "Preparateur/Charge", manipulateur[0][0].split("/")[0] + "/" + CommandNbr , 2)
 
 			else:
 		 		#	On fait attendre le robot jusqu'à ce que la commande soit prête
@@ -391,9 +397,10 @@ def on_message(client, userdata, msg):
 			#	robot en "Idle"
 			Robot.update_status(robot, "Idle")
 			Robot.update_command(robot,0)
-
+			table=Table.get_Table_by_CommandNbr(CommandNbr)
+			position=Table.get_Table_data(Table)[0][2]
 			#	mise à jour de la dernière position du robot
-			Robot.update_position(robot,Positions.get_Pose_by_name("table"))
+			Robot.update_position(robot,position)
 
 			#	Command en "Delivered"
 			Commande.update_status(CommandNbr, "Delivered")
@@ -542,14 +549,15 @@ def command_loop():
 
 
 	#Si une commande est preparee et qu'aucun robot de service ne s'en occupe et qu'un robot de service est libre
-	if(len(Prepared)!=0 and len(Free_Service)!=0 and len(Robot.get_robot_by_ActiveCommand_and_type(Prepared[0][0], Service))==0):
-		
+	if(len(Prepared)!=0 and len(Free_Service)!=0 and len(Robot.get_robot_by_ActiveCommand_and_type(Prepared[0][0], "Service"))==0):
 		#Mise en occupé du robot de service
 		Robot.update_status(Free_Service[0][0],"Occupied")
 		#Mise à jour de la commande active du robot de service
-		Robot.update_command(Free_Service[0][0], Pending[0][0])
+		Robot.update_command(Free_Service[0][0], Table.get_Table_data(Prepared[0][0])[0][1])
 		#On envoi un robot de service pour aller la chercher
-		publish(my_ip, port, "Service/Go/Bar", Free_Service[0][0] + "/" + str(Free_Preparateur[0][2]), 2)
+		publish(my_ip, port, "Service/Go/Bar", Free_Service[0][0] + "/" + str(Positions.get_Pose_by_name("bar")[0][0]), 2)
+	
+
 	time.sleep(30)
 '''
 	#	Si une commande est en attente et qu'un robot de service et un préparateur sont libres, lancer la commande

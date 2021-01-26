@@ -153,6 +153,25 @@ def find_robot_by_role_status_and_position(role, position, status):
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
+#GET A ROBOT BY ITS ROLE AND STATUS TO A CERTAIN POSITION
+def find_robot_by_CommandNbr_and_status(CommandNbr,status):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='172.19.0.3',
+			user='root',
+			password='root'
+		)
+		sql="SELECT RobotIP FROM Robot_tb WHERE ActiveCommandNbr= \""+ str(CommandNbr) + "\" AND Etat = \"" + status + "\""
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")	
+		mycursor.execute(sql)
+		myresult = mycursor.fetchall()
+		mycursor.close()
+		flotte_db.close()
+		return myresult 
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
+
 #GET A ROBOTS DATA BY ITS IP
 def get_robot_data(RobotIP):
 	try:

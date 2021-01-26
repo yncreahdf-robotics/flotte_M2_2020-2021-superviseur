@@ -224,7 +224,7 @@ def delete_Commande(CommandNbr):
 			user='root',
 			password='root'
 		)
-		sql="DELETE FROM Commande_tb WHERE CommandNbr=\""+ CommandNbr + "\""
+		sql="DELETE FROM Commande_tb WHERE CommandNbr=\""+ str(CommandNbr) + "\""
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)

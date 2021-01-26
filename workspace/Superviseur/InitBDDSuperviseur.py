@@ -4,6 +4,8 @@ import Table
 import Type
 import Robot
 import Positions
+import Bouteille
+import Recette
 import mysql.connector
 
 hosts = open('/etc/hosts','r')
@@ -51,6 +53,8 @@ def create_all_tables():
 	Type.create_Type_tb()
 	Robot.create_Robot_tb()
 	Positions.create_Pose_tb()
+	Bouteille.create_Bouteille_tb()
+	Recette.create_Recete_tb()
 
 
 #	DELETE DATABASE

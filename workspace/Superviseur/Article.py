@@ -22,7 +22,7 @@ def create_Article_tb():
 		)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
-		mycursor.execute("CREATE TABLE IF NOT EXISTS Article_tb (ArticleID INT AUTO_INCREMENT, ArticleName VARCHAR(30) UNIQUE, ArticlePrice INT, ArticleWeight INT, Bouteille1 INT, Bouteille2 INT, Bouteille3 INT, Bouteille4 INT, Bouteille5 INT,  Bouteille6 INT,CONSTRAINT ArticleID_pk PRIMARY KEY (ArticleID))" ) 
+		mycursor.execute("CREATE TABLE IF NOT EXISTS Article_tb (ArticleID INT AUTO_INCREMENT, ArticleName VARCHAR(30) UNIQUE, ArticlePrice INT, ArticleWeight INT, IDRecette INT,CONSTRAINT ArticleID_pk PRIMARY KEY (ArticleID))" ) 
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:
@@ -51,15 +51,15 @@ def check_Article_tb():
 ############################################
 
 #	INSERT ARTICLES IN THE COMMAND DATABASE
-def insert_Article(ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6):
+def insert_Article(ArticleName, ArticlePrice, ArticleWeight, IDRecette):
 	try:
 		flotte_db=mysql.connector.connect(
 			host='172.19.0.3',
 			user='root',
 			password='root'
 		)
-		sql="INSERT INTO Article_tb (ArticleName, ArticlePrice, ArticleWeight, Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-		val=(ArticleName,ArticlePrice,ArticleWeight,Bouteille1,Bouteille2,Bouteille3,Bouteille4,Bouteille5,Bouteille6)
+		sql="INSERT INTO Article_tb (ArticleName, ArticlePrice, ArticleWeight, IDRecette) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+		val=(ArticleName,ArticlePrice,ArticleWeight,IDRecette)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql,val)
@@ -97,7 +97,7 @@ def get_all_Articles():
 		print("Something went wrong: {}".format(err))
 
 #	GET AN ARTICLE BY ITS NAME
-def get_Article_by_name(ArticleID):
+def get_Article_by_ID(ArticleID):
 	try:
 		flotte_db=mysql.connector.connect(
 			host='172.19.0.3',
