@@ -58,7 +58,7 @@ def insert_Article(ArticleName, ArticlePrice, ArticleWeight, IDRecette):
 			user='root',
 			password='root'
 		)
-		sql="INSERT INTO Article_tb (ArticleName, ArticlePrice, ArticleWeight, IDRecette) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+		sql="INSERT INTO Article_tb (ArticleName, ArticlePrice, ArticleWeight, IDRecette) VALUES(%s,%s,%s,%s)"
 		val=(ArticleName,ArticlePrice,ArticleWeight,IDRecette)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")

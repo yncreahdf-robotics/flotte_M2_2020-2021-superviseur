@@ -54,7 +54,7 @@ def create_all_tables():
 	Robot.create_Robot_tb()
 	Positions.create_Pose_tb()
 	Bouteille.create_Bouteille_tb()
-	Recette.create_Recete_tb()
+	Recette.create_Recette_tb()
 
 
 #	DELETE DATABASE

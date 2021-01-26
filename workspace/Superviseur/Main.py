@@ -23,7 +23,8 @@ import Type
 import Table
 import Commande
 import Article
-
+import Bouteille
+import Recette
 
 # Import des librairies exterieures au projet
 
@@ -632,11 +633,19 @@ Table.insert_Table(0, Positions.get_Pose_by_name("table1")[0][0], 2, "Free", 0)
 Table.insert_Table(0, Positions.get_Pose_by_name("table2")[0][0], 2, "Free", 0)
 Table.insert_Table(0, Positions.get_Pose_by_name("table3")[0][0], 2, "Free", 0)
 
-Article.insert_Article("Coca", 1, 33, 4, 0, 0, 0, 0, 0)
-Article.insert_Article("Wisky", 1, 33, 0, 1, 0, 0, 0, 0)
-Article.insert_Article("Leffe", 1, 33, 0, 0, 4, 0, 0, 0)
-Article.insert_Article("Eau", 1, 33, 0, 0, 0, 8, 0, 0)
-Article.insert_Article("Jaggermeister", 1, 33, 4, 0, 0, 0, 2, 2)
+Bouteille.insert_Bouteille("Jagger Meister", 25, 1)
+Bouteille.insert_Bouteille("Crazy Tigger", 75, 2)
+Bouteille.insert_Bouteille("Eau Plate", 75, 3)
+Bouteille.insert_Bouteille("Badoit Rouge", 75, 4)
+Bouteille.insert_Bouteille("Grenadine", 25, 5)
+
+Recette.insert_Recette("JaggerBomb", 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+Recette.insert_Recette("GillesGrenadine", 5, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+Recette.insert_Recette("Eau Finement Pétillante", 4, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+
+Article.insert_Article("JaggerBomb", 1, 33, 2)
+Article.insert_Article("GillesGrenadine", 1, 33, 1)
+Article.insert_Article("Eau Finement Pétillante", 1, 33, 3)
 
 subscribe(my_ip, port, "Initialisation/Envoi", 2)
 subscribe(my_ip, port, "Commande/Envoi", 2)
