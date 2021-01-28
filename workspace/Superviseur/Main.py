@@ -40,8 +40,10 @@ import datetime
 ##########################
 ### Variables globales ###
 ##########################
-#global tentative
-#tentative = 0
+
+tentative = 0
+service_turns = 0 
+
 timer=None
 #	gets the supervisor's IP using the host file
 hosts = open('/etc/hosts','r')
@@ -107,6 +109,8 @@ def on_message(client, userdata, msg):
 			if(Type.get_Type(typerobot)[0][2]=="Preparateur"):
 				Robot.insert_Robot(iprobot+"/1", typerobot+"/Melangeur", Positions.get_Pose_by_name("bar")[0][0], "Idle", 0, datetime.datetime.now())
 				Robot.insert_Robot(iprobot+"/2", typerobot+"/Manipulateur", Positions.get_Pose_by_name("bar")[0][0], "Idle", 0, datetime.datetime.now())
+				#envoi du message de lancement des différents programmes du Préparateur
+				publish(my_ip, port, "Preparateur/Start", iprobot, 2)
 			else:
 				Robot.insert_Robot(iprobot, typerobot, Positions.get_Pose_by_name("recharge")[0][0], "Idle", 0, datetime.datetime.now()) 
 
@@ -131,8 +135,8 @@ def on_message(client, userdata, msg):
 			charge_status=msg.payload.decode("utf-8").split("/")[2]
 			#print(msg.payload.decode("utf-8"))
 			if (float(battery)<10 and charge_status=="Unpluged" and Robot.get_robot_data(iprobot)[0][3]=="Idle"):
-				publish(my_ip, port, "Service/Go/Base", iprobot, str(Positions.get_Pose_by_name("recharge")[0][0]), 2)
-				publish(my_ip, port, "Guide/Go/Base", iprobot, str(Positions.get_Pose_by_name("recharge")[0][0]), 2)
+				publish(my_ip, port, "Service/Go/Base", iprobot+"/"+str(Positions.get_Pose_by_name("recharge")[0][0]), 2)
+				publish(my_ip, port, "Guide/Go/Base", iprobot+"/"+str(Positions.get_Pose_by_name("recharge")[0][0]), 2)
 		#print("MESSAGE:  Reception d'un ping : " + iprobot)
 
 		confirmation = 0
@@ -209,7 +213,7 @@ def on_message(client, userdata, msg):
 
 	#	Quand le préparateur a fini de préparer une commande
 	if msg.topic == "Preparateur/Prepared":
-		#tentative = 0
+		tentative = 0
 		#time.sleep(5)
 		print("MESSAGE:	ARTICLE PREPARE")
 		#	On récupère l'IP du préparateur ayant terminé sa préparation
@@ -289,7 +293,7 @@ def on_message(client, userdata, msg):
 		#	Si l'article est le dernier de la commande on envoie le départ du robot
 		if len(remaining_articles)==0:
 			print("MESSAGE: Commande chargée")
-			article_count=0
+			service_turns=0
 			
 			#on cherche la table de la commande
 			tableID=Table.get_Table_by_CommandNbr(CommandNbr)[0][0]
@@ -312,8 +316,8 @@ def on_message(client, userdata, msg):
 			print("MESSAGE: Chargement de l'article suivant")
 			#On dit au robot de service sur lequel on charge la commande de tourner 
 			#TODO: voir si on tourne à chaque fois ou si on tourne une fois sur deux dans le cas de l'utilisation des 2 Nyrio pour charger le robot
-			#if(article_count%2==0):
-			publish(my_ip , port, "Service/Turn", str(robot), 2)
+			if(service_turns%2==0):
+				publish(my_ip , port, "Service/Turn", str(robot), 2)
 			#On dit au préparateur de charger l'article suivant
 			publish(my_ip , port, "Preparateur/Charge", str(preparateur)+"/"+str(CommandNbr), 2)
 
@@ -327,20 +331,20 @@ def on_message(client, userdata, msg):
 		codeError=int(msg.payload.decode("utf-8").split("/")[1])
 		if(codeError==1):	#obstable gobelet
 			print("Erreur 1 : obstacle gobelet")
-			#tentative = tentative+1
-			#if (tentative <3):
-			publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
-			#else : 
-			#robot.update_status(preparateur+"/1","Maintenance")
+			tentative = tentative+1
+			if (tentative <=3):
+				publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
+			else : 
+				robot.update_status(preparateur+"/1","Maintenance")
 
 			
 		if(codeError==2):	#gobelet absent
 			print("Erreur 2 : absence gobelet")
-			#tentative = tentative+1
-			#if (tentative <3):
-			publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
-			#else : 
-			#robot.update_status(preparateur+"/1","Maintenance")
+			tentative = tentative+1
+			if (tentative <=3):
+				publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
+			else : 
+				robot.update_status(preparateur+"/1","Maintenance")
 
 
 
@@ -507,27 +511,31 @@ def command_loop():
 	Prepared=Table.get_Table_by_Status("Prepared")
 	Delivered=Table.get_Table_by_Status("Delivered")
 	Service=Robot.find_robot_by_role("Service")
+	Guide=Robot.find_robot_by_role("Guide")
 	Melangeur=Robot.find_robot_by_role("Melangeur")
 	Manipulateur=Robot.find_robot_by_role("Manipulateur")
 	Free_Service=Robot.find_robot_by_role_and_status("Service","Idle")
+	Free_Guide=Robot.find_robot_by_role_and_status("Guide","Idle")
 	Free_Melangeur=Robot.find_robot_by_role_and_status("Melangeur","Idle")
 	Free_Manipulateur=Robot.find_robot_by_role_and_status("Manipulateur","Idle")
 
 	#Affichage des données 
-	print("=============================================")
-	print("COMMANDE(S):")
+	print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+	print("================ COMMANDE(S) ================")
 	print("En attente:"+ str(len(Pending)))
 	print("Commandée(s):"+ str(len(Ordered)))
 	print("Preparée(s):"+ str(len(Prepared)))
 	print("Terminée(s):"+ str(len(Delivered)))
-	print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-	print("ROBOT(S):")
+	#print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+	print("================= ROBOT(S) ==================")
 	print("Service(s):"+ str(len(Service)))
+	print("Guide(s):"+str(len(Guide)))
 	print("Melangeur(s):"+ str(len(Melangeur)))
 	print("Manipulateur(s):"+ str(len(Manipulateur)))
-	print("---------------------------------------------")
-	print("ROBOT(S) LIBRE(S):")
+	#print("---------------------------------------------")
+	print("============ ROBOT(S) LIBRE(S) ==============")
 	print("Service(s):"+ str(len(Free_Service)))
+	print("Guide(s):"+str(len(Free_Guide)))
 	print("Melangeur(s):"+ str(len(Free_Melangeur)))
 	print("Manipulateur(s):"+ str(len(Free_Manipulateur)))
 	
@@ -654,6 +662,8 @@ subscribe(my_ip, port, "Preparateur/#",2)
 subscribe(my_ip, port, "Robot/Ping",2)
 subscribe(my_ip, port, "Accueil/#",2)
 #subscribe(my_ip, port, "RobotCharles",2)
+
+
 
 ############
 ### Main ###
