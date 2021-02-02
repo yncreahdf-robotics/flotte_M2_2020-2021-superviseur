@@ -171,6 +171,7 @@ def get_commande_data(CommandID):
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
+
 ############################################
 ##	Fonctions de mise à jour de la table  ##
 ############################################

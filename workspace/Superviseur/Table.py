@@ -56,7 +56,7 @@ def insert_Table(CommandNbr, PositionID, Place, Etat, Prix):
 			user='root',
 			password='root'
 		)
-		sql="INSERT IGNORE INTO Table_tb (CommandNbr, PositionID, Place, Etat, Prix) VALUES(%s,%s,%s,%s,%s)"
+		sql="INSERT INTO Table_tb (CommandNbr, PositionID, Place, Etat, Prix) VALUES(%s,%s,%s,%s,%s)"
 		val=(CommandNbr, PositionID, Place, Etat, Prix)
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
@@ -66,7 +66,10 @@ def insert_Table(CommandNbr, PositionID, Place, Etat, Prix):
 		flotte_db.close()
 		print("BDD: 	Table ajoutée")
 	except mysql.connector.Error as err:
-		print("Something went wrong: {}".format(err))
+		if (format(err).split()[0]=="1062"):
+			pass
+		else:
+			print("Something went wrong: {}".format(err))
 
 ####################################
 ##  Fonctions d'accès à la table  ##

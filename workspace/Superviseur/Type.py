@@ -137,6 +137,27 @@ def Type_exists(TypeName):
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
+		#	GET A CAPACITY OF WEIGHT OF A TYPE BY ITS NAME
+def get_WeightCapacity(TypeName):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='172.19.0.3',
+			user='root',
+			password='root'
+		)
+		sql = "SELECT WeightCapacity FROM Type_tb WHERE TypeName=\"" + TypeName + "\""
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
+		mycursor.execute(sql)
+		myresult = mycursor.fetchall()
+		mycursor.close()
+		flotte_db.close()
+		if len(myresult)!=0:
+			return True
+		return False	
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
+
 ################################
 ##  Fonctions de suppression  ##
 ################################
