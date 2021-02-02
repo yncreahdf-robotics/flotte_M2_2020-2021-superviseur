@@ -1,0 +1,220 @@
+/*------------- En-tête de page -------------*/
+
+header
+{
+	border-bottom: 2px solid #97b6d1;
+	padding-left: 15px;
+	display: flex;
+	justify-content: center;
+}
+
+/*-------------------------------------------*/
+
+/*------------ Corps de la page -------------*/
+
+body
+{
+	background: url('images/fond.png') fixed;
+
+	font-family: 'Trebuchet MS', Arial, sans-serif;
+}
+
+#bloc_page
+{
+	width: auto;
+	background-color: rgba(13, 63, 106, 0.7);
+	/*background: url('images/flocon.gif');*/
+}
+
+h1, h2, h3, h4, p, label
+{
+	color: #FFFFFF;
+	text-align: center;
+}
+
+a
+{
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+a:hover
+{
+	color: #000080;
+	text-decoration: underline;
+}
+
+img
+{
+	max-width: 100%;
+	height: auto;
+}
+
+section
+{
+	text-align: center;
+}
+
+nav
+{
+	margin: auto;
+	display: flex;
+	justify-content: center;
+}
+
+#map_robot
+{
+	box-shadow: 6px 6px 6px black;
+}
+
+.Commande
+{
+	text-align: left;
+	color: #FFFFFF;
+}
+
+#Liste_Article
+{
+	display: flex;
+	justify-content: space-between;
+}
+
+#Suivi_Salle
+{
+	display: flex;
+
+	flex-wrap: wrap;
+	justify-content: space-around;
+}
+
+/*-------------------------------------------*/
+
+/*----------------- Tableau -----------------*/
+
+table
+{
+	display: block;
+    border-collapse: collapse;
+    table-layout: fixed;
+    overflow-x: auto;
+}
+td
+{
+	padding-left: 30px;
+	padding-right: 30px;
+	padding-bottom: 15px;
+	padding-top: 15px;
+    border: 1px solid white;
+    color: #FFFFFF;
+    text-align: center;
+    background-color: rgba(140, 148, 163, 0.6); 
+}
+
+th
+{
+	padding-left: 30px;
+	padding-right: 30px;
+	padding-bottom: 15px;
+	padding-top: 15px;
+	border: 1px solid white;
+    color: #FFFFFF;
+    text-align: center;
+	font-weight: bold;
+	background-color: rgba(72, 79, 92, 1); 
+}
+
+#Tableau
+{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+/*-------------------------------------------*/
+
+/*-------------- Piede de page --------------*/
+
+footer
+{
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+footer p
+{
+	font-size: 0.8em;
+}
+
+footer a
+{
+	font-size: 1.2em;
+}
+
+#Credits
+{
+	width: 33%;
+	text-align: center;
+}
+
+#logo_junia
+{
+	width: 33%;
+	align-self: flex-end;
+}
+
+#Retour
+{
+	width: 33%;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+}
+
+
+/*-------------------------------------------*/
+
+/*----------------- Boutons -----------------*/
+
+.bouton {
+	display: flex;
+  	color: white;
+  	background-color: #000080;
+  	text-decoration: none;
+  	font-weight: bold;
+  	flex-direction: column;
+  	justify-content: center;
+  	padding: 10px;
+  	width: 200px;
+  	margin-left: 1%;
+  	margin-right: 1%;
+  	margin-top: 50px;
+  	margin-bottom: 50px;
+}
+.bouton:hover {
+  	background-color: #6495ED;
+}
+
+/*-------------------------------------------*/
+
+/*---------- Affichage petit écran ----------*/
+
+@media screen and (max-width: 1024px) and (orientation: portrait)
+{
+    nav
+    {
+    	margin: auto;
+    	display: flex;
+    	flex-direction: column;
+    	justify-content: center;
+    	align-items: center;
+    }
+
+    .bouton
+    {
+    	margin: 1%;
+    	padding: 10px;
+    	width: 200px;
+    }
+}
