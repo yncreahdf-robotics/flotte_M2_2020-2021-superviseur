@@ -147,16 +147,16 @@ def get_Bouteille_by_Name(BouteilleName):
 ############################################
 ##	Fonctions de mise à jour de la table  ##
 ############################################
-'''
-#	UPDATE ALL BouteilleS IN A COMMAND TO A GIVEN STATUS
-def update_Emplacement(BouteilleID, Emplacement, VolumeDoseur):
+
+#UPDATE ALL BouteilleS IN A COMMAND TO A GIVEN STATUS
+def update_ID(BouteilleName, newID):
 	try:
 		flotte_db=mysql.connector.connect(
 			host='172.19.0.3',
 			user='root',
 			password='root'
 		)
-		sql = "UPDATE Bouteille_tb SET Emplacement = \"" + Emplacement + "\" AND VolumeDoseur = \"" + VolumeDoseur + "\" WHERE CommandNbr = \"" + str(CommandNbr) + "\""
+		sql = "UPDATE Bouteille_tb SET BouteilleID = \"" + str(newID) + "\" WHERE BouteilleName = \"" + BouteilleName + "\""
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")	
 		mycursor.execute(sql)
@@ -165,7 +165,7 @@ def update_Emplacement(BouteilleID, Emplacement, VolumeDoseur):
 		flotte_db.close()
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
-'''
+
 ########################################################
 ##  Fonctions de suppression d'un Bouteille de la base  ##
 ########################################################

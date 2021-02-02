@@ -24,7 +24,7 @@ def create_Robot_tb():
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
 		#status can be : Idle, Occupied, Pending, Maintenance
-		mycursor.execute("CREATE TABLE IF NOT EXISTS Robot_tb (RobotIP VARCHAR(30) NOT NULL PRIMARY KEY, RobotType VARCHAR(30), Position INT, Etat VARCHAR(30), ActiveCommandNbr INT, LastCheck DATETIME)" ) 
+		mycursor.execute("CREATE TABLE IF NOT EXISTS Robot_tb (RobotIP VARCHAR(30) NOT NULL PRIMARY KEY, RobotType VARCHAR(30), Position INT, Etat VARCHAR(30), ActiveCommandNbr INT, LastCheck DATETIME, BatteryLevel INT, BatteryStatus VARCHAR(30))" ) 
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:
@@ -60,8 +60,8 @@ def insert_Robot(RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck
 			password='root'
 		)
 		#need to verify that the RobotType is an existing Type in the  Type database
-		sql="INSERT INTO Robot_tb (RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck) VALUES(%s,%s,%s,%s,%s,%s)"
-		val=(RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck)
+		sql="INSERT INTO Robot_tb (RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck, BatteryLevel, BatteryStatus) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
+		val=(RobotIP, RobotType, Position, Etat, ActiveCommandNbr, LastCheck, -1, "Unknown")
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql,val)
@@ -288,6 +288,22 @@ def update_command(RobotIP, newCommandNbr):
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
+def update_battery(RobotIP, BatteryLevel, BatteryStatus):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='172.19.0.3',
+			user='root',
+			password='root'
+		)
+		sql = "UPDATE Robot_tb SET BatteryLevel= \"" + str(BatteryLevel) + "\" , BatteryStatus= \""+ BatteryStatus + "\" WHERE RobotIP = \"" + RobotIP + "\""
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
+		mycursor.execute(sql)
+		flotte_db.commit()
+		mycursor.close()
+		flotte_db.close()
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
 #########################################################
 ##	Fonctions de suppression d'elements dans la table  ##
 #########################################################

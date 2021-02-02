@@ -117,6 +117,27 @@ def get_Article_by_ID(ArticleID):
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
+		#	GET AN ARTICLE BY ITS WEIGHT
+def get_Article_by_Weight(ArticleID):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='172.19.0.3',
+			user='root',
+			password='root'
+		)	
+		sql = "SELECT ArticleWeight FROM Article_tb WHERE ArticleID= \"" + ArticleID + "\""
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
+		mycursor.execute(sql)
+		myresult = mycursor.fetchall()
+		for x in myresult:
+			print(x)
+		mycursor.close()
+		flotte_db.close()
+
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
+
 
 ########################################################
 ##  Fonctions de suppression d'un article de la base  ##
