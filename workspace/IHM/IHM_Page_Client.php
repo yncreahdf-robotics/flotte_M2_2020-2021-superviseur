@@ -1,6 +1,6 @@
 <?php 
 	session_start();	//On démarre une session pour utiliser un panier associé au client
-	include_once("fonctions-panier.php");
+	//include_once("fonctions-panier.php");
 
 	$_SESSION['panier'] = array();
 	$_SESSION['panier']['table'] = NULL;
@@ -20,28 +20,43 @@
 	<body>
 		<?php
 			
+			/*Connexion à la base de données avec le fichier connexion.php*/
 			include("connexion.php");
 			
-			$requete_commande = $bdd->query('SELECT * FROM Commande_tb');	//Lecture de la table "commande_tb" depuis la base de données
-			$requete_article = $bdd->query('SELECT ArticleID, ArticleName, ArticlePrice FROM Article_tb');	//Lecture du nom et du prix des articles depuis la bdd 
+			/*Création de la requète qui va récupérer les informations des tables dans Table_tb*/
+			$requete_commande = $bdd->query('SELECT * FROM Commande_tb');
+
+			/*Création de la requète qui va récupérer les informations des articles dans Article_tb*/
+			$requete_article = $bdd->query('
+				SELECT ArticleID, ArticleName, ArticlePrice 
+				FROM Article_tb
+			');	
 		?>
+
 		<div id="bloc_page">
 			
+			<!-- Affichage de l'entete de la page avec le fichier entete.php -->
 			<?php include("entete.php"); ?>
 		
 			<section>
 				<h2>Menu Client</h2>
 
 				<form action="" method="post">
+					<!-- Formulaire qui permet au client d'indiquer la table à laquelle il se trouve et de saisir les articles qu'il veut commander -->
 					<h3>Merci d'indiquer le numéro de la table où vous êtes assis</h3>
-					<input type="radio" name="Choix_table" value="table1" /><label class="label-radio">Table 1</label><br/>
-					<input type="radio" name="Choix_table" value="table2" /><label class="label-radio">Table 2</label><br/>
-					<input type="radio" name="Choix_table" value="table3" /><label class="label-radio">Table 3</label><br/>
+					<input type="radio" name="Choix_table" value="table1" /><label class="label-radio">Table 1</label>
+					<br />
+					<input type="radio" name="Choix_table" value="table2" /><label class="label-radio">Table 2</label>
+					<br />
+					<input type="radio" name="Choix_table" value="table3" /><label class="label-radio">Table 3</label>
+					<br />
+					<br />
 		        	
-					<h2><br /> Liste des articles :</h2>
-					<div id="Liste_Article">
-						<ul>
+					<h2>Liste des articles :</h2>
+					
+					<ul>
 						<?php
+						/*On récupère les informations depuis requete_article et on les affiches dans une liste. Chaque article va créer une entrée dans la liste. Cette liste permet au client d'indiquer combien de quantité de chaque article il veut commander*/
 							while($donnees = $requete_article->fetch()){
 						?>
 							<li>
@@ -49,40 +64,42 @@
 							</li>
 							<br />
 						<?php
-							}		//Fin du while
+							}
 						?>
-						</ul>
-
-					</div>
+					</ul>
 				</form>
 				<p>
 					 Prix total : €
 				</p>
+
+				<!-- Création de boutons permettant de pré-valider la commande ou d'appeler un serveur -->
 				<nav>
 					<div class="bouton" id="commande">
-						<h3><a href="IHM_Commande_Client.html">Commander</a></h3>
+						<p>Commander</p>
 					</div>
 					<div class="bouton" id="appel_serveur">
-						<h3>Appeler un serveur</h3>
+						<p>Appeler un serveur</p>
 					</div>
 				</nav>
 			</section>
 
+			<!-- Affichage du pied de page avec le fichier pied_de_pahe.php-->
 			<?php include("pied_de_page.php"); ?>
 
+		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
 			//Bouton pour pré-valider la commande
 			const elt_commande = document.getElementById('commande');
 			elt_commande.addEventListener('click', function commande(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Commande_Client.php";
 			})
 
 			//Appel d'un serveur
 			const elt_serveur = document.getElementById('appel_serveur');
 			elt_serveur.addEventListener('click', function appel_serveur(event) {
-				event.preventDefault()
+				//event.preventDefault()
 				if(confirm("Etes-vous sur de vouloir appeler un serveur ?")){
 					alert("Un serveur a été appelé.")
 				}
@@ -94,7 +111,7 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function client(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "index.php";
 			})
 		</script>

@@ -9,27 +9,33 @@
 	<body>
 		<div id="bloc_page">
 			<?php
-				
+				/*Connexion à la base de données avec le fichier connexion.php*/
 				include("connexion.php");
+
 
 				$requete = $bdd->query('SELECT r.RobotIP, r.RobotType, r.Position, r.Etat, t.Role
 					FROM Robot_tb r	/*Lecture table Robot depuis la bdd*/
 					INNER JOIN Type_tb t
-					ON r.RobotType = t.TypeName');
+					ON r.RobotType = t.TypeName
+				');
 				$position = $bdd->query('SELECT PoseName FROM Pose_tb');
 			?>
 			
+			<!-- Affichage de l'entete de la page avecle fichier entete.php -->
 			<?php include("entete.php"); ?>
 		
 			<section>
 				<h2>Choisir le robot à deplacer parmi les robots disponible</h2>
+				<!-- Formulaire qui permet de choisir le robot à déplacer et la position d'arrivée -->
 				<form method="post" action="deplacer_robot.php">
    					<p>
    						<?php
+   						/*On affiche les robots mobiles qui sont libres*/
    							//Robot libre -> Etat = Idle
    							while($donnees = $requete->fetch()){
    								if($donnees['Role'] == 'Service'){
-   									echo "<input type=\"radio\" name=\"Robot\" value=\"".$donnees['RobotIP']."\" id=\"".$donnees['RobotIP']."\"/><label for=\"".$donnees['RobotIP']."\">IP : ".$donnees['RobotIP']." - Type : ".$donnees['RobotType']."</label>" ;
+   									echo "<input type=\"radio\" name=\"Robot\" value=\"".$donnees['RobotIP']."\" id=\"".$donnees['RobotIP']."\"/>
+   									<label for=\"".$donnees['RobotIP']."\">IP : ".$donnees['RobotIP']." - Type : ".$donnees['RobotType']."</label>";
    						?>
        					<br />
        					<br />
@@ -42,30 +48,36 @@
 					<br />
 
 					<h2>Choisir la position d'arrivée du robot</h2>
-   					<p>
+   					
    						<?php
-   							//Robot libre -> Etat = Idle
+   						/*On affiche les différentes positions enregistrées dans la base de données*/
    							while($donnees = $position->fetch()){		
-   								echo "<input type=\"radio\" name=\"Position\" value=\"".$donnees['PoseName']."\" id=\"".$donnees['PoseName']."\"/><label for=\"".$donnees['PoseName']."\">".$donnees['PoseName']."</label>";
+   								echo "<input type=\"radio\" name=\"Position\" value=\"".$donnees['PoseName']."\" id=\"".$donnees['PoseName']."\"/>
+   								<label for=\"".$donnees['PoseName']."\">".$donnees['PoseName']."</label>";
    						?>
        					<br />
        					<br />
        					<?php
        						}
        					?>
-   					</p>
+   					
+   					<br />
+   					<input type="submit" name="Deplacer" value="Deplacer" id="Deplacer" />
+   					<br />
 				</form>
-				<p><br /><input type="submit" name="Deplacer" value="Deplacer" id="Deplacer" /><br /></p>
 			</section>
 
+			<!-- Affichage du pied de page avec le fichier pied_de_page.php -->
 			<?php include("pied_de_page.php"); ?>
 		</div>
+
+		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Page_Proprietaire.php";
 			})
 		</script>

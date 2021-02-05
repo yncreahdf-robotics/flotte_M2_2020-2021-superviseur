@@ -10,17 +10,22 @@
 		<div id="bloc_page">
 			<?php
 				
+				/*Connexion à la base de données avec le fichier connexion.php*/
 				include("connexion.php");
 
-				$requete = $bdd->query('SELECT * FROM Pose_tb');	//Lecture table Pose depuis la bdd
+
+				/*Création de la requète qui va récupérer les positions dans Pose_tb*/
+				$requete = $bdd->query('SELECT * FROM Pose_tb');	
 			?>
 			
+			<!-- Affichage de l'entete de la page avec le fichier entete.php -->
 			<?php include("entete.php"); ?>
 		
 			<section>
 				<h2>Liste des Positions</h2>
 				<div id="Listes">
 					<div id="Tableau">
+						<!-- Création du tableau des positions -->
 						<table>
 							<thead>
 								<tr>
@@ -44,6 +49,7 @@
 
 							<tbody>
 								<?php
+								/*On récupère les informations depuis requete et on les affiches dans un tableau de taille variable. Chaque recette va créer une nouvelle ligne du tableau*/
 									while($donnees = $requete->fetch()){
 								?>
 								<tr>
@@ -59,50 +65,55 @@
 							</tbody>
 						</table>
 					</div>
+
+					<!-- Créations de différents boutons permettant d'accéder aux outils de gestions des bouteilles ou des boissons -->
 					<nav>
 						<div class="bouton" id="ajouter">
-							<a href="IHM_Ajouter_Position.php">Ajouter une position</a>
+							<p>Ajouter une position</p>
 						</div>
 						<div class="bouton" id="modifier">
-							<a href="IHM_Modifier_Position.php">Modifier une position</a>
+							<p>Modifier une position</p>
 						</div>
 						<div class="bouton" id="supprimer">
-							<a href="IHM_Supprimer_Position.php">Supprimer une position</a>
+							<p>Supprimer une position</p>
 						</div>
 					</nav>
 				</div>
 			</section>
 
+			<!-- Affichage du pied de page avecle fichier pied_de_page.php -->
 			<?php include("pied_de_page.php"); ?>
 
 		</div>
+
+		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Page_Proprietaire.php";
 			})
 
-			//Bouton pour ajouter un article
+			//Bouton pour ajouter une position
 			const elt_ajouter = document.getElementById('ajouter');
 			elt_ajouter.addEventListener('click', function ajouter(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Ajouter_Position.php";
 			})
 
-			//Bouton pour modifier un article
+			//Bouton pour modifier une position
 			const elt_modifier = document.getElementById('modifier');
 			elt_modifier.addEventListener('click', function modifer(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Modifier_Position.php";
 			})
 
-			//Bouton pour supprimer un article
+			//Bouton pour supprimer une position
 			const elt_supprimer = document.getElementById('supprimer');
 			elt_supprimer.addEventListener('click', function supprimer(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Supprimer_Position.php";
 			})
 		</script>

@@ -1,3 +1,6 @@
+
+<!-- Fichier qui est appelé à chaque fin de page pour afficher le pied de page, le contenu de ce fichier remplace l'endroit où il est appelé lorsqu'on navigue sur le site-->
+
 <footer>
 	<div id="Credits">
 		<p>Projet réalisé par le groupe Robotique Mobile M2 2020-2021</p>					
@@ -7,7 +10,7 @@
 	</div>
 	<div id="Retour">
 		<div class="bouton">
-			<a href="">Retour</a>
+			<h3>Retour</h3>
 		</div>
 	</div>
 </footer>

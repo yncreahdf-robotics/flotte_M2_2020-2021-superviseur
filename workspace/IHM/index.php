@@ -9,24 +9,29 @@
 	<body>
 		<div id="bloc_page">
 
+			<!-- Affichage de l'entete de la page avec le fichier entete.php -->
 			<?php include("entete.php"); ?>
 
 			<section>
 				<h2>Accueil</h2>
+
+				<!-- Création de boutons permettant d'accèder à la partie propriétaire ou à la partie client du site -->
 				<nav>
 					<div class="bouton" id="proprietaire">
-						<h3><a href="IHM_Mot_De_Passe.php">Menu Proprietaire</a></h3>
+						<p>Menu Proprietaire</p>
 					</div>
 					<div class="bouton" id="client">
-						<h3><a href="IHM_Page_Client.php">Menu Client</a></h3>
+						<p>Menu Client</p>
 					</div>
 				</nav>
 			</section>
 
+			<!-- Affichage du pied de page avec le fichier pied_de_page.php -->
 			<?php include("pied_de_page.php"); ?>
 
 		</div>
 
+		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
 			//Bouton pour accèder à la page de protection de la partie propriétaire

@@ -87,6 +87,12 @@ nav
 	justify-content: space-around;
 }
 
+#tourniquet
+{
+	display: flex;
+	justify-content: center;
+}
+
 /*-------------------------------------------*/
 
 /*----------------- Tableau -----------------*/
@@ -123,7 +129,7 @@ th
 	background-color: rgba(72, 79, 92, 1); 
 }
 
-#Tableau
+.Tableau
 {
 	display: flex;
 	flex-direction: column;
@@ -191,9 +197,11 @@ footer a
   	margin-right: 1%;
   	margin-top: 50px;
   	margin-bottom: 50px;
+  	cursor: pointer;
 }
 .bouton:hover {
   	background-color: #6495ED;
+  	cursor: pointer;
 }
 
 /*-------------------------------------------*/

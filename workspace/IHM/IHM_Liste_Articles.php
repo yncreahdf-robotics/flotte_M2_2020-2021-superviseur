@@ -4,6 +4,8 @@
 		<meta charset="utf-8" />
 		<link rel="stylesheet" href="IHM.css" />
 		<title>Liste des articles</title>
+
+		<!-- Fonctions qui permettent d'afficher la liste des bouteilles OU des boissons -->
 		<script type="text/javascript">
 			function aff_bouteille(action){
     			document.getElementById('block_bouteille').style.display = (action == "oui")? "inline" : "none";
@@ -18,8 +20,10 @@
 		<div id="bloc_page">
 			<?php
 				
+				/*Connexion à la base de données avec le fichier connexion.php*/
 				include("connexion.php");
 
+				/*Création de la requète qui va récupérer les recettes de la table Recette_tb et qui va associer ces recettes aux articles de Article_tb avec le premier "INNER JOIN". Cette requète permet aussi d'associer les recettes avec les bouteilles qui les composent avec les six autres "INNER JOIN"*/
 				$requete_recette = $bdd->query('
 					SELECT r.RecetteName AS RecetteName, 
 						   a.ArticlePrice AS ArticlePrice, a.ArticleWeight AS ArticleWeight, 
@@ -37,18 +41,24 @@
 					INNER JOIN Bouteille_tb b4 ON b4.BouteilleID = r.BouteilleID4
 					INNER JOIN Bouteille_tb b5 ON b5.BouteilleID = r.BouteilleID5
 					INNER JOIN Bouteille_tb b6 ON b6.BouteilleID = r.BouteilleID6
-					');
-				$requete_bouteille = $bdd->query('SELECT * FROM Bouteille_tb'); //Lecture table Bouteille depuis la bdd
+				');
+
+				/*Création de la requète qui va récupérer les informations des bouteilles dans Bouteille_tb, on ne prend pas la bouteille ayant un ID = 0 car ce champ est là pour pouvoir indiquer qu'il n'y a pas de bouteille*/
+				$requete_bouteille = $bdd->query('
+					SELECT * FROM Bouteille_tb 
+					WHERE BouteilleID <> 0	/* <> équivaut à != */
+				');
 			?>
 			
+			<!-- Affichage de l'entete de la page avec le fichier entete.php -->
 			<?php include("entete.php"); ?>
 		
 			<section>
-				
 				<div id="Listes">
 					<div id="Tableau">
 						<div id="block_boisson">
 							<h2>Liste des Articles</h2>
+							<!-- Création du tableau des boissons -->
 							<table>
 								<thead>
 									<tr>
@@ -70,6 +80,7 @@
 
 								<tbody>
 									<?php
+									/*On récupère les informations depuis requete_recette et on les affiches dans un tableau de taille variable. Chaque recette va créer une nouvelle ligne du tableau*/
 										while($donnees = $requete_recette->fetch()){
 									?>
 									<tr>
@@ -77,6 +88,7 @@
 										<td><?php echo $donnees['ArticlePrice'] ;?></td>
 										<td><?php echo $donnees['ArticleWeight'] ;?></td>
 										<td><?php 
+										/*On vérifie pour chaque bouteille de la recette si elle n'est pas égale à 'Pas de bouteille' puis on l'affiche si la condition est vérifiée, pour ne pas surcharger le tableau*/
 											if($donnees['1stBouteilleName'] != 'Pas de bouteille'){
 												echo $donnees['1stBouteilleName'] . " (" . $donnees['1stVolumeDoseur'] . " mL * " . $donnees['Quantity1'] . ")" ;
 											}
@@ -110,6 +122,7 @@
 
 						<div id="block_bouteille" hidden="hidden">
 							<h2>Liste des Bouteilles</h2>
+							<!-- Création du tableau des bouteilles -->
 							<table>
 								<thead>
 									<tr>
@@ -129,6 +142,7 @@
 
 								<tbody>
 									<?php
+									/*On récupère les informations depuis requete_bouteille et on les affiche dans un tableau à taille variable. Chaque bouteille va créer une nouvelle ligne dans le tableau*/
 										while($bouteille = $requete_bouteille->fetch()){
 									?>
 									<tr>
@@ -144,54 +158,61 @@
 						</div>
 					</div>
 					<br />
+
+					<!-- Bouton radio permettant de choisir entre l'affichage des articles OU des bouteilles -->
 					<div id="affichage">
 						<input type="radio" name="choix_affichage" id="article" checked="checked" onchange="aff_boisson('oui'); aff_bouteille('non')" /><label for="article">Afficher les articles</label>
 						<input type="radio" name="choix_affichage" id="bouteille" onchange="aff_boisson('non'); aff_bouteille('oui')" /><label for="bouteille">Afficher les bouteilles</label>
 					</div>
+
+					<!-- Créations de différents boutons permettant d'accéder aux outils de gestions des bouteilles ou des boissons -->
 					<nav>
 						<div class="bouton" id="ajouter">
-							<a href="IHM_Ajouter_Article.php">Ajouter un article</a>
+							<p>Ajouter un article</p>
 						</div>
 						<div class="bouton" id="modifier">
-							<a href="IHM_Modifier_Article.php">Modifier un article</a>
+							<p>Modifier un article</p>
 						</div>
 						<div class="bouton" id="supprimer">
-							<a href="IHM_Supprimer_Article.php">Supprimer un article</a>
+							<p>Supprimer un article</p>
 						</div>
 					</nav>
 				</div>
 			</section>
 
+			<!-- Affiche du pied de page avec le fichier pied_de_page.php-->
 			<?php include("pied_de_page.php"); ?>
 
 		</div>
+
+		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Page_Proprietaire.php";
 			})
 
 			//Bouton pour ajouter un article
 			const elt_ajouter = document.getElementById('ajouter');
 			elt_ajouter.addEventListener('click', function ajouter(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Ajouter_Article.php";
 			})
 
 			//Bouton pour modifier un article
 			const elt_modifier = document.getElementById('modifier');
 			elt_modifier.addEventListener('click', function modifer(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Modifier_Article.php";
 			})
 
 			//Bouton pour supprimer un article
 			const elt_supprimer = document.getElementById('supprimer');
 			elt_supprimer.addEventListener('click', function supprimer(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Supprimer_Article.php";
 			})
 		</script>

@@ -1,7 +1,7 @@
 <?php
 
 
-//Connexion BDD profil IHM depuis pc perso
+//Connexion BDD profil ihm depuis pc perso
 	try{
 		$bdd = new PDO('mysql:host=192.168.1.5;dbname=flotte_db', 'ihm', 'password', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 	}
