@@ -26,7 +26,7 @@
 			<section>
 				<h2>Liste des robots</h2>
 				<div id="Listes">
-					<div id="Tableau">
+					<div class="Tableau">
 						<!-- Création du tableau des robots -->
 						<table>
 							<thead>
@@ -68,7 +68,7 @@
 					<!-- Création d'un bouton permettant d'accéder à un outil d'ajout de type de robot -->
 					<nav>
 						<div class="bouton" id="ajout_robot">
-							<p>Ajouter un type de robot<p>
+							<p>Ajouter un type de robot</p>
 						</div>
 					</nav>
 				</div>

@@ -61,18 +61,26 @@
 							<tbody>
 								<?php
 								/*On récupère les informations depuis requete_bouteille et on les affiches dans un tableau de 6 lignes. On regarde si une bouteille est à chaque emplacement, et on l'affiche si c'est le cas, sinon on affiche une ligne sans bouteille*/
+								/*On vérifie d'abord si la requète a récuperé au moins une ligne de la table*/
 									if($requete_bouteille->rowCount() > 0){
+										/*Si il y a au moins une bouteille, on récupère les informations de la requète qu'on va venir mettre dans la variable bouteille. On définit aussi le nombre de bouteilles à placer sur le tourniquet*/
 										$bouteille = $requete_bouteille->fetch();
-										$lignes_restantes = 6;
-										for($nombre_de_lignes = 1; $nombre_de_lignes <= $requete_bouteille->rowCount(); $nombre_de_lignes++){
+										$bouteilles_restantes = $requete_bouteille->rowCount();
+										for($nombre_de_lignes = 1; $nombre_de_lignes <= 6; $nombre_de_lignes++){
+											/*On regarde si l'emplacment de la dernière bouteille récuperée correspond à la ligne actuelle du tableau*/
 											if($bouteille['Emplacement'] == $nombre_de_lignes){
+												/*Si c'est le cas on affiche le nom de la bouteille*/
 								?>
 												<tr>
 													<td><?php echo $nombre_de_lignes ;?></td>
 													<td><?php echo $bouteille['BouteilleName'] ;?></td>
 												</tr>
 								<?php
-												$bouteille= $requete_bouteille->fetch();
+												/*On indique qu'il y a une bouteille de moins à placer et on vérifie si toutes les bouteilles on été placées. Si il reste des bouteilles on récupère les informations de la bouteille suivante*/ 
+												$bouteilles_restantes--;
+												if($bouteilles_restantes > 0){
+													$bouteille = $requete_bouteille->fetch();
+												}
 											}
 											else{
 								?>
@@ -81,19 +89,10 @@
 													<td>Pas de bouteille</td>
 												</tr>
 								<?php
-											$lignes_restantes--;
 											}
-
-										}
-										for($nombre_de_lignes_restantes = $nombre_de_lignes; $nombre_de_lignes_restantes <= $lignes_restantes; $nombre_de_lignes_restantes++){
-								?>
-												<tr>
-													<td><?php echo $nombre_de_lignes_restantes ;?></td>
-													<td>Pas de bouteille</td>
-												</tr>
-								<?php
 										}
 									}
+									/*Si il n'y a pas de bouteille sur le tourniquet (requète vide) alors on affiche ce tableau*/
 									else{
 								?>
 									<tr>

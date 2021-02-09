@@ -55,7 +55,7 @@
 		
 			<section>
 				<div id="Listes">
-					<div id="Tableau">
+					<div class="Tableau">
 						<div id="block_boisson">
 							<h2>Liste des Articles</h2>
 							<!-- Création du tableau des boissons -->

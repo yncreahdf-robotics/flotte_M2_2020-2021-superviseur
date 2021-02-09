@@ -254,7 +254,7 @@
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
 				//event.preventDefault()
-				document.location = "IHM_Liste_Articles.php";
+				document.location = "IHM_Page_Proprietaire.php";
 			})
 		</script>
 	</body>

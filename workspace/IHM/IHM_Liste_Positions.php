@@ -24,7 +24,7 @@
 			<section>
 				<h2>Liste des Positions</h2>
 				<div id="Listes">
-					<div id="Tableau">
+					<div class="Tableau">
 						<!-- Création du tableau des positions -->
 						<table>
 							<thead>

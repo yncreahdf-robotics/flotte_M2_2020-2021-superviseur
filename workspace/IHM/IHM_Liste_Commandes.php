@@ -25,7 +25,7 @@
 
 			<section>
 				<h2>Liste des commandes</h2>
-				<div id="Tableau">
+				<div class="Tableau">
 					<!-- Création du tableau des commandes -->
 					<table>
 						<thead>
