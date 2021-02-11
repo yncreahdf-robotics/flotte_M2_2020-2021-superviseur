@@ -41,9 +41,9 @@ import datetime
 ### Variables globales ###
 ##########################
 global tentative
-global service_turns
+#global service_turns
 tentative = 0
-service_turns = 0 
+#service_turns = 0 
 
 timer=None
 #	gets the supervisor's IP using the host file
@@ -290,12 +290,26 @@ def on_message(client, userdata, msg):
 
 		#recherche du robot de service sur lequel on charge la commande
 		robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr, "Service")[0][0]
+
+		##recherche du robot en fonction du poids
+		#poids_total = Article.total_weight_of_an_order(CommandNbr)
+		#print(poids_total)
+		##On selectionne les robots disponibles
+		#robots_candidats=robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr, "Service")
+		#robot=[]
+		#for i in range len(robots_candidats):
+		#if Robot.get_robot_weight_capacity(i[0])>=poids_total and Robot.get_robot_weight_capacity(i[0])>Robot.get_robot_weight_capacity(Robot[0][0]):
+		#	robot[0]=robots_candidats[i]
+
+
+
+
 		
 		#	Si l'article est le dernier de la commande on envoie le départ du robot
 		if len(remaining_articles)==0:
 			print("MESSAGE: Commande chargée")
-			global service_turns
-			service_turns=0
+			#global service_turns
+			#service_turns=0
 			
 			#on cherche la table de la commande
 			tableID=Table.get_Table_by_CommandNbr(CommandNbr)[0][0]
@@ -317,8 +331,8 @@ def on_message(client, userdata, msg):
 			#article_count+=1
 			print("MESSAGE: Chargement de l'article suivant")
 			#On dit au robot de service sur lequel on charge la commande de tourner 
-			if(service_turns%2==0):
-				publish(my_ip , port, "Service/Turn", str(robot), 2)
+			#if(service_turns%2==0):
+			publish(my_ip , port, "Service/Turn", str(robot), 2)
 			#On dit au préparateur de charger l'article suivant
 			publish(my_ip , port, "Preparateur/Charge", str(preparateur)+"/"+str(CommandNbr), 2)
 
@@ -361,6 +375,7 @@ def on_message(client, userdata, msg):
 		robot=msg.payload.decode("utf-8").split("/")[0]
 		#On trouve ensuite la nouvelle position du robot
 		position=msg.payload.decode("utf-8").split("/")[1]
+		print(position)
 		#On met à jour la position du robot
 		Robot.update_position(robot,position)
 		#Quand le robot arrive à la base de chargement des commandes
@@ -508,6 +523,9 @@ def command_loop():
 	Ordered=Table.get_Table_by_Status("Ordered")
 	Prepared=Table.get_Table_by_Status("Prepared")
 	Delivered=Table.get_Table_by_Status("Delivered")
+	NbrPending=Commande.get_commande_Nbr_status("Pending")
+	NbrOrdered=Commande.get_commande_Nbr_status("Ordered")
+	NbrPrepared=Commande.get_commande_Nbr_status("Prepared")
 	Service=Robot.find_robot_by_role("Service")
 	Guide=Robot.find_robot_by_role("Guide")
 	Melangeur=Robot.find_robot_by_role("Melangeur")
@@ -520,9 +538,9 @@ def command_loop():
 	#Affichage des données 
 	print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 	print("================ COMMANDE(S) ================")
-	print("En attente:"+ str(len(Pending)))
-	print("Commandée(s):"+ str(len(Ordered)))
-	print("Preparée(s):"+ str(len(Prepared)))
+	print("En attente:"+ str(len(Pending))+"		"+"Nbre d'article:"+str(len(NbrPending)))
+	print("Commandée(s):"+ str(len(Ordered))+"		"+"Nbre d'article:"+str(len(NbrOrdered)))
+	print("Preparée(s):"+ str(len(Prepared))+"		"+"Nbre d'article:"+str(len(NbrPrepared)))
 	print("Terminée(s):"+ str(len(Delivered)))
 	#print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 	print("================= ROBOT(S) ==================")
@@ -543,7 +561,7 @@ def command_loop():
 		
 		#La commande est en preparation
 		CommandNbr=Table.get_Table_data(Pending[0][0])[0][1]
-		Commande.update_status(CommandNbr, "Ordered")
+		Commande.update_status_when_status(CommandNbr,"Pending" ,"Ordered")
 		Table.update_Table_status(Pending[0][0],"Ordered")
 		
 		#Mise en occupé du préparateur
@@ -563,7 +581,7 @@ def command_loop():
 		Robot.update_command(Free_Service[0][0], Table.get_Table_data(Prepared[0][0])[0][1])
 		#On envoi un robot de service pour aller la chercher
 		publish(my_ip, port, "Service/Go/Bar", Free_Service[0][0] + "/" + str(Positions.get_Pose_by_name("bar")[0][0]), 2)
-	
+		print("MESSAGE: Robot go to bar")
 
 	time.sleep(10)
 '''
@@ -619,11 +637,11 @@ InitBDDSuperviseur.create_flotte_db()
 
 InitBDDSuperviseur.create_all_tables()
 
-Positions.insert_Pose("recharge", 0.42, 0.70, 0.98, 0.18)
+Positions.insert_Pose("recharge", 0.25, 0.1, 0.98, 0.21)
 Positions.insert_Pose("table1", 2.9226691810219827, 0.7380693324419132, 0.79, 0.6)
 Positions.insert_Pose("table2", 2.001872215066296, 1.1748824989062503, -0.83, 0.56)
 Positions.insert_Pose("table3", 3.508061809231884, 2.9028496618974104, -0.56, 0.83)
-Positions.insert_Pose("bar", 5.53,0.77,0.57,0.8)
+Positions.insert_Pose("bar", 5.66,1.2,0.56,0.82)
 #Positions.insert_Pose("tagne", -21.2689863214036, -1.0389461981502848, 0.62, 0.80)
 Positions.insert_Pose("accueil", 0.15,3.55,-0.25,1)
 

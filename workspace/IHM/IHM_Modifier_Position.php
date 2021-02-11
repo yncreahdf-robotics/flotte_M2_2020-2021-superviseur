@@ -10,18 +10,23 @@
 		<div id="bloc_page">
 			<?php
 				
+				/*Connexion à la base de données avec le fichier connexion.php*/
 				include("connexion.php");
 				
+				/*Création de la requète qui récupère les informations des positions dans Pose_tb*/
 				$requete = $bdd->query('SELECT * FROM Pose_tb');
 			?>
 			
+			<!-- Affichage de l'entete de la page avec le fichier entete.php -->
 			<?php include("entete.php"); ?>
 		
 			<section>
 				<h2>Sélectionner la position à modifier</h2>
+				<!-- Formulaire qui permet de modifier les informations d'une position -->
 				<form method="post" action="modif_position.php">
    					<p>
    						<?php
+   						/*On récupère les informations depuis requete et on les affiches dans une liste de boutons radio. Chaque recette va créer une option dans la liste. Cette liste permet de choisir la recette qui sera modifiée grâce à son ID*/
        						while($donnees = $requete->fetch()){
        							echo "<input type=\"radio\" name=\"selected_position\" value=\"".$donnees['PoseID']."\" id=\"".$donnees['PoseID']."\"/><label for=\"".$donnees['PoseID']."\">".$donnees['PoseName']."</label>" ;
        					?>
@@ -36,8 +41,9 @@
 				<h2>Saisir les nouvelles informations</h2>
 				
     				<p>
+    					<!-- Saisie des nouvelles informations de la position -->
         				<label for="nom_position">Nom de la position :</label>
-        				<input type="text" name="new_nom_position" id="nom_position" size="30" maxlength="10" />
+        				<input type="text" name="new_nom_position" id="nom_position" size="30" maxlength="30" />
         				<br />
         				<br />
         				<label for="position_X">Position en X :</label>
@@ -61,15 +67,18 @@
 				</form>
 			</section>
 
+			<!-- Affichage du pied de page avec le fichier pied_de_page.php -->
 			<?php include("pied_de_page.php"); ?>
 
 		</div>
+
+		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 		<script type="text/javascript">
 			//Bouton validant les modifications
 			const elt = document.getElementById('modifier');
 			elt.addEventListener('click', function modifier(event) {
-				event.preventDefault()
+				//event.preventDefault()
 				if(confirm("Appliquer les modifications ?")){
 					alert("La position a été modifiée.")
 					document.location = "IHM_Liste_Positions.php";
@@ -82,26 +91,9 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Liste_Positions.php";
 			})
-
-			//Fonction d'auto-remplissage des champs
-			/*<?php
-				while($donnees = $requete->fetch()){
-			?>
-				$(document).ready(function(){
-					$("#<?php echo $donnees['PoseName'] ;?>").click(function(){
-			    		$("#nom_position").attr("value","<?php echo $donnees['PoseName'] ;?>");
-			    		$("#position_X").attr("value","<?php echo $donnees['PoseX'] ;?>");
-			    		$("#position_Y").attr("value","<?php echo $donnees['PoseY'] ;?>");
-			    		$("#position_Z").attr("value","<?php echo $donnees['PoseZ'] ;?>");
-			    		$("#position_W").attr("value","<?php echo $donnees['PoseW'] ;?>");
-			  		});
-				});
-			<?php
-				}
-			?>*/
 		</script>
 	</body>
 </html>

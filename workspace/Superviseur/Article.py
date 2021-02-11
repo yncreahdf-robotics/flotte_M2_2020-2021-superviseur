@@ -138,6 +138,27 @@ def get_Article_by_Weight(ArticleID):
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
+		# GET THE TOTAL WEIGHT OF AN ORDER
+def total_weight_of_an_order(CommandNbr):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='172.19.0.3',
+			user='root',
+			password='root'
+		)
+		sql="SELECT SUM(ArticleWeight) AS total_weight FROM Article_tb INNER JOIN Commande_tb ON Article_tb.ArticleID=Commande_tb.ArticleID WHERE Commande_tb.CommandNbr = \"" + str(CommandNbr) + "\""
+
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")
+		mycursor.execute(sql)
+		myresult=mycursor.fetchall()
+		for x in myresult:
+			print(x)
+		mycursor.close()
+		flotte_db.close()
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))		
+
 
 ########################################################
 ##  Fonctions de suppression d'un article de la base  ##

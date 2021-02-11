@@ -171,6 +171,23 @@ def get_commande_data(CommandID):
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
+def get_commande_Nbr_status(status):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='172.19.0.3',
+			user='root',
+			password='root'
+		)
+		sql="SELECT * FROM Commande_tb WHERE Etat=\""+ status + "\""
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")	
+		mycursor.execute(sql)
+		myresult = mycursor.fetchall()
+		mycursor.close()
+		flotte_db.close()
+		return myresult
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
 
 ############################################
 ##	Fonctions de mise à jour de la table  ##
@@ -185,6 +202,23 @@ def update_status(CommandNbr, Status):
 			password='root'
 		)
 		sql = "UPDATE Commande_tb SET Etat = \"" + Status + "\" WHERE CommandNbr = \"" + str(CommandNbr) + "\""
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")	
+		mycursor.execute(sql)
+		mycursor.close()
+		flotte_db.commit()
+		flotte_db.close()
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
+
+def update_status_when_status(CommandNbr,ActualStatus, Status):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='172.19.0.3',
+			user='root',
+			password='root'
+		)
+		sql = "UPDATE Commande_tb SET Etat = \"" + Status + "\" WHERE CommandNbr = \"" + str(CommandNbr) + "\" AND Etat =  \"" + ActualStatus + "\""
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")	
 		mycursor.execute(sql)

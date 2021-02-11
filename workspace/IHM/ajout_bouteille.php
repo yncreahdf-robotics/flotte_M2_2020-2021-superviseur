@@ -1,16 +1,26 @@
 <?php
+
+	/*Récupération des données envoyées par le formulaire d'ajout de bouteille*/
 	$nom_bouteille = $_POST["nom_bouteille"];
 	$doseur = $_POST["doseur"];
 	$emplacement = 0;
 
+	/*Connexion à la base de données avec le fichier connexion.php*/
 	include("connexion.php");
 
-	$requete = $bdd->prepare('INSERT INTO Bouteille_tb(BouteilleName, VolumeDoseur, Emplacement) VALUES(:nom_bouteille, :doseur, :emplacement)');
+	/*Création de la requète qui va ajouter la bouteille dans la table Bouteille_tb, le premier champ prend la valeur de la première variable, le deuxième champ prend la valeur de la deuxième variable, etc...*/
+	$requete = $bdd->prepare('
+		INSERT INTO Bouteille_tb(BouteilleName, VolumeDoseur, Emplacement) 
+		VALUES(:nom_bouteille, :doseur, :emplacement)
+	');
+
+	/*On associe les variables de la requète avec les variables récupérées du formulaire*/
 	$requete->execute(array(
 		'nom_bouteille' => $nom_bouteille,
 		'doseur' => $doseur,
 		'emplacement' => $emplacement
 	));
 
+	/*On renvoit l'utilisateur sur la page IHM_Liste_Articles.php*/
 	header('Location: IHM_Liste_Articles.php');
 ?>

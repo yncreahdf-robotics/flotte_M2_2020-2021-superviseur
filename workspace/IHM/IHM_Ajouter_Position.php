@@ -9,10 +9,12 @@
 	<body>
 		<div id="bloc_page">
 			
+			<!-- Affichage de l'entete de la page avec le fichier entete.php -->
 			<?php include("entete.php"); ?>
-		
+			
 			<section>
 				<h2>Définir une nouvelle position</h2>
+				<!-- Formulaire qui permet de rentrer les informations d'une nouvelle position -->
 				<form method="post" action="ajout_position.php">
     				<p>
         				<label for="nom_position">Nom de la position :</label>
@@ -41,11 +43,15 @@
 				
 			</section>
 
+			<!-- Affichage du pied de page avec le fichier pied_de_page.php -->
 			<?php include("pied_de_page.php"); ?>
 
 		</div>
+
+		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
+			//Bouton de validation du formulaire
 			const elt = document.getElementById('valider');
 			elt.addEventListener('click', function valider(event) {
 				alert("Article ajouté.");
@@ -55,7 +61,7 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Liste_Positions.php";
 			})
 		</script>

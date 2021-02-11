@@ -8,11 +8,13 @@
 
 	<body>
 		<div id="bloc_page">
-			
+
+			<!-- Affichage de l'entete de la page avec le fichier entete.php -->
 			<?php include("entete.php"); ?>
 		
 			<section>
 				<h2>Saisir le nom du nouveau type de robot</h2>
+				<!-- Formulaire qui permet de rentrer les informations d'un nouveau type de robot -->
 				<form method="post" action="ajout_type_robot.php">
     				<p>
         				<label for="type_robot">Type de robot :</label>
@@ -35,14 +37,17 @@
    					<input type="submit" value="Valider" id="valider" />
    					<br />
 				</form>
-				
 			</section>
 
+			<!-- Affichage du pied de page avec le fichier pied_de_page.php -->
 			<?php include("pied_de_page.php"); ?>
 
 		</div>
+
+		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
+			//Bouton de validation du formulaire
 			const elt = document.getElementById('valider');
 			elt.addEventListener('click', function valider(event) {
 				alert("Type de robot ajouté.");
@@ -52,7 +57,7 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				event.preventDefault()
+				//event.preventDefault()
 				document.location = "IHM_Liste_Robots.php";
 			})
 		</script>

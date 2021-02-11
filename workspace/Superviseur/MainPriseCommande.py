@@ -46,11 +46,11 @@ port = 1883
 
 
 menu_accueil = ["Preparateur", "Service", "Commande", "Return Trip","Libérez Robots", "Choix Robot"]
-menu_preparateur = ["Preparateur/Prepare", "Preparateur/Charge", "Preparateur/Charged", "Fin de Maintenance", "Back"]
-menu_service = ["Service/Go/Accueil", "Service/Go/Table1", "Service/Turn", "Service/Go/Bar", "Service/Go/Recharge", "Back"]
+menu_preparateur = ["Preparateur/Prepare", "Preparateur/Prepared", "Preparateur/Charge", "Preparateur/Charged", "Fin de Maintenance", "Back"]
+menu_service = ["Service/Go/Accueil", "Service/Arrived/Bar", "Service/Go/Table1", "Service/Turn", "Service/Go/Bar", "Service/Go/Recharge", "Back"]
 menu_returntrip = ["ReturnTrip Table1", "ReturnTrip Table2", "ReturnTrip Table3", "ReturnTrip Recharge", "Back"]
 menu_choix_robot = ["Robotino", "Kobuki","Heron"]
-menu_commande = ["Nouvelle Commande", "Commande de plusieurs articles","Supprimer commande unique", "Supprimer commande multiple","Back"]
+menu_commande = ["Nouvelle Commande", "Commande de plusieurs articles","Supprimer commande 1", "Supprimer commande 2","Back"]
 menu_liberez_robots = ["Libérez Robotino","Libérez TurtleBot","Libérez Heron","Libérez Mélangeur","Libérez Manipulateur","Free Dobby","Back"]
 
 ############
@@ -182,26 +182,32 @@ def main(stdscr):
 
 
 			elif menu[current_row] == "Preparateur/Prepare":
-				ippreparateur="192.168.1.7"
-				#Commande.update_status(1, "Ordered")
-				Robot.update_status(ippreparateur+"/1","Occupied")
-				Robot.update_command(ippreparateur+"/1",1)
-				publish(ipsuperviseur, port, "Preparateur/Prepare",ippreparateur + "/1", 2)
+				ippreparateur="192.168.1.4"
+				CommandNbr=2 #input()
+				Tablenbr=Table.get_Table_by_CommandNbr(CommandNbr)
+				Commande.update_status_when_status(CommandNbr,"Ordered","Pending")
+				Table.update_Table_status(3,"Pending")
+				Robot.update_status(ippreparateur+"/1","Idle")
+				Robot.update_command(ippreparateur+"/1",0)
+				
+			elif menu[current_row] == "Preparateur/Prepared":
+				ippreparateur="192.168.1.128"
+				publish(ipsuperviseur, port, "Preparateur/Prepared",ipsuperviseur, 2)
 
 
 
 			elif menu[current_row] == "Preparateur/Charge":
-				ippreparateur="192.168.1.7"
+				ippreparateur="192.168.1.128"
 				Robot.update_status(ippreparateur+"/2","Occupied")
 				Robot.update_command(ippreparateur+"/2",1)
 				publish(ipsuperviseur, port, "Preparateur/Charge",ippreparateur + "/1", 2)
 
 			elif menu[current_row] == "Preparateur/Charged":
-				ippreparateur="192.168.1.7"
-				publish(ipsuperviseur, port, "Preparateur/Charged",ippreparateur, 2)
+				ippreparateur="192.168.1.4"
+				publish(ipsuperviseur, port, "Preparateur/Charged",ipsuperviseur, 2)
 
 			elif menu[current_row] == "Fin de Maintenance":
-				ippreparateur="192.168.1.7"
+				ippreparateur="192.168.1.4"
 				Robot.update_status(ippreparateur+"/1", "Occupied")
 				publish(ipsuperviseur,port, "Preparateur/Prepare", ippreparateur+ "/1", 2)
 
@@ -214,6 +220,8 @@ def main(stdscr):
 				menu = menu_service
 				current_row = 0
 
+			elif menu[current_row] == "Service/Arrived/Bar":		
+				publish(ipsuperviseur, port, "Service/Arrived/Bar", ip_choisie + "/" + str(Positions.get_Pose_by_name("bar")[0][0]), 2)
 
 			elif menu[current_row] == "Service/Go/Accueil":
 				destination=Positions.get_Pose_by_name("accueil")[0][0]
@@ -289,19 +297,19 @@ def main(stdscr):
 				Commande.insert_Commande(2, 3, "Pending")
 				Table.update_Table_status(3,"Pending")
 				Table.update_Table_commandNbr(3, 2)
-					
+				publish(ipsuperviseur, port, "Commande/Envoi", "rien", 2)	
 
-			elif menu[current_row] == "Supprimer commande unique":
+			elif menu[current_row] == "Supprimer commande 1":
 				Commande.delete_Commande(1)
 				Table.update_Table_status(2,"Free")
 				Table.update_Table_commandNbr(2, 0)
-				publish(ipsuperviseur, port, "Commande/Envoi", "rien", 3)
 
-			elif menu[current_row] == "Supprimer commande multiple":
+			elif menu[current_row] == "Supprimer commande 2":
 				Commande.delete_Commande(2)
 				Table.update_Table_status(3,"Free")
 				Table.update_Table_commandNbr(3, 0)
 				
+
 
 
 
@@ -326,13 +334,13 @@ def main(stdscr):
 
 			elif menu[current_row] == "Libérez Mélangeur":
 				
-				Robot.update_status("192.168.1.7/1", "Idle")
-				Robot.update_command("192.168.1.7/1", 0)
+				Robot.update_status("192.168.1.128/1", "Idle")
+				Robot.update_command("192.168.1.128/1", 0)
 
 			elif menu[current_row] == "Libérez Manipulateur":
 				
-				Robot.update_status("192.168.1.130/2", "Idle")
-				Robot.update_command("192.168.1.130/2", 0)
+				Robot.update_status("192.168.1.4/2", "Idle")
+				Robot.update_command("192.168.1.4/2", 0)
 
 			elif menu[current_row] == "Free Dobby":
 				listerobots=Robot.get_all_Robot()

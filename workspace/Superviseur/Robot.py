@@ -191,6 +191,26 @@ def get_robot_data(RobotIP):
 	except mysql.connector.Error as err:
 		print("Something went wrong: {}".format(err))
 
+#GET A ROBOT WEIGHT CAPACITY BY ITS IP
+def get_robot_weight_capacity(RobotIP):
+	try:
+		flotte_db=mysql.connector.connect(
+			host='172.19.0.3',
+			user='root',
+			password='root'
+		)
+		sql=" SELECT WeightCapacity from Type_tb INNER JOIN Robot_tb ON Type_tb.TypeName=Robot_tb.RobotType WHERE  Robot_tb.RobotIP =\""+ RobotIP + "\""
+		mycursor=flotte_db.cursor()
+		mycursor.execute("USE flotte_db")	
+		mycursor.execute(sql)
+		myresult = mycursor.fetchall()
+		mycursor.close()
+		flotte_db.close()
+		return myresult
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
+
+
 #	GET A ROBOT BY ITS ACTIVE COMMAND NUMBER
 def get_robot_by_ActiveCommand_and_type(ActiveCommandNbr, role):
 	
