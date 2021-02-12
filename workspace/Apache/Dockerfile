@@ -9,6 +9,15 @@ RUN docker-php-ext-install pdo_mysql
 #     docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
 #     docker-php-ext-install gd
 
+#RUN apt-get update && \
+#	apt-get install -y wget && \ 
+#	wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key && \
+#	apt-key add mosquitto-repo.gpg.key &&
+#	apt-get install -y libmosquitto-dev mosquitto-clients && \
+#	pecl install Mosquitto-alpha
+
+#	echo "extension=mosquitto.so" >> php.ini
+
 # Uncomment if you require opcache
 # RUN docker-php-ext-install opcache
 

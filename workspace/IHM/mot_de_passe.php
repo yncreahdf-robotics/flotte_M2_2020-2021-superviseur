@@ -5,7 +5,7 @@
         <title>Connexion</title>
     </head>
     <body>
-        <?php
+<?php
         /*Création des identifiants d'accès à la partie propriétaire*/
             $username = "FRS";
             $password = "Caroita";
@@ -19,16 +19,14 @@
                 }
                 else{
                 /*Si ils sont incorrects, on garde l'utilisateur sur cette page et on envoit une alerte qui indique qu'au moins un des deux champs est incorrects*/
-
-        ?>  
+?>  
                     <script type="text/javascript">
                         alert("Identifiant ou mot de passe incorrect");
                         document.location = "IHM_Mot_De_Passe.php";
                     </script>
-        
-        <?php
+<?php
                 }
             }
-        ?>
+ ?>
     </body>
 </html>

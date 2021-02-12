@@ -93,6 +93,7 @@ def on_message(client, userdata, msg):
 	######################
 	##	Topic Généraux  ##
 	######################
+	print(msg.payload.decode("utf-8"))
 
 	# Topic - Connexion d'un nouveau robot
 	if msg.topic == "Initialisation/Envoi":
@@ -669,11 +670,11 @@ Bouteille.insert_Bouteille("Pas de bouteille",0,0)
 Bouteille.update_ID("Pas de bouteille", 0)
 
 Recette.insert_Recette("JaggerBomb", 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0)
-Recette.insert_Recette("GillesGrenadine", 5, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+Recette.insert_Recette("Grenadine", 5, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
 Recette.insert_Recette("Eau Finement Pétillante", 4, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
 
 Article.insert_Article("JaggerBomb", 1, 33, 1)
-Article.insert_Article("GillesGrenadine", 1, 33, 2)
+Article.insert_Article("Grenadine", 1, 33, 2)
 Article.insert_Article("Eau Finement Pétillante", 1, 33, 3)
 
 subscribe(my_ip, port, "Initialisation/#", 2)
