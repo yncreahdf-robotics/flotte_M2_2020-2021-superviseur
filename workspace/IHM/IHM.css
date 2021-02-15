@@ -15,7 +15,7 @@ header
 body
 {
 	background: url('images/fond.png') fixed;
-
+	color: white;
 	font-family: 'Trebuchet MS', Arial, sans-serif;
 }
 
@@ -29,6 +29,11 @@ body
 h1, h2, h3, h4, p, label
 {
 	color: #FFFFFF;
+	text-align: center;
+}
+
+option
+{
 	text-align: center;
 }
 
@@ -53,6 +58,7 @@ img
 section
 {
 	text-align: center;
+	color: #FFFFFF;
 }
 
 nav
@@ -67,11 +73,7 @@ nav
 	box-shadow: 6px 6px 6px black;
 }
 
-.Commande
-{
-	text-align: left;
-	color: #FFFFFF;
-}
+
 
 #Liste_Article
 {

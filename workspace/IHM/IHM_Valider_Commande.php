@@ -18,22 +18,25 @@
 			<!-- Affichage de l'entete de la page avec le fichier entete.php -->
 			<?php include("entete.php"); ?>
 		
+			<!-- Affichage du panier -->
 			<section>
-				<h2>Commande validée avec succès !</h2>
-				<h2 class="Commande"><br />Liste des articles commandés :</h2>
-				<ul class="Commande">
-					<li>Article 1  -  Quantité : X  -  Prix unitaire : €  -  Prix total : €</li>
-					<br />
-					<li>Article 2  -  Quantité : X  -  Prix unitaire : €  -  Prix total : €</li>
-					<br />
-					<li>Article 3  -  Quantité : X  -  Prix unitaire : €  -  Prix total : €</li>
-				</ul>
-				<p class="Commande">
-					Prix total : €
+				<h2>Commande en cours</h2>
+				<h2><br />Liste des articles sélectionnés :</h2>
+				<?php
+					for($i = 0; $i < count($_SESSION['panier']['nom_produit']); $i++){
+						echo $_SESSION['panier']['nom_produit'][$i] . " - Quantité : " . $_SESSION['panier']['quantite_produit'][$i] . " - Prix unitaire : " . $_SESSION['panier']['prix_produit'][$i] . "€<br />";
+					}
+				?>
+				<p>
+					Table : <?php echo $_SESSION['panier']['table'] ?><br />
+					Prix total : <?php echo montantTotal() ?>€
 				</p>
 				<nav>
-					<div class="bouton" id="retour">
-						<p>Retour à l'accueil</p>
+					<div class="bouton" id="valider">
+						<p>Valider la commande</p>
+					</div>
+					<div class="bouton" id="appel_serveur">
+						<h3>Appeler un serveur</h3>
 					</div>
 				</nav>
 			</section>

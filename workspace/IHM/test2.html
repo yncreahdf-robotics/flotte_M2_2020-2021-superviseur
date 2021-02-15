@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<div>
+		<button id='moins1'>-</button><input type='text' id='compteur1' value="0" /><button id='plus1'>+</button>
+		<button id='moins2'>-</button><input type='text' id='compteur2' value="0" /><button id='plus2'>+</button>
+		<button id='moins3'>-</button><input type='text' id='compteur3' value="0" /><button id='plus3'>+</button>
+		<button id='moins4'>-</button><input type='text' id='compteur4' value="0" /><button id='plus4'>+</button>
+	</div>
+
+	<script type="text/javascript">
+		var valeur1 = 0;
+		var valeur2 = 0;
+		var valeur3 = 0;
+		var valeur4 = 0;
+
+		moins1 = document.getElementById("moins1");
+		plus1 = document.getElementById("plus1");
+		compteur1 = document.getElementById("compteur1");
+
+		moins2 = document.getElementById("moins2");
+		plus2 = document.getElementById("plus2");
+		compteur2 = document.getElementById("compteur2");
+
+		moins3 = document.getElementById("moins3");
+		plus3 = document.getElementById("plus3");
+		compteur3 = document.getElementById("compteur3");
+
+		moins4 = document.getElementById("moins4");
+		plus4 = document.getElementById("plus4");
+		compteur4 = document.getElementById("compteur4"); 
+
+		moins1.onclick = function(){ valeur1 -= 1; compteur1.value = valeur1; }
+		plus1.onclick = function(){ valeur1 += 1;  compteur1.value = valeur1; }
+
+		moins2.onclick = function(){ valeur2 -= 1; compteur2.value = valeur2; }
+		plus2.onclick = function(){ valeur2 += 1;  compteur2.value = valeur2; }
+
+		moins3.onclick = function(){ valeur3 -= 1; compteur3.value = valeur3; }
+		plus3.onclick = function(){ valeur3 += 1;  compteur3.value = valeur3; }
+
+		moins4.onclick = function(){ valeur4 -= 1; compteur4.value = valeur4; }
+		plus4.onclick = function(){ valeur4 += 1;  compteur4.value = valeur4; }
+	</script>
+</body>
+</html>
