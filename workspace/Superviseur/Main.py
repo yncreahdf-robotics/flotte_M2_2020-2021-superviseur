@@ -37,6 +37,8 @@ import datetime
 
 
 
+
+
 ##########################
 ### Variables globales ###
 ##########################
@@ -114,7 +116,7 @@ def on_message(client, userdata, msg):
 				#envoi du message de lancement des différents programmes du Préparateur
 				publish(my_ip, port, "Preparateur/Start", iprobot, 2)
 			else:
-				Robot.insert_Robot(iprobot, typerobot, Positions.get_Pose_by_name("recharge")[0][0], "Idle", 0, datetime.datetime.now()) 
+				Robot.insert_Robot(iprobot, typerobot, 0, "Idle", 0, datetime.datetime.now()) 
 
 		# Si le type de robot n'existe pas encore on l'ajoute à la base des types
 		else:
@@ -122,8 +124,8 @@ def on_message(client, userdata, msg):
 			print("MESSAGE:  Type de robot inexistant")
 		
 	if msg.topic == "Commande/Envoi":
-		pass
-		#print("MESSAGE:  Nouvelle commande")
+		#pass
+		print("MESSAGE:  Nouvelle commande")
 
 
 
@@ -546,6 +548,9 @@ def command_loop():
 	#print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 	print("================= ROBOT(S) ==================")
 	print("Service(s):"+ str(len(Service)))
+
+
+
 	print("Guide(s):"+str(len(Guide)))
 	print("Melangeur(s):"+ str(len(Melangeur)))
 	print("Manipulateur(s):"+ str(len(Manipulateur)))
@@ -638,11 +643,18 @@ InitBDDSuperviseur.create_flotte_db()
 
 InitBDDSuperviseur.create_all_tables()
 
-Positions.insert_Pose("recharge", 0.25, 0.1, 0.98, 0.21)
-Positions.insert_Pose("table1", 2.9226691810219827, 0.7380693324419132, 0.79, 0.6)
-Positions.insert_Pose("table2", 2.001872215066296, 1.1748824989062503, -0.83, 0.56)
-Positions.insert_Pose("table3", 3.508061809231884, 2.9028496618974104, -0.56, 0.83)
-Positions.insert_Pose("bar", 5.66,1.2,0.56,0.82)
+#Positions.insert_Pose("recharge", 0.25, 0.1, 0.98, 0.21)
+#Positions.insert_Pose("table1", 2.9226691810219827, 0.7380693324419132, 0.79, 0.6)
+#Positions.insert_Pose("table2", 2.001872215066296, 1.1748824989062503, -0.83, 0.56)
+#Positions.insert_Pose("table3", 3.508061809231884, 2.9028496618974104, -0.56, 0.83)
+#Positions.insert_Pose("bar", 5.66,1.2,0.56,0.82)
+
+Positions.insert_Pose("table1", 3.30, 1.57, 0.05, -0.99)
+Positions.insert_Pose("table2", 1.64, 1.26, 0.99, 0.03)
+Positions.insert_Pose("table3", 2.56, 3.56, 0.91, -0.41)
+Positions.insert_Pose("bar", 4.92, 2.77, 0.72, 0.69)
+
+
 #Positions.insert_Pose("tagne", -21.2689863214036, -1.0389461981502848, 0.62, 0.80)
 Positions.insert_Pose("accueil", 0.15,3.55,-0.25,1)
 
@@ -659,12 +671,13 @@ Table.insert_Table(0, Positions.get_Pose_by_name("table2")[0][0], 2, "Free", 0)
 Table.insert_Table(0, Positions.get_Pose_by_name("table3")[0][0], 2, "Free", 0)
 
 
-
+Bouteille.insert_Bouteille("Eau",25,7)
 Bouteille.insert_Bouteille("Jagger Meister", 25, 1)
 Bouteille.insert_Bouteille("Crazy Tigger", 75, 2)
-Bouteille.insert_Bouteille("Eau Plate", 75, 3)
+Bouteille.insert_Bouteille("Sirop de Cerise", 75, 3)
 Bouteille.insert_Bouteille("Badoit Rouge", 75, 4)
 Bouteille.insert_Bouteille("Grenadine", 25, 5)
+
 
 Bouteille.insert_Bouteille("Pas de bouteille",0,0)
 Bouteille.update_ID("Pas de bouteille", 0)

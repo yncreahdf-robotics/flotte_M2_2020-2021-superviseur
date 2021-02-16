@@ -9,7 +9,7 @@ RUN docker-php-ext-install pdo_mysql
 #     docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
 #     docker-php-ext-install gd
 
-#RUN apt-get update && \
+RUN apt update
 #	apt-get install -y wget && \ 
 #	wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key && \
 #	apt-key add mosquitto-repo.gpg.key &&
@@ -23,6 +23,12 @@ RUN docker-php-ext-install pdo_mysql
 
 # Uncomment if you requrie apache rewrite mod.
 # RUN a2enmod rewrite
+RUN apt update
+RUN apt-get install -y python3
+RUN apt-get install -y python3-pip
+RUN pip3 install paho-mqtt
+RUN pip3 install mysql-connector-python
+
 
 # Uncomment to enable xdebug
 # RUN pecl install xdebug-beta &&\
@@ -36,4 +42,9 @@ RUN docker-php-ext-install pdo_mysql
 #     echo "xdebug.remote_port=9000" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini &&\
 #     echo "xdebug.remote_host = host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
+RUN apt-get install libapache2-mod-wsgi -y
+RUN a2enmod cgid
+
 RUN apt-get clean
+
+

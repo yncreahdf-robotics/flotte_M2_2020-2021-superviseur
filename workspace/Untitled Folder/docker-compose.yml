@@ -1,0 +1,116 @@
+version: "3.7"
+services:
+  web:
+    build: ./Apache
+    working_dir: /var/www/html
+    depends_on: [db]
+    networks:
+     - bdd
+    volumes:
+      - type: bind
+        source: ./IHM # Relative path to the root of your php source code.
+        target: /var/www/html
+
+#       To expose the logs, create the relevant folders/files and uncomment the below section.
+#       - type: bind
+#         source: ./logs/httpd
+#         target: /var/log/httpd
+#       - type: binds
+#         source: ./logs/php_errors.log
+#         target: /var/log/php_errors.log
+
+#     To enable debugging, uncomment the below section.
+#     environment:
+#       XDEBUG_CONFIG: "remote_host=host.docker.internal"
+#       PHP_IDE_CONFIG: "serverName=my-app"
+    ports:
+      - "8000:80"
+  db:
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=root  
+    ports:
+    - "3306:3306"
+    networks:
+     bdd:
+       ipv4_address: 172.19.0.3 
+    volumes:
+      - ./BDD:/var/lib/mysql
+#       To expose the logs, create the relevant folders/files and uncomment the below section.
+#       - type: bind
+#         source: ./logs/mysql.log
+#         target: /var/log/mysql.log
+  reverse-proxy:
+    image: nginx:latest
+    depends_on: [web]
+    networks:
+     - bdd
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+#       To expose the logs, create the relevant folders/files and uncomment the below section.
+#       - type: bind
+#         source: ./logs/nginx
+#         target: /etc/nginx/logs
+    ports:
+      - 80:80
+      - 443:443
+  db-data:
+    image: adminer:latest
+    networks:
+     - bdd
+    ports:
+      - "8080:8080"
+  superviseur:
+    build: ./Superviseur
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    networks:
+     - bdd
+    ports: 
+     - "1883:1883"
+    extra_hosts:
+     - "supIP:192.168.1.5"
+    command: mosquitto -p 1883
+    volumes:
+     - ./Superviseur:/Superviseur
+    depends_on: [web]
+
+
+    image: eclipse-mosquitto
+    networks:
+     - bdd
+    ports:
+      - "8080:8080"
+      - "1883:1883"
+      - "9001:9001"
+  mosquitto:
+    build: ./Mosquitto
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    networks:
+     - bdd
+    ports: 
+     - "1883:1883"
+    extra_hosts:
+     - "supIP:192.168.1.5"
+    command: mosquitto -p 1883
+    volumes:
+     - ./Superviseur:/Superviseur
+     - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+    depends_on: [web]
+
+   
+networks:
+  bdd:
+    driver: bridge
+    ipam:
+      config:
+       - subnet: 172.19.0.0/24
+         gateway: 172.19.0.1
+
+
+
+    
+   

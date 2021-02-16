@@ -10,6 +10,9 @@ services:
       - type: bind
         source: ./IHM # Relative path to the root of your php source code.
         target: /var/www/html
+      - type: bind
+        source: ./Superviseur
+        target: /var/www/html/Superviseur
 
 #       To expose the logs, create the relevant folders/files and uncomment the below section.
 #       - type: bind

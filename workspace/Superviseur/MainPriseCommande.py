@@ -47,7 +47,7 @@ port = 1883
 
 menu_accueil = ["Preparateur", "Service", "Commande", "Return Trip","Libérez Robots", "Choix Robot"]
 menu_preparateur = ["Preparateur/Prepare", "Preparateur/Prepared", "Preparateur/Charge", "Preparateur/Charged", "Fin de Maintenance", "Back"]
-menu_service = ["Service/Go/Accueil", "Service/Arrived/Bar", "Service/Go/Table1", "Service/Turn", "Service/Go/Bar", "Service/Go/Recharge", "Back"]
+menu_service = ["Service/Go/Accueil", "Service/Arrived/Bar", "Service/Go/Table1", "Service/Go/Table2", "Service/Go/Table3",  "Service/Turn", "Service/Go/Bar", "Service/Go/Recharge", "Back"]
 menu_returntrip = ["ReturnTrip Table1", "ReturnTrip Table2", "ReturnTrip Table3", "ReturnTrip Recharge", "Back"]
 menu_choix_robot = ["Robotino", "Kobuki","Heron"]
 menu_commande = ["Nouvelle Commande", "Commande de plusieurs articles","Supprimer commande 1", "Supprimer commande 2","Back"]
@@ -231,6 +231,14 @@ def main(stdscr):
 
 			elif menu[current_row] == "Service/Go/Table1":
 				destination=Positions.get_Pose_by_name("table1")[0][0]
+				publish(ipsuperviseur, port, "Service/Go/Table", ip_choisie + "/" + str(destination), 2)
+
+			elif menu[current_row] == "Service/Go/Table2":
+				destination=Positions.get_Pose_by_name("table2")[0][0]
+				publish(ipsuperviseur, port, "Service/Go/Table", ip_choisie + "/" + str(destination), 2)
+
+			elif menu[current_row] == "Service/Go/Table3":
+				destination=Positions.get_Pose_by_name("table3")[0][0]
 				publish(ipsuperviseur, port, "Service/Go/Table", ip_choisie + "/" + str(destination), 2)
 
 

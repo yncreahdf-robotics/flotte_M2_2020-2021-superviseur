@@ -62,7 +62,7 @@
        					?>
    					
    					<br />
-   					<input type="submit" name="Deplacer" value="Deplacer" id="Deplacer" />
+   					<input type="submit" name="Deplacer" value="Deplacer" id="Deplacer" onclick="goPython()"/>
    					<br />
 				</form>
 			</section>
@@ -72,7 +72,7 @@
 		</div>
 
 		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
-		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+		<script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 		<script type="text/javascript">
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
@@ -80,6 +80,16 @@
 				//event.preventDefault()
 				document.location = "IHM_Page_Proprietaire.php";
 			})
+		
+	        function goPython(){
+	            $.ajax({
+	              url: "CommandeRobot.py",
+	             context: document.body
+	            }).done(function() {
+	             alert('finished python script');;
+	            });
+	        }
+	    
 		</script>
 	</body>
 </html>
