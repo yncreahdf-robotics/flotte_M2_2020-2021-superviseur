@@ -1,12 +1,10 @@
 <?php 
 	session_start();	//On démarre une session pour utiliser un panier associé au client
-	//include_once("fonctions-panier.php");
 
-	$_SESSION['panier'] = array();
-	$_SESSION['panier']['table'] = NULL;
-	$_SESSION['panier']['nom_produit'] = array();
-	$_SESSION['panier']['quantité_produit'] = array();
-	$_SESSION['panier']['prix_produit'] = array();
+	include_once("fonctions_panier.php");
+
+
+	creationPanier();
 ?>
 
 <!DOCTYPE html>
@@ -22,15 +20,19 @@
 			
 			/*Connexion à la base de données avec le fichier connexion.php*/
 			include("connexion.php");
-			
-			/*Création de la requète qui va récupérer les informations des tables dans Table_tb*/
-			$requete_commande = $bdd->query('SELECT * FROM Commande_tb');
+
 
 			/*Création de la requète qui va récupérer les informations des articles dans Article_tb*/
 			$requete_article = $bdd->query('
-				SELECT ArticleID, ArticleName, ArticlePrice 
+				SELECT ArticleID, ArticleName, ArticlePrice, ArticleWeight 
 				FROM Article_tb
 			');	
+
+			/*Création de la requète qui va récupérer les tables dans la base de données*/
+			$requete_table = $bdd->query('
+				SELECT TableID
+				FROM Table_tb
+			');
 		?>
 
 		<div id="bloc_page">
@@ -39,38 +41,40 @@
 			<?php include("entete.php"); ?>
 		
 			<section>
-				<h2>Menu Client</h2>
 
-				<form action="" method="post">
-					<!-- Formulaire qui permet au client d'indiquer la table à laquelle il se trouve et de saisir les articles qu'il veut commander -->
-					<h3>Merci d'indiquer le numéro de la table où vous êtes assis</h3>
-					<input type="radio" name="Choix_table" value="table1" /><label class="label-radio">Table 1</label>
-					<br />
-					<input type="radio" name="Choix_table" value="table2" /><label class="label-radio">Table 2</label>
-					<br />
-					<input type="radio" name="Choix_table" value="table3" /><label class="label-radio">Table 3</label>
-					<br />
-					<br />
-		        	
-					<h2>Liste des articles :</h2>
-					
-					<ul>
-						<?php
-						/*On récupère les informations depuis requete_article et on les affiches dans une liste. Chaque article va créer une entrée dans la liste. Cette liste permet au client d'indiquer combien de quantité de chaque article il veut commander*/
-							while($donnees = $requete_article->fetch()){
-						?>
-							<li>
-								<?php echo $donnees['ArticleName'];?> - Quantité : <input type="number" step="1" value="0" min="0" max="8"> - Prix unitaire : <?php echo $donnees['ArticlePrice'];?> €
-							</li>
-							<br />
-						<?php
+				<h2>Liste des articles :</h2>
+
+				<form action="panier_client.php" method="post">
+                    <!-- Formulaire qui permet au client de saisir les articles qu'il veut commander et d'indiquer la table à laquelle il est installé-->
+                    <h3>Indiquez la table à laquelle vous êtes installé</h3>
+                    <select name="table" id="table">
+                    	<?php
+                    	/*Affichage des tables de la salle dans une liste déroulante*/
+                    		while($table = $requete_table->fetch()){
+                    			echo "<option value=\"" . $table['TableID'] . "\">Table " . $table['TableID'] . "</option>";
+                    		}
+                    	?>
+                    </select>
+                    <h3>Choisissez la boisson que vous voulez ajouter à votre commande ainsi que sa quantité</h3>
+
+                    <select name="article_commande" id="article_commande">
+                    	<?php
+                    	/*Affichage des articles dans une liste déroulante*/
+                    		while($articles = $requete_article->fetch()){
+								echo "<option value=\"" . $articles['ArticleID'] . "\">" . $articles['ArticleName'] . " - " . $articles['ArticleWeight'] . " cL - " . $articles['ArticlePrice'] . "€</option>";
 							}
-						?>
-					</ul>
+                    	?>
+                    </select>
+
+                    <input type="number" name="quantite_article" id="quantite_article" min="1" step="1"  value="1" size="5" />
+
+                    <br />
+                    <br />
+
+					<input type="submit" name="ajouter_panier" value="Ajouter" id="ajout_panier" />
 				</form>
-				<p>
-					 Prix total : €
-				</p>
+				
+				<br />
 
 				<!-- Création de boutons permettant de pré-valider la commande ou d'appeler un serveur -->
 				<nav>
@@ -83,8 +87,11 @@
 				</nav>
 			</section>
 
-			<!-- Affichage du pied de page avec le fichier pied_de_pahe.php-->
+
+			<!-- Affichage du pied de page avec le fichier pied_de_page.php-->
 			<?php include("pied_de_page.php"); ?>
+
+		</div>
 
 		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
@@ -95,6 +102,7 @@
 				//event.preventDefault()
 				document.location = "IHM_Commande_Client.php";
 			})
+
 
 			//Appel d'un serveur
 			const elt_serveur = document.getElementById('appel_serveur');
@@ -117,3 +125,4 @@
 		</script>
 	</body>
 </html>
+

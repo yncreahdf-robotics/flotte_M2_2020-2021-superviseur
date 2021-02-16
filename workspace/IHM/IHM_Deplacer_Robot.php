@@ -62,7 +62,9 @@
        					?>
    					
    					<br />
-   					<input type="submit" name="Deplacer" value="Deplacer" id="Deplacer" onclick="goPython()"/>
+
+   					<input type="submit" name="Deplacer" value="Deplacer" id="Deplacer" />
+
    					<br />
 				</form>
 			</section>
@@ -72,7 +74,9 @@
 		</div>
 
 		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
+
 		<script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
 		<script type="text/javascript">
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');

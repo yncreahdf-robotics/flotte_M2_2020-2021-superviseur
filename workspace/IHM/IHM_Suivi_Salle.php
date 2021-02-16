@@ -15,7 +15,9 @@
 			
 			/*Création de la requète qui va récupérer les informations des tables dans Table_tb*/
 			$requete = $bdd->query('
-				SELECT TableID, Etat 
+
+				SELECT TableID, Etat, Prix 
+
 				FROM Table_tb
 			');
 
@@ -139,6 +141,9 @@
 								<tr>
 									<th>Table</th>
 									<th>Etat</th>
+
+									<th>Montant à payer</th>
+
 									<th></th>
 								</tr>
 							</thead>
@@ -147,6 +152,9 @@
 								<tr>
 									<th>Table</th>
 									<th>Etat</th>
+
+									<th>Montant à payer</th>
+
 									<th></th>
 								</tr>
 							</tfoot>
@@ -159,7 +167,10 @@
 								<tr>
 									<td><?php echo $donnees['TableID']; ?></td>
 									<td><?php echo $donnees['Etat']; ?></td>
-									<td><?php echo "<input type=\"submit\" value=\"Libérer la table\" id=\"table".$donnees['TableID']."\"/>" ;?></td>
+
+									<td><?php echo $donnees['Prix']; ?> €</td>
+									<td><?php echo "<input type=\"submit\" value=\"Libérer\" id=\"table".$donnees['TableID']."\"/>" ;?></td>
+
 								</tr>
 								<?php
 									}
@@ -182,7 +193,11 @@
 			elt_table1.addEventListener('click', function table1(event) {
 				//Lien BDD pour changer l'état de la table sélectionnée vers "Libre"
 				<?php
-					$bdd->exec('UPDATE Table_tb SET Etat = \'FREE\' WHERE TableID = 1');
+					$bdd->exec('
+						UPDATE Table_tb 
+						SET Etat = \'FREE\', Prix = 0 
+						WHERE TableID = 1
+					');
 					?>
 			})
 
@@ -190,7 +205,11 @@
 			elt_table2.addEventListener('click', function table1(event) {
 				//Lien BDD pour changer l'état de la table sélectionnée vers "Libre"
 				<?php
-					$bdd->exec('UPDATE Table_tb SET Etat = \'FREE\' WHERE TableID = 2');
+					$bdd->exec('
+						UPDATE Table_tb 
+						SET Etat = \'FREE\', Prix = 0 
+						WHERE TableID = 2
+					');
 					?>
 			})
 
@@ -198,7 +217,11 @@
 			elt_table3.addEventListener('click', function table1(event) {
 				//Lien BDD pour changer l'état de la table sélectionnée vers "Libre"
 				<?php
-					$bdd->exec('UPDATE Table_tb SET Etat = \'FREE\' WHERE TableID = 3');
+					$bdd->exec('
+						UPDATE Table_tb 
+						SET Etat = \'FREE\', Prix = 0 
+						WHERE TableID = 3
+					');
 					?>
 			})
 

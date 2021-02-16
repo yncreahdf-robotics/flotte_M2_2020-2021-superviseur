@@ -1,6 +1,12 @@
 <?php
 	session_start();	/*On démarre une session pour utiliser un panier associé au client*/
+
 	//include_once("fonctions-panier.php");
+
+	include_once("fonctions_panier.php");
+
+	creationPanier();
+
 ?>
 
 <!DOCTYPE html>
@@ -12,23 +18,33 @@
 	</head>
 
 	<body>
+		<?php
+
+			/*Connexion à la base de données avec le fichier connexion.php*/
+			include("connexion.php");
+
+			
+		?>
+
 		<div id="bloc_page">
 			
 			<!-- Affichage de l'entete de la page avec le fichier entete.php -->
 			<?php include("entete.php"); ?>
 		
+			<!-- Affichage du panier -->
 			<section>
 				<h2>Commande en cours</h2>
-				<h2 class="Commande"><br />Liste des articles sélectionnés :</h2>
-				<ul class="Commande">
-					<li>Article 1  -  Quantité : X  -  Prix unitaire : €  -  Prix total : €</li>
-					<br />
-					<li>Article 2  -  Quantité : X  -  Prix unitaire : €  -  Prix total : €</li>
-					<br />
-					<li>Article 3  -  Quantité : X  -  Prix unitaire : €  -  Prix total : €</li>
-				</ul>
-				<p class="Commande">
-					Prix total : €
+				<h2><br />Liste des articles sélectionnés :</h2>
+				<?php
+					for($i = 0; $i < count($_SESSION['panier']['nom_produit']); $i++){
+						echo $_SESSION['panier']['nom_produit'][$i] . " - Quantité : " . $_SESSION['panier']['quantite_produit'][$i] . " - Prix unitaire : " . $_SESSION['panier']['prix_produit'][$i] . "€<br />";
+					}
+
+					$_SESSION['panier']['montant_panier'] = montantTotal();
+				?>
+				<p>
+					Table : <?php echo $_SESSION['panier']['table'] ?><br />
+					Prix total : <?php echo $_SESSION['panier']['montant_panier'] ?>€
 				</p>
 				<nav>
 					<div class="bouton" id="valider">
@@ -53,7 +69,7 @@
 			elt_valider.addEventListener('click', function valider_commande(event) {
 				//event.preventDefault();
 				if(confirm("Valider la commande ?")){
-					document.location = "IHM_Valider_Commande.php";
+					document.location = "envoie_commande.php";
 				}
 				else{
 					
