@@ -637,7 +637,7 @@ def command_loop():
 # Lancement IHM Initialisation
 
 
-#InitBDDSuperviseur.delete_flotte_db()
+InitBDDSuperviseur.delete_flotte_db()
 
 InitBDDSuperviseur.create_flotte_db()
 

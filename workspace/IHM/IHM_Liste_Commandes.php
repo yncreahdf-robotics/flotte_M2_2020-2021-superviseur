@@ -60,6 +60,15 @@
 						</tbody>
 					</table>
 				</div>
+				<br />
+				<br />
+				<form method="post" action="supprimer_commande.php">
+					<p>
+						<label for="supprimer_commande">Indiquer le numéro de commande à supprimer : </label>
+						<input type="number" name="commande_supprimee" id="commande_supprimee" size="10" />
+						<input type="submit" name="supprimer" value="Supprimer" id="supprimer" />
+					</p>
+				</form>
 			</section>
 
 			<!-- Affichage du pied de page avec le fichier pied_de_page.php -->

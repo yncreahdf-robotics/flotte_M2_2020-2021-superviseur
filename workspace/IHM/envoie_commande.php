@@ -65,13 +65,14 @@
 
 	$requete_nouveau_montant = $bdd->prepare('
 		UPDATE Table_tb
-		SET Prix = :nouveau_montant
+		SET Prix = :nouveau_montant, Etat = "Pending", CommandNbr = :numero_commande
 		WHERE TableID = :table
 	');
 
 	$requete_nouveau_montant->execute(array(
 		'nouveau_montant' => $nouveau_montant,
-		'table' => $_SESSION['panier']['table']
+		'table' => $_SESSION['panier']['table'],
+		'numero_commande' => $numero_commande
 	));
 
 	supprimerPanier();
