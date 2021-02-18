@@ -34,12 +34,12 @@
 				$requete_recette = $bdd->query('SELECT RecetteID, RecetteName FROM Recette_tb');
 
 				/*Création de 6 requètes qui vont toutes récupérer l'ID et le nom des bouteilles depuis la base de données, il faut 6 requètes car on peut avoir jusqu'à 6 bouteilles dans une même boisson*/
-				$requete1 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');	
-				$requete2 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');
-				$requete3 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');
-				$requete4 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');
-				$requete5 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');
-				$requete6 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');
+				$requete1 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');	
+				$requete2 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');
+				$requete3 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');
+				$requete4 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');
+				$requete5 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');
+				$requete6 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');
 
 			?>
 			
