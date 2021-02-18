@@ -1,3 +1,7 @@
+<?php
+	/*Page du menu de la partie propriétaire, elle donne accès aux différents outils de gestions de la base de données, de la salle ou des robots.*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -47,49 +51,42 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
 				document.location = "index.php";
 			})
 
 			//Bouton suivi de salle
 			const elt_suivi = document.getElementById('suivi');
 			elt_suivi.addEventListener('click', function suivi(event){
-				//event.preventDefault()
 				document.location = "IHM_Suivi_Salle.php";
 			})
 
 			//Bouton liste des robots
 			const elt_liste_robot = document.getElementById('liste_robot');
 			elt_liste_robot.addEventListener('click', function liste_robot(event){
-				//event.preventDefault()
 				document.location = "IHM_Liste_Robots.php";
 			})
 
 			//Bouton liste des articles
 			const elt_liste_article = document.getElementById('liste_article');
 			elt_liste_article.addEventListener('click', function liste_article(event){
-				//event.preventDefault()
 				document.location = "IHM_Liste_Articles.php";
 			})
 
 			//Bouton liste des commandes
 			const elt_liste_commande = document.getElementById('liste_commande');
 			elt_liste_commande.addEventListener('click', function liste_commande(event){
-				//event.preventDefault()
 				document.location = "IHM_Liste_Commandes.php";
 			})
 
 			//Bouton liste des positions
 			const elt_liste_position = document.getElementById('liste_position');
 			elt_liste_position.addEventListener('click', function liste_position(event){
-				//event.preventDefault()
 				document.location = "IHM_Liste_Positions.php";
 			})
 
 			//Bouton envoi de robot
 			const elt_envoi_robot = document.getElementById('deplacer_robot');
 			elt_envoi_robot.addEventListener('click', function deplacer_robot(event){
-				//event.preventDefault()
 				document.location = "IHM_Deplacer_Robot.php";
 			})
 		</script>

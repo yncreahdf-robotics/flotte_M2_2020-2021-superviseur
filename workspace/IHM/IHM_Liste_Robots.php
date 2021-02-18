@@ -1,3 +1,7 @@
+<?php
+	/*Page permettant d'afficher la liste des robots connectés sous forme de tableau. Elle permet d'accéder à l'outil d'ajout de type de robot*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -84,14 +88,12 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
 				document.location = "IHM_Page_Proprietaire.php";
 			})
 
 			//Bouton ajout robot
 			const elt_ajout = document.getElementById('ajout_robot');
 			elt_ajout.addEventListener('click', function ajout_robot(event){
-				//event.preventDefault()
 				document.location = "IHM_Ajouter_Robot.php";
 			})
 		</script>

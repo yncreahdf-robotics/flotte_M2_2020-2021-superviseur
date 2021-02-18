@@ -1,4 +1,6 @@
 <?php
+/*Fonction php appelée par le formulaire de déplacement de bouteille de la page IHM_Deplacer_Bouteille.php, elle permet d'ajouter, de déplacer ou d'enlever une bouteille sur le tourniquet*/
+
 	/*Récupération des données envoyées par le formulaire de modification de boisson*/
 	$bouteille_modifiee = $_POST["bouteille_modifiee"];
 	$emplacement = $_POST["emplacement"];
@@ -27,5 +29,6 @@
 		'bouteille_modifiee' => $bouteille_modifiee
 	));
 
+	/*On renvoit l'utilisateur sur la page IHM_Suivi_Salle.php*/
 	header('Location: IHM_Suivi_Salle.php');
 ?>

@@ -1,3 +1,5 @@
+/*Feuille de style du site*/
+
 /*------------- En-tête de page -------------*/
 
 header
@@ -15,7 +17,6 @@ header
 body
 {
 	background: url('images/fond.png') fixed;
-	color: white;
 	font-family: 'Trebuchet MS', Arial, sans-serif;
 }
 
@@ -26,39 +27,16 @@ body
 	/*background: url('images/flocon.gif');*/
 }
 
-h1, h2, h3, h4, p, label
+h1, h2, h3, h4, p, label, section
 {
 	color: #FFFFFF;
 	text-align: center;
-}
-
-option
-{
-	text-align: center;
-}
-
-a
-{
-	color: #FFFFFF;
-	text-decoration: none;
-}
-
-a:hover
-{
-	color: #000080;
-	text-decoration: underline;
 }
 
 img
 {
 	max-width: 100%;
 	height: auto;
-}
-
-section
-{
-	text-align: center;
-	color: #FFFFFF;
 }
 
 nav
@@ -72,8 +50,6 @@ nav
 {
 	box-shadow: 6px 6px 6px black;
 }
-
-
 
 #Liste_Article
 {
@@ -153,11 +129,6 @@ footer
 footer p
 {
 	font-size: 0.8em;
-}
-
-footer a
-{
-	font-size: 1.2em;
 }
 
 #Credits

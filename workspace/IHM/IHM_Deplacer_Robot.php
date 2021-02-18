@@ -1,3 +1,7 @@
+<?php
+	/*Page qui permet de déplacer un robot à une position enregistrée en le sélectionnant et en choisissant sa position d'arrivée avec le formulaire. Ce formulaire va appeler deplacer_robot.php pour envoyer l'ordre au robot*/
+?>
+
 <!DOCTYPE html>		
 <html>
 	<head>
@@ -81,7 +85,6 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
 				document.location = "IHM_Page_Proprietaire.php";
 			})
 		

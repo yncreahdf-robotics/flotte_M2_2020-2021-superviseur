@@ -1,10 +1,13 @@
 <?php
-	session_start();	/*On démarre une session pour utiliser un panier associé au client*/
+/*Page affichant le contenu du panier du client avant l'envoie de la commande. Si le client ne veut plus modifier son panier, il peut envoyer la commande avec le bouton de validation qui va appeler envoie_commande.php*/
 
-	//include_once("fonctions-panier.php");
+	/*On démarre une session pour utiliser un panier associé au client*/
+	session_start();	
 
+	/*On récupère les fonctions de gestion du panier depuis le fichier fonctions_panier.php*/
 	include_once("fonctions_panier.php");
 
+	/*On vérifie que le panier est bien créer*/
 	creationPanier();
 
 ?>
@@ -18,14 +21,6 @@
 	</head>
 
 	<body>
-		<?php
-
-			/*Connexion à la base de données avec le fichier connexion.php*/
-			include("connexion.php");
-
-			
-		?>
-
 		<div id="bloc_page">
 			
 			<!-- Affichage de l'entete de la page avec le fichier entete.php -->
@@ -40,6 +35,7 @@
 						echo $_SESSION['panier']['nom_produit'][$i] . " - Quantité : " . $_SESSION['panier']['quantite_produit'][$i] . " - Prix unitaire : " . $_SESSION['panier']['prix_produit'][$i] . "€<br />";
 					}
 
+					/*On calcule le montant total du panier*/
 					$_SESSION['panier']['montant_panier'] = montantTotal();
 				?>
 				<p>
@@ -67,8 +63,8 @@
 			//Validation de la commande
 			const elt_valider = document.getElementById('valider');
 			elt_valider.addEventListener('click', function valider_commande(event) {
-				//event.preventDefault();
 				if(confirm("Valider la commande ?")){
+					alert("Commande envoyée.")
 					document.location = "envoie_commande.php";
 				}
 				else{
@@ -79,7 +75,6 @@
 			//Appel d'un serveur
 			const elt = document.getElementById('appel_serveur');
 			elt.addEventListener('click', function appel_serveur(event) {
-				//event.preventDefault()
 				if(confirm("Etes-vous sur de vouloir appeler un serveur ?")){
 					alert("Un serveur a été appelé.")
 				}
@@ -91,7 +86,6 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function client(event){
-				//event.preventDefault()
 				document.location = "IHM_Page_Client.php";
 			})
 		</script>

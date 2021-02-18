@@ -1,4 +1,5 @@
 <?php
+/*Fonction appelée lorsque l'on veut supprimer une boisson de la base de données*/
 	
 	/*Récupération de l'ID de la recette à supprimer depuis le formulaire*/
 	$boisson_supprimee = $_POST["boisson_supprimee"];

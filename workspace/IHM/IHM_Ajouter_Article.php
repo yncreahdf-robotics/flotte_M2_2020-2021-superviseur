@@ -1,3 +1,7 @@
+<?php
+	/*Page qui permet de saisir les informations d'une nouvelle bouteille ou d'une nouvelle boisson qui seront ajoutées à la base de données avec les formulaires appelant respectivement ajout_bouteille.php ou ajout_boisson.php*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -207,7 +211,6 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
 				document.location = "IHM_Liste_Articles.php";
 			})
 		</script>

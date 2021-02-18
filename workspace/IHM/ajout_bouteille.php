@@ -1,4 +1,5 @@
 <?php
+/*Fonction php appelée par le formulaire d'ajout de bouteille de la page IHM_Ajouter_Article.php, elle permet d'ajouter une bouteille dans la table Bouteille_tb de la base de donnée*/
 
 	/*Récupération des données envoyées par le formulaire d'ajout de bouteille*/
 	$nom_bouteille = $_POST["nom_bouteille"];

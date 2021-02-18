@@ -1,8 +1,14 @@
 <?php
-	session_start();	//On démarre une session pour utiliser un panier associé au client
+/*Fonction appelée lorsque le client valide sa commande sur la page IHM_Commande_Client.php, elle envoit les articles commandés dans la table Commande_tb de la base de données*/
+
+	/*On démarre une session pour utiliser un panier associé au client*/
+	session_start();	
+
+	/*On récupère les fonctions de gestion du panier depuis le fichier fonctions_panier.php*/
 	include_once("fonctions_panier.php");
 
-	creationPanier();	//On vérifie que le panier est bien créer
+	/*On vérifie que le panier est bien créer*/
+	creationPanier();	
 
 	/*Connexion à la base de données avec le fichier connexion.php*/
 	include("connexion.php");
@@ -53,29 +59,30 @@
 		FROM Table_tb
 		WHERE TableID = :table
 	');
+	/*On associe les variables de la requète avec les variables du panier*/
 	$requete_montant_actuel->execute(array(
 		'table' => $_SESSION['panier']['table']
 	));
 
 	$montant_actuel = $requete_montant_actuel->fetch();
 
-
-
 	$nouveau_montant = $montant_actuel['Prix'] + $_SESSION['panier']['montant_panier'];
 
+	/*On met à jour le nouveau montant à payer de la table*/
 	$requete_nouveau_montant = $bdd->prepare('
 		UPDATE Table_tb
 		SET Prix = :nouveau_montant, Etat = "Pending", CommandNbr = :numero_commande
 		WHERE TableID = :table
 	');
-
+	/*On associe les varaibles de la requète avec les variables du panier*/
 	$requete_nouveau_montant->execute(array(
 		'nouveau_montant' => $nouveau_montant,
 		'table' => $_SESSION['panier']['table'],
 		'numero_commande' => $numero_commande
 	));
-
+	/*La commande étant envoyée, on supprime le panier*/
 	supprimerPanier();
 
+	/*On renvoit l'utilisateur sur la page IHM_Page_Client.php*/
 	header('Location: IHM_Page_Client.php');
 ?>

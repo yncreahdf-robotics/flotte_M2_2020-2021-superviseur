@@ -1,4 +1,5 @@
 <?php
+/*Fonction php appelée par le formulaire d'ajout de type de robot de la page IHM_Ajouter_Robot.php, elle permet d'ajouter un type de robot dans la table Type_tb de la base de donnée*/
 
 	/*Récupération des données envoyées par le formulaire d'ajout de type de robot*/
 	$type_robot = $_POST["type_robot"];

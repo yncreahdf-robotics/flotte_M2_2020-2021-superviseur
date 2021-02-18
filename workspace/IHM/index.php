@@ -1,3 +1,7 @@
+<?php
+	/*Page d'accueil du site, elle donne accès à la partie client et à la partie propriétaire. Ce nom de fichier est nécessaire pour que le serveur sache quel fichier appeler en premier lorsqu'on démarre le site*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -37,21 +41,18 @@
 			//Bouton pour accèder à la page de protection de la partie propriétaire
 			const elt_password = document.getElementById('proprietaire');
 			elt_password.addEventListener('click', function mot_de_passe(event){
-				event.preventDefault()
 				document.location = "IHM_Mot_De_Passe.php";
 			})
 
 			//Bouton pour interface client
 			const elt_client = document.getElementById('client');
 			elt_client.addEventListener('click', function client(event){
-				event.preventDefault()
 				document.location = "IHM_Page_Client.php";
 			})
 
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				event.preventDefault()
 				document.location = "index.php";
 			})
 		</script>

@@ -1,3 +1,7 @@
+<?php
+	/*Page qui permet de déplacer une bouteille en la sélectionnant et en choisissant sa nouvelle position avec le formulaire. Ce formulaire va appeler deplacer_bouteille.php pour effectuer les modifications*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -16,7 +20,7 @@
 			$requete_bouteille = $bdd->query('
 				SELECT BouteilleID, BouteilleName, Emplacement
 				FROM Bouteille_tb
-				WHERE BouteilleID <> 0
+				WHERE BouteilleID <> 0 AND BouteilleID <> 1
 			 ')
 		?>
 
@@ -64,9 +68,8 @@
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
 			//Bouton de validation d'une modification
-			const elt = document.getElementsByClassName('modif_ok');
+			const elt = document.getElementById('modif_ok');
 			elt.addEventListener('click', function modifier(event) {
-				//event.preventDefault()
 				if(confirm("Appliquer les modifications ?")){
 					alert("L'article a été modifié.")
 					document.location = "IHM_Liste_Articles.php";
@@ -79,7 +82,6 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
 				document.location = "IHM_Suivi_Salle.php";
 			})
 		</script>

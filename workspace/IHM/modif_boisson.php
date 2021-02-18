@@ -1,4 +1,5 @@
 <?php
+/*Fonction php appelée par le formulaire de modification de boisson de la page IHM_Modifier_Article.php, elle permet de modifier les informations de la boisson sélectionnée grâce à son ID avec le formulaire*/
 
 	/*Récupération des données envoyées par le formulaire de modification de boisson*/
 	$modif_boisson = $_POST["modif_boisson"];

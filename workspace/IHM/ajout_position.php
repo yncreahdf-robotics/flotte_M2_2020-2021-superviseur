@@ -1,4 +1,5 @@
 <?php
+/*Fonction php appelée par le formulaire d'ajout de position de la page IHM_Ajouter_Position.php, elle permet d'ajouter une position dans la table Position_tb de la base de donnée*/
 
 	/*Récupération des données envoyées par le formulaire d'ajout de position*/
 	$nom_position = $_POST["nom_position"];

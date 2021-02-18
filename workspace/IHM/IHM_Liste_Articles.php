@@ -1,3 +1,7 @@
+<?php
+	/*Page qui permet d'afficher la liste des boissons ou la liste des bouteilles sous forme de tableau. Elle donne aussi accès aux outils pour ajouter, modifier ou supprimer une boisson ou une bouteille*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -191,28 +195,24 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
 				document.location = "IHM_Page_Proprietaire.php";
 			})
 
 			//Bouton pour ajouter un article
 			const elt_ajouter = document.getElementById('ajouter');
 			elt_ajouter.addEventListener('click', function ajouter(event){
-				//event.preventDefault()
 				document.location = "IHM_Ajouter_Article.php";
 			})
 
 			//Bouton pour modifier un article
 			const elt_modifier = document.getElementById('modifier');
 			elt_modifier.addEventListener('click', function modifer(event){
-				//event.preventDefault()
 				document.location = "IHM_Modifier_Article.php";
 			})
 
 			//Bouton pour supprimer un article
 			const elt_supprimer = document.getElementById('supprimer');
 			elt_supprimer.addEventListener('click', function supprimer(event){
-				//event.preventDefault()
 				document.location = "IHM_Supprimer_Article.php";
 			})
 		</script>

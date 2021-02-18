@@ -1,3 +1,7 @@
+<?php
+	/*Page qui permet d'afficher la liste des commandes sous forme de tableau. Elle permet aussi de supprimer une commande de la liste en indiquant le numéro de la commande à supprimer*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -62,6 +66,8 @@
 				</div>
 				<br />
 				<br />
+
+				<!-- Formulaire permettant de supprimer une commande de la base de données -->
 				<form method="post" action="supprimer_commande.php">
 					<p>
 						<label for="supprimer_commande">Indiquer le numéro de commande à supprimer : </label>
@@ -81,7 +87,6 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
 				document.location = "IHM_Page_Proprietaire.php";
 			})
 		</script>
