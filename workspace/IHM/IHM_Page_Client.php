@@ -100,10 +100,16 @@
 		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
-			//Bouton pour pré-valider la commande
+			//Bouton pour afficher le panier
 			const elt_commande = document.getElementById('commande');
 			elt_commande.addEventListener('click', function commande(event){
 				document.location = "IHM_Commande_Client.php";
+			})
+
+			//Bouton d'ajout d'article au panier
+			const elt_ajout = document.getElementById('ajout_panier');
+			elt_ajout.addEventListener('click', function ajout_panier(event){
+				alert("L'article a été ajouté au panier.")
 			})
 
 

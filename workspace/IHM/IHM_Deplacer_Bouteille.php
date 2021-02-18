@@ -71,7 +71,7 @@
 			const elt = document.getElementById('modif_ok');
 			elt.addEventListener('click', function modifier(event) {
 				if(confirm("Appliquer les modifications ?")){
-					alert("L'article a été modifié.")
+					alert("La bouteille a été déplacée.")
 					document.location = "IHM_Liste_Articles.php";
 				}
 				else{
