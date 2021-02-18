@@ -1,102 +1,67 @@
-# Docker ROS Base Image
-
-This is a Docker Image.
-
-**Requirements :**
--Docker Desktop(for Windows or Mac)
--Docker Engine (for Linux)
-
-<<<<<<< HEAD
-=======
-## Getting basic auth credentials
-
-In case of getting the error "no basic auth credentials"
-
-- Go to https://github.com/settings/tokens
-
-- Generate new token
-
-- Name it
-
-- Check write:packages
-
-- Generate token
-
-- Save it on your computer !
-
-Now you need to login to the repo with your token, open a terminal :
-
-    docker login docker.pkg.github.com -u <UserNameOfYourGitHub>
-
-Password is your freshly generated token. You can now start to pull the image
+#Superviseur repository
 
 
->>>>>>> 5a3dd90d0c958f961e854e65f75bcb5fd162d058
-## Getting Started to work !
+## Getting started with supervisor !
 
-First clone this image :
+### INSTALLATION
+
+### Step 1:
+
+First clone this repository :
     
-<<<<<<< HEAD
-    docker pull docker.pkg.github.com/yncreahdf-robotics/flotte_m2_2020-2021-<yourproductname>/ros:mykinetic
+    git clone https://github.com/yncreahdf-robotics/flotte_M2_2020-2021-superviseur.git
 
-Then build the image using Docker
+### Step 2:
+Then navigate into workspace:
 
-    docker build --tag ros:mykinetic 
-=======
-    sudo docker pull docker.pkg.github.com/yncreahdf-robotics/flotte_m2_2020-2021-superviseur/xenialrosmysql:latest
+    cd workspace
 
-Then build the image using Docker
+### Step 3:
 
-    docker build --tag ros:mykinetic .
-(Dot is important !)
->>>>>>> 5a3dd90d0c958f961e854e65f75bcb5fd162d058
+Build the supervisor:
 
-Next go to your wanted directory and pull your repo from your branche to one directory.
+    ./Superviseur_Setup.sh
 
-    git pull <yourrepo>
+You don't need to follow next step
 
-Check if you have build your network:
+### LAUNCH SUPERVISOR
 
-    docker network ls
+### Step 4:
+Launch the supervisor:
 
-If you have a network called ros skip the next step if not do:
+    ./Supervisor.sh
 
-    docker network create ros
 
-Then check with:
 
-    docker network ls
+### IN CASE OF MODIFICATION
 
-Move to your the directory that contain your "workspace" folder
+## Change branch
 
-    cd <path>
+Make a new branch for new feature:
 
-Finally run your image
+    git checkout -b feature/<your-feature-name>
 
-<<<<<<< HEAD
-    docker run --rm -it --net ros -e ROS_MASTER_URI=http://roscore:11311 -e WORKSPACE_NAME=workspace -v $(pwd)/workspace:/root/workspace -w /root/workspace/catkin_ws ros:<yourimagename>
-=======
-    sudo docker run --rm -it --net ros -e ROS_MASTER_URI=http://roscore:11311 -e WORKSPACE_NAME=workspace -v $(pwd)/workspace:/home/workspace -w /home/workspace docker.pkg.github.com/yncreahdf-robotics/flotte_m2_2020-2021-superviseur/xenialrosmysql:latest
->>>>>>> 5a3dd90d0c958f961e854e65f75bcb5fd162d058
+To change branch:
 
-You are now in your docker container running your programs and nodes.
-You can modify the files directly from the shared folder "workspace" that you have pulled from github and use docker as your developpement environnement.
+    git checkout <your-branch>
 
 ## Save your work
-First commit your work:
 
-    git commit
+First add your work with:
+
+    git add --all
+
+Then commit your work:
+
+    git commit -m "your message"
 
 Push your local repository containing the "workspace" folder to your branch
 
-    git push <your repo>
+    git push 
 
 
 
 
 
-sudo docker login https://docker.pkg.github.com -u USERNAME -p PASSWORD
 
-
-Now you are ready for next section.
 
