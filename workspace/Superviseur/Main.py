@@ -599,48 +599,48 @@ def command_loop():
 
 # Lancement IHM Initialisation
 
-#InitBDDSuperviseur.create_flotte_db()
+InitBDDSuperviseur.create_flotte_db()
 
-#InitBDDSuperviseur.create_all_tables()
+InitBDDSuperviseur.create_all_tables()
 
-# Positions.insert_Pose("table1", 3.30, 1.57, 0.05, -0.99)
-# Positions.insert_Pose("table2", 1.64, 1.26, 0.99, 0.03)
-# Positions.insert_Pose("table3", 2.56, 3.56, 0.91, -0.41)
-# Positions.insert_Pose("bar", 4.92, 2.77, 0.72, 0.69)
-# #Positions.insert_Pose("tagne", -21.2689863214036, -1.0389461981502848, 0.62, 0.80)
-# Positions.insert_Pose("accueil", 0.15,3.55,-0.25,1)
+Positions.insert_Pose("table1", 3.30, 1.57, 0.05, -0.99)
+Positions.insert_Pose("table2", 1.64, 1.26, 0.99, 0.03)
+Positions.insert_Pose("table3", 2.56, 3.56, 0.91, -0.41)
+Positions.insert_Pose("bar", 4.92, 2.77, 0.72, 0.69)
+#Positions.insert_Pose("tagne", -21.2689863214036, -1.0389461981502848, 0.62, 0.80)
+Positions.insert_Pose("accueil", 0.15,3.55,-0.25,1)
 
-# Type.insert_Type("Robotino", "Service", 20000)
-# Type.insert_Type("Heron", "Service", 10000)
-# Type.insert_Type("Turtlebot", "Guide", 1000)
-# Type.insert_Type("Caroita", "Preparateur", 500)
-# Type.insert_Type("Caroita/Melangeur", "Melangeur", 500)
-# Type.insert_Type("Caroita/Manipulateur", "Manipulateur", 500)
-# Type.insert_Type("Accueil", "Accueil", -1)
+Type.insert_Type("Robotino", "Service", 20000)
+Type.insert_Type("Heron", "Service", 10000)
+Type.insert_Type("Turtlebot", "Guide", 1000)
+Type.insert_Type("Caroita", "Preparateur", 500)
+Type.insert_Type("Caroita/Melangeur", "Melangeur", 500)
+Type.insert_Type("Caroita/Manipulateur", "Manipulateur", 500)
+Type.insert_Type("Accueil", "Accueil", -1)
 
-# Table.insert_Table(0, Positions.get_Pose_by_name("table1")[0][0], 2, "Free", 0)
-# Table.insert_Table(0, Positions.get_Pose_by_name("table2")[0][0], 2, "Free", 0)
-# Table.insert_Table(0, Positions.get_Pose_by_name("table3")[0][0], 2, "Free", 0)
-
-
-# Bouteille.insert_Bouteille("Eau",25,7)
-# Bouteille.insert_Bouteille("Jagger Meister", 25, 1)
-# Bouteille.insert_Bouteille("Crazy Tigger", 75, 2)
-# Bouteille.insert_Bouteille("Sirop de Cerise", 75, 3)
-# Bouteille.insert_Bouteille("Badoit Rouge", 75, 4)
-# Bouteille.insert_Bouteille("Grenadine", 25, 5)
+Table.insert_Table(0, Positions.get_Pose_by_name("table1")[0][0], 2, "Free", 0)
+Table.insert_Table(0, Positions.get_Pose_by_name("table2")[0][0], 2, "Free", 0)
+Table.insert_Table(0, Positions.get_Pose_by_name("table3")[0][0], 2, "Free", 0)
 
 
-# Bouteille.insert_Bouteille("Pas de bouteille",0,0)
-# Bouteille.update_ID("Pas de bouteille", 0)
+Bouteille.insert_Bouteille("Eau",25,7)
+Bouteille.insert_Bouteille("Jagger Meister", 25, 1)
+Bouteille.insert_Bouteille("Crazy Tigger", 75, 2)
+Bouteille.insert_Bouteille("Sirop de Cerise", 75, 3)
+Bouteille.insert_Bouteille("Badoit Rouge", 75, 4)
+Bouteille.insert_Bouteille("Grenadine", 25, 5)
 
-# Recette.insert_Recette("JaggerBomb", 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0)
-# Recette.insert_Recette("Grenadine", 5, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
-# Recette.insert_Recette("Eau Finement Pétillante", 4, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
 
-# Article.insert_Article("JaggerBomb", 1, 33, 1)
-# Article.insert_Article("Grenadine", 1, 33, 2)
-# Article.insert_Article("Eau Finement Pétillante", 1, 33, 3)
+Bouteille.insert_Bouteille("Pas de bouteille",0,0)
+Bouteille.update_ID("Pas de bouteille", 0)
+
+Recette.insert_Recette("JaggerBomb", 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+Recette.insert_Recette("Grenadine", 5, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+Recette.insert_Recette("Eau Finement Pétillante", 4, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+
+Article.insert_Article("JaggerBomb", 1, 33, 1)
+Article.insert_Article("Grenadine", 1, 33, 2)
+Article.insert_Article("Eau Finement Pétillante", 1, 33, 3)
 
 subscribe(my_ip, port, "Initialisation/#", 2)
 subscribe(my_ip, port, "Commande/#", 2)

@@ -145,10 +145,7 @@
 								<tr>
 									<th>Table</th>
 									<th>Etat</th>
-
 									<th>Montant à payer</th>
-
-									<th></th>
 								</tr>
 							</thead>
 
@@ -156,10 +153,7 @@
 								<tr>
 									<th>Table</th>
 									<th>Etat</th>
-
 									<th>Montant à payer</th>
-
-									<th></th>
 								</tr>
 							</tfoot>
 
@@ -173,14 +167,23 @@
 									<td><?php echo $donnees['Etat']; ?></td>
 
 									<td><?php echo $donnees['Prix']; ?> €</td>
-									<td><?php echo "<input type=\"submit\" value=\"Libérer\" id=\"table".$donnees['TableID']."\"/>" ;?></td>
-
 								</tr>
 								<?php
 									}
 								?>
 							</tbody>
 						</table>
+						<br />
+						<!-- Formumlaire pour réinitialiser une table -->
+						<form method="post" action="liberer_table.php">
+							<label for="liberer_table">Choisir la table à réinitialiser :</label>
+							<select name="liberer_table">
+								<option value="1">Table 1</option>
+								<option value="2">Table 2</option>
+								<option value="3">Table 3</option>
+							</select>
+							<input type="submit" name="liberer" value="Libérer" id="liberer" />
+						</form>
 					</div>
 				</nav>
 			</section>
@@ -193,42 +196,6 @@
 		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
-			const elt_table1 = document.getElementById('table1');
-			elt_table1.addEventListener('click', function table1(event) {
-				//Lien BDD pour changer l'état de la table 1 vers "Libre", remet à 0 la note de cette table
-				<?php
-					$bdd->exec('
-						UPDATE Table_tb 
-						SET Etat = \'BDSM\', Prix = 0 
-						WHERE TableID = 1
-					');
-					?>
-			})
-
-			const elt_table2 = document.getElementById('table2');
-			elt_table2.addEventListener('click', function table2(event) {
-				//Lien BDD pour changer l'état de la table 2 vers "Libre", remet à 0 la note de cette table
-				<?php
-					$bdd->exec('
-						UPDATE Table_tb 
-						SET Etat = \'BDSM\', Prix = 0 
-						WHERE TableID = 2
-					');
-					?>
-			})
-
-			const elt_table3 = document.getElementById('table3');
-			elt_table3.addEventListener('click', function table3(event) {
-				//Lien BDD pour changer l'état de la table 3 vers "Libre", remet à 0 la note de cette table
-				<?php
-					$bdd->exec('
-						UPDATE Table_tb 
-						SET Etat = \'BDSM\', Prix = 0 
-						WHERE TableID = 3
-					');
-					?>
-			})
-
 			//Bouton de déplacement des bouteilles
 			const elt_tourniquet = document.getElementById('tourniquet');
 			elt_tourniquet.addEventListener('click', function tourniquet(event){

@@ -14,21 +14,35 @@
 	include("connexion.php");
 
 	/*------------------------------ Création de la commande dans la bdd ------------------------------*/
+	$requette_numero_commande = $bdd->prepare('
+		SELECT CommandNbr
+		FROM Table_tb
+		WHERE TableID = :table
+	');
+	$requette_numero_commande->execute(array(
+		'table' => $_SESSION['panier']['table']
+	));
 
-	/*Création du numéro de commande, on vérifie que le numéro créé ne soit pas déjà attribué dans la bdd*/
-	do{
-		$creation_ok = true;
-		$numero_commande = rand(1, 10000);
-		$requette_nbr_cmd = $bdd->query('SELECT CommandNbr FROM Commande_tb');
+	$numero_commande_recup = $requette_numero_commande->fetch();
 
-		while($nrb_cmd = $requette_nbr_cmd->fetch()){
-			if($nrb_cmd['CommandNbr'] === $numero_commande){
-				$creation_ok = false;
-				break;
+	if($numero_commande_recup['CommandNbr'] == 0){
+		/*Création du numéro de commande, on vérifie que le numéro créé ne soit pas déjà attribué dans la bdd*/	
+		do{
+			$creation_ok = true;
+			$numero_commande = rand(1, 10000);
+			$requette_nbr_cmd = $bdd->query('SELECT CommandNbr FROM Commande_tb');
+
+			while($nrb_cmd = $requette_nbr_cmd->fetch()){
+				if($nrb_cmd['CommandNbr'] === $numero_commande){
+					$creation_ok = false;
+					break;
+				}
 			}
-		}
-	} while($creation_ok !== true);
-	
+		} while($creation_ok !== true);
+	}
+	else{
+		$numero_commande = $numero_commande_recup['CommandNbr'];
+	}
 
 	$etat = "Pending";
 	$nombre_article = count($_SESSION['panier']['ID_article']);
