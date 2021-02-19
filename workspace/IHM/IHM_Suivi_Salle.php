@@ -195,7 +195,7 @@
 				<?php
 					$bdd->exec('
 						UPDATE Table_tb 
-						SET Etat = \'FREE\', Prix = 0 
+						SET Etat = \'BDSM\', Prix = 0 
 						WHERE TableID = 1
 					');
 					?>
@@ -207,7 +207,7 @@
 				<?php
 					$bdd->exec('
 						UPDATE Table_tb 
-						SET Etat = \'FREE\', Prix = 0 
+						SET Etat = \'BDSM\', Prix = 0 
 						WHERE TableID = 2
 					');
 					?>
@@ -219,7 +219,7 @@
 				<?php
 					$bdd->exec('
 						UPDATE Table_tb 
-						SET Etat = \'FREE\', Prix = 0 
+						SET Etat = \'BDSM\', Prix = 0 
 						WHERE TableID = 3
 					');
 					?>

@@ -95,6 +95,7 @@ def on_message(client, userdata, msg):
 	######################
 	##	Topic Généraux  ##
 	######################
+	print(msg.topic)
 	print(msg.payload.decode("utf-8"))
 
 	# Topic - Connexion d'un nouveau robot
@@ -193,12 +194,12 @@ def on_message(client, userdata, msg):
 			print("MESSAGE:	Aucune table de libre")
 
 
-	if msg.topic == "Accueil/Paiement":
-		CommandNbr=msg.payload.decode("utf-8").split("/")[1]
-		table=Table.get_Table_by_CommandNbr(CommandNbr)
-		#Libérer la table dans la base de données
-		Table.update_status(table, "Free")
-		Table.update_command(0)
+	#if msg.topic == "Accueil/Paiement":
+	#	CommandNbr=msg.payload.decode("utf-8").split("/")[1]
+	#	table=Table.get_Table_by_CommandNbr(CommandNbr)
+	#	#Libérer la table dans la base de données
+	#	Table.update_status(table, "Free")
+	#	Table.update_command(0)
 		
 
 
@@ -292,18 +293,18 @@ def on_message(client, userdata, msg):
 		remaining_articles=Commande.get_Commande_with_status_and_commandNbr(CommandNbr, "Prepared")
 
 		#recherche du robot de service sur lequel on charge la commande
-		robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr, "Service")[0][0]
+		#robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr, "Service")[0][0]
 
-		##recherche du robot en fonction du poids
-		#poids_total = Article.total_weight_of_an_order(CommandNbr)
-		#print(poids_total)
-		##On selectionne les robots disponibles
-		#robots_candidats=robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr, "Service")
-		#robot=[]
-		#for i in range len(robots_candidats):
-		#if Robot.get_robot_weight_capacity(i[0])>=poids_total and Robot.get_robot_weight_capacity(i[0])>Robot.get_robot_weight_capacity(Robot[0][0]):
-		#	robot[0]=robots_candidats[i]
-
+		#recherche du robot en fonction du poids
+		poids_total = Article.total_weight_of_an_order(CommandNbr)
+		print(poids_total)
+		#On selectionne les robots disponibles
+		robots_candidats=robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr, "Service")
+		for i in range (len(robots_candidats)):
+			print(robots_candidats[i])
+			if (Robot.get_robot_weight_capacity(i[0])>=poids_total and Robot.get_robot_weight_capacity(i[0])>Robot.get_robot_weight_capacity(robot)):
+				robot=robots_candidats[i]
+		print(robot)
 
 
 
@@ -352,7 +353,7 @@ def on_message(client, userdata, msg):
 			if (tentative <=3):
 				publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
 			else : 
-				robot.update_status(preparateur+"/1","Maintenance")
+				Robot.update_status(preparateur+"/1","Maintenance")
 
 			
 		if(codeError==2):	#gobelet absent
@@ -397,7 +398,7 @@ def on_message(client, userdata, msg):
 				manipulateur=Robot.find_robot_by_CommandNbr_and_status(CommandNbr,"Pending")
 				print(manipulateur)
 				Robot.update_status(manipulateur,"Occupied")
-				publish(my_ip, port, "Preparateur/Charge", manipulateur[0][0].split("/")[0] + "/" + CommandNbr , 2)
+				publish(my_ip, port, "Preparateur/Charge", str(manipulateur[0][0].split("/")[0]) + "/" + str(CommandNbr) , 2)
 
 			else:
 		 		#	On fait attendre le robot jusqu'à ce que la commande soit prête
@@ -590,44 +591,6 @@ def command_loop():
 		print("MESSAGE: Robot go to bar")
 
 	time.sleep(10)
-'''
-	#	Si une commande est en attente et qu'un robot de service et un préparateur sont libres, lancer la commande
-	if(len(Commande.get_CommandNbr_with_status("Pending"))!=0 and len(Robot.find_robot_by_role_and_status("Service", "Idle"))!=0 and len(Robot.find_robot_by_role_and_status("Preparateur", "Idle"))!=0):
-		
-		print("MESSAGE: Une commande est en préparation")
-
-		commande=Commande.get_CommandNbr_with_status("Pending")[0][0]
-		print(commande)
-		Commande.update_status(commande, "Ordered")
-
-		listeRobots=Robot.find_robot_by_role_and_status("Service", "Idle")
-		listePreparateurs = Robot.find_robot_by_role_and_status("Preparateur", "Idle")
-
-		#	On choisit le robot de service qui va effectuer la commande 
-		robotMissione = listeRobots[0]
-		iprobot=robotMissione[0]
-		Robot.update_command(iprobot, commande)
-		Robot.update_status(iprobot, "Occupied")
-
-		#	On choisit le préparateur qui va effectuer la commande
-		preparateurMissione = listePreparateurs[0]
-		ippreparateur=preparateurMissione[0]
-		Robot.update_command(ippreparateur,commande)
-		Robot.update_status(ippreparateur, "Occupied")
-
-		destination=Positions.get_Pose_by_name("bar")[0][0] 
-		#Robot.get_robot_data(ippreparateur)[0][2]
-
-		print("PUBLISH:  Envoi d'un ordre a", iprobot)
-		publish(my_ip, port, "Service/Go/Bar", iprobot + "/" + str(destination), 2)
-
-		print("PUBLISH:  Envoi d'un ordre a", ippreparateur)
-		publish(my_ip, port, "Preparateur/Prepare", ippreparateur + "/" + str(commande) , 2)
-
-		return True
-	time.sleep(30)
-	return False
-'''
 
 ######################
 ### Initialisation ###
@@ -636,59 +599,48 @@ def command_loop():
 
 # Lancement IHM Initialisation
 
+#InitBDDSuperviseur.create_flotte_db()
 
-InitBDDSuperviseur.delete_flotte_db()
+#InitBDDSuperviseur.create_all_tables()
 
-InitBDDSuperviseur.create_flotte_db()
+# Positions.insert_Pose("table1", 3.30, 1.57, 0.05, -0.99)
+# Positions.insert_Pose("table2", 1.64, 1.26, 0.99, 0.03)
+# Positions.insert_Pose("table3", 2.56, 3.56, 0.91, -0.41)
+# Positions.insert_Pose("bar", 4.92, 2.77, 0.72, 0.69)
+# #Positions.insert_Pose("tagne", -21.2689863214036, -1.0389461981502848, 0.62, 0.80)
+# Positions.insert_Pose("accueil", 0.15,3.55,-0.25,1)
 
-InitBDDSuperviseur.create_all_tables()
+# Type.insert_Type("Robotino", "Service", 20000)
+# Type.insert_Type("Heron", "Service", 10000)
+# Type.insert_Type("Turtlebot", "Guide", 1000)
+# Type.insert_Type("Caroita", "Preparateur", 500)
+# Type.insert_Type("Caroita/Melangeur", "Melangeur", 500)
+# Type.insert_Type("Caroita/Manipulateur", "Manipulateur", 500)
+# Type.insert_Type("Accueil", "Accueil", -1)
 
-#Positions.insert_Pose("recharge", 0.25, 0.1, 0.98, 0.21)
-#Positions.insert_Pose("table1", 2.9226691810219827, 0.7380693324419132, 0.79, 0.6)
-#Positions.insert_Pose("table2", 2.001872215066296, 1.1748824989062503, -0.83, 0.56)
-#Positions.insert_Pose("table3", 3.508061809231884, 2.9028496618974104, -0.56, 0.83)
-#Positions.insert_Pose("bar", 5.66,1.2,0.56,0.82)
-
-Positions.insert_Pose("table1", 3.30, 1.57, 0.05, -0.99)
-Positions.insert_Pose("table2", 1.64, 1.26, 0.99, 0.03)
-Positions.insert_Pose("table3", 2.56, 3.56, 0.91, -0.41)
-Positions.insert_Pose("bar", 4.92, 2.77, 0.72, 0.69)
-
-
-#Positions.insert_Pose("tagne", -21.2689863214036, -1.0389461981502848, 0.62, 0.80)
-Positions.insert_Pose("accueil", 0.15,3.55,-0.25,1)
-
-Type.insert_Type("Robotino", "Service", 20000)
-Type.insert_Type("Heron", "Service", 10000)
-Type.insert_Type("Turtlebot", "Guide", 1000)
-Type.insert_Type("Caroita", "Preparateur", 500)
-Type.insert_Type("Caroita/Melangeur", "Melangeur", 500)
-Type.insert_Type("Caroita/Manipulateur", "Manipulateur", 500)
-Type.insert_Type("Accueil", "Accueil", -1)
-
-Table.insert_Table(0, Positions.get_Pose_by_name("table1")[0][0], 2, "Free", 0)
-Table.insert_Table(0, Positions.get_Pose_by_name("table2")[0][0], 2, "Free", 0)
-Table.insert_Table(0, Positions.get_Pose_by_name("table3")[0][0], 2, "Free", 0)
+# Table.insert_Table(0, Positions.get_Pose_by_name("table1")[0][0], 2, "Free", 0)
+# Table.insert_Table(0, Positions.get_Pose_by_name("table2")[0][0], 2, "Free", 0)
+# Table.insert_Table(0, Positions.get_Pose_by_name("table3")[0][0], 2, "Free", 0)
 
 
-Bouteille.insert_Bouteille("Eau",25,7)
-Bouteille.insert_Bouteille("Jagger Meister", 25, 1)
-Bouteille.insert_Bouteille("Crazy Tigger", 75, 2)
-Bouteille.insert_Bouteille("Sirop de Cerise", 75, 3)
-Bouteille.insert_Bouteille("Badoit Rouge", 75, 4)
-Bouteille.insert_Bouteille("Grenadine", 25, 5)
+# Bouteille.insert_Bouteille("Eau",25,7)
+# Bouteille.insert_Bouteille("Jagger Meister", 25, 1)
+# Bouteille.insert_Bouteille("Crazy Tigger", 75, 2)
+# Bouteille.insert_Bouteille("Sirop de Cerise", 75, 3)
+# Bouteille.insert_Bouteille("Badoit Rouge", 75, 4)
+# Bouteille.insert_Bouteille("Grenadine", 25, 5)
 
 
-Bouteille.insert_Bouteille("Pas de bouteille",0,0)
-Bouteille.update_ID("Pas de bouteille", 0)
+# Bouteille.insert_Bouteille("Pas de bouteille",0,0)
+# Bouteille.update_ID("Pas de bouteille", 0)
 
-Recette.insert_Recette("JaggerBomb", 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0)
-Recette.insert_Recette("Grenadine", 5, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
-Recette.insert_Recette("Eau Finement Pétillante", 4, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+# Recette.insert_Recette("JaggerBomb", 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+# Recette.insert_Recette("Grenadine", 5, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+# Recette.insert_Recette("Eau Finement Pétillante", 4, 1, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0)
 
-Article.insert_Article("JaggerBomb", 1, 33, 1)
-Article.insert_Article("Grenadine", 1, 33, 2)
-Article.insert_Article("Eau Finement Pétillante", 1, 33, 3)
+# Article.insert_Article("JaggerBomb", 1, 33, 1)
+# Article.insert_Article("Grenadine", 1, 33, 2)
+# Article.insert_Article("Eau Finement Pétillante", 1, 33, 3)
 
 subscribe(my_ip, port, "Initialisation/#", 2)
 subscribe(my_ip, port, "Commande/#", 2)
@@ -714,76 +666,3 @@ while 1:
 
 	
 
-	
-
-
-############################
-## Messages initiaux MQTT ##
-############################
-
-	#print("Yes! i receive the message :" , str(msg.payload))
-	#print("message received ", msg.payload.decode("utf-8"))
-	#print("message topic=",msg.topic)
-	#print("message qos=",msg.qos)
-	#print("message retain flag=",msg.retain)
-
-	
-	# Topic - Réception d'une commande
-	'''
-	if msg.topic == "Commande/Envoi":
-
-		print("MESSAGE:  Nouvelle commande")
-
-		CommandNbr=msg.payload.decode("utf-8")[0]
-
-		# recherche du robot dispo (+le plus proche de la destination si possible)			
-		listeRobots=Robot.find_robot_by_role_and_status("Service", "Idle")
-
-		# Vérifier qu'il y a des robots de service disponibles
-		if len(listeRobots)!=0:
-
-			# Recherche d'un preparateur disponible
-			listePreparateurs = Robot.find_robot_by_role_and_status("Preparateur", "Idle")
-
-			# Vérifier que la liste n'est pas vide
-			if len(listePreparateurs)!=0:
-
-				print("MESSAGE: Commande en cours de préparation"
-					)
-				#	Commande Etat="Ordered"
-				Commande.update_status(CommandNbr,"Ordered")
-
-				#TODO: choisir un robot avec des critères plus poussés?
-				#	On choisit le robot de service qui va effectuer la commande 
-				robotMissione = listeRobots[0]
-				iprobot=robotMissione[0]
-				Robot.update_status(iprobot, "Occupied")
-
-				#TODO: choisir un préparateur avec des critères plus poussés?
-				#	On choisit le préparateur qui va effectuer la commande
-				preparateurMissione = listePreparateurs[0]
-				ippreparateur=preparateurMissione[0]
-				Robot.update_status(ippreparateur, "Occupied")
-
-				destination=Robot.get_robot_data(ippreparateur)[0][2]
-
-				print("PUBLISH:  Envoi d'un ordre a", iprobot)
-				publish(my_ip, port, "Service/Go/Bar", iprobot + "/" + CommandNbr, 2)
-
-				print("PUBLISH:  Envoi d'un ordre a", ippreparateur)
-				publish(my_ip, port, "Preparateur/Prepare", ippreparateur + "/" +  CommandNbr , 2)
-
-			# Si aucun préparateurt n'est disponible
-			else:
-			#	Commande - Etat="Pending"
-				print("MESSAGE: Commande en attente - Préparateur Indisponible")
-				Commande.update_status(CommandNbr,"Pending")
-
-		# Si aucun robot de service n'est disponible
-		else:
-		#TODO: METTRE LA COMMANDE EN ATTENTE: Entrer la commande dans la base de données Etat="Pending"
-			print("MESSAGE: Commande en attente - Préparateur Indisponible")
-			Commande.update_status(CommandNbr,"Pending")
-
-	## Fin Commande/Envoi
-	'''

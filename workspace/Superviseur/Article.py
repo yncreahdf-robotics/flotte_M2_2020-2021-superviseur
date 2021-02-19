@@ -153,6 +153,7 @@ def total_weight_of_an_order(CommandNbr):
 		mycursor.execute(sql)
 		myresult=mycursor.fetchall()
 		for x in myresult:
+			x=int(x)
 			print(x)
 		mycursor.close()
 		flotte_db.close()

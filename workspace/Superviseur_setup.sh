@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo docker-compose down 
 
 sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -10,7 +11,6 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.28.2/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 sudo docker-compose --version
 
-
 sudo service mysql stop
 sudo service mosquitto stop
-sudo docker-compose up -d && sudo docker-compose exec superviseur python Main.py sh
+sudo docker-compose up -d && sudo docker-compose exec superviseur python Main_setup.py sh

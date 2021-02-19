@@ -1,3 +1,4 @@
+
 import mysql.connector
 hosts = open('/etc/hosts','r')
 for line in hosts:
