@@ -1,4 +1,5 @@
 <?php
+/*Fonction appelée lorsqu'on veut supprimer une bouteille de la base de données*/
 
 	/*Récupération de l'ID de la bouteille à supprimer depuis le formulaire*/
 	$bouteille_supprimee = $_POST["bouteille_supprimee"];

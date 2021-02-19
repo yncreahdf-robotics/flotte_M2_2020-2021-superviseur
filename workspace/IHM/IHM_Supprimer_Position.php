@@ -1,3 +1,7 @@
+<?php
+	/*Page permettant de supprimer une position de la base de données avec le formulaire appelant supprimer_position.php*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>

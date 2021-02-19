@@ -1,4 +1,5 @@
 <?php
+/*Fonction appelée lorsqu'on veut supprimer une position de la base de données*/
 
 	/*Récupération de l'ID de la position à supprimer depuis le formulaire*/
 	$selected_position = $_POST["selected_position"];

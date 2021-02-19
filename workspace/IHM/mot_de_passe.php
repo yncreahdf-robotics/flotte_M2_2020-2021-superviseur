@@ -1,4 +1,5 @@
 <?php
+/*Fonction appelée lors de la vérification des identifiants saisis sur la page IHM_Mot_De_Passe.php*/
 
 /*Création des identifiants d'accès à la partie propriétaire*/
     $username = "FRS";

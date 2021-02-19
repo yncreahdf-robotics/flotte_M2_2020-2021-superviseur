@@ -1,3 +1,7 @@
+<?php
+	/*Page permettant de limiter l'accès à la partie propriétaire grâce à un mot de passe, elle fait appel à mot_de_passe.php pour faire la vérification des identifiants saisis par l'utilisateur*/
+?>	
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -37,7 +41,6 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
 				document.location = "index.php";
 			})
 		</script>

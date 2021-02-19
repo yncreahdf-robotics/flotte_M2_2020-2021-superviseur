@@ -1,9 +1,13 @@
-<?php 
-	session_start();	//On démarre une session pour utiliser un panier associé au client
+<?php
+/*Page qui permet au client d'ajouter des articles qu'il veut commander dans un panier et d'indiquer la table à laquelle il se trouve*/
 
+	/*On démarre une session pour utiliser un panier associé au client*/
+	session_start();	
+
+	/*On récupère les fonctions de gestion du panier depuis le fichier fonctions_panier.php*/
 	include_once("fonctions_panier.php");
 
-
+	/*On crée le panier*/
 	creationPanier();
 ?>
 
@@ -79,7 +83,7 @@
 				<!-- Création de boutons permettant de pré-valider la commande ou d'appeler un serveur -->
 				<nav>
 					<div class="bouton" id="commande">
-						<p>Commander</p>
+						<p>Voir le panier</p>
 					</div>
 					<div class="bouton" id="appel_serveur">
 						<p>Appeler un serveur</p>
@@ -96,18 +100,22 @@
 		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
-			//Bouton pour pré-valider la commande
+			//Bouton pour afficher le panier
 			const elt_commande = document.getElementById('commande');
 			elt_commande.addEventListener('click', function commande(event){
-				//event.preventDefault()
 				document.location = "IHM_Commande_Client.php";
+			})
+
+			//Bouton d'ajout d'article au panier
+			const elt_ajout = document.getElementById('ajout_panier');
+			elt_ajout.addEventListener('click', function ajout_panier(event){
+				alert("L'article a été ajouté au panier.")
 			})
 
 
 			//Appel d'un serveur
 			const elt_serveur = document.getElementById('appel_serveur');
 			elt_serveur.addEventListener('click', function appel_serveur(event) {
-				//event.preventDefault()
 				if(confirm("Etes-vous sur de vouloir appeler un serveur ?")){
 					alert("Un serveur a été appelé.")
 				}
@@ -119,7 +127,6 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function client(event){
-				//event.preventDefault()
 				document.location = "index.php";
 			})
 		</script>

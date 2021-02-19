@@ -1,4 +1,5 @@
 <?php
+/*Fonction php appelée par le formulaire de modification de position de la page IHM_Modifier_Position.php, elle permet de modifier les informations de la position sélectionnée grâce à son ID avec le formulaire*/
 
 	/*Récupération des données envoyées par le formulaire de modification de boisson*/
 	$selected_position = $_POST["selected_position"];

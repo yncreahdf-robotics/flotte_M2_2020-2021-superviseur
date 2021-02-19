@@ -1,3 +1,7 @@
+<?php
+	/*Page permettant de supprimer une boisson ou une bouteille de la base de données avec les formulaires appelant respectivement supprimer_boisson.php ou supprimer_bouteille.php*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>

@@ -1,4 +1,5 @@
 <?php
+/*Fonction php appelée par le formulaire d'ajout de boisson de la page IHM_Ajouter_Article.php, elle permet d'ajouter une boisson dans la table Article_tb de la base de données ainsi que sa recette associée grâce à son ID dans la table Recette_tb*/
 
 	/*Récupération des données envoyées par le formulaire d'ajout de boisson*/
 	$nom_boisson = $_POST["nom_boisson"];

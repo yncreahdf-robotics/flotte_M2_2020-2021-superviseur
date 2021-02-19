@@ -1,8 +1,14 @@
 <?php
-	session_start();	//On démarre une session pour utiliser un panier associé au client
+/*Fonction appelée lorsque le client veut ajouter un article sur la page IHM_Page_Client.php, elle ajoute l'article sélectionné avec la quantité saisie et elle modifie la table si besoin*/
+
+	/*On démarre une session pour utiliser un panier associé au client*/
+	session_start();	
+
+	/*On récupère les fonctions de gestion du panier depuis le fichier fonctions_panier.php*/
 	include_once("fonctions_panier.php");
 
-	creationPanier();	//On vérifie que le panier est bien créer
+	/*On vérifie que le panier est bien créer*/
+	creationPanier();
 
 	/*On récupère l'article choisit par le client avec le formulaire*/
 	$_SESSION['panier']['table'] = $_POST["table"];

@@ -1,3 +1,7 @@
+<?php
+	/*Page permettant de saisir les nouvelles informations d'une boisson ou d'une bouteille déjà présente dans la base de données avec les formulaires appelant respectivement modif_boisson.php ou modif_bouteille.php*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -23,19 +27,19 @@
 				/*Connexion à la base de données avec le fichier connexion.php*/
 				include("connexion.php");
 
-				/*Création de la requète qui va récupérer les informations des bouteilles dans Bouteille_tb. On ne recupère pas l'ID = 0 car c'est un champ servant à indiquer qu'il n'y a pas de bouteille*/
-				$requete_bouteille = $bdd->query('SELECT * FROM Bouteille_tb WHERE BouteilleID <> 0');
+				/*Création de la requète qui va récupérer les informations des bouteilles dans Bouteille_tb. On ne recupère pas l'ID = 0 ni l'ID = 1 car on ne doit pas les modifier*/
+				$requete_bouteille = $bdd->query('SELECT * FROM Bouteille_tb WHERE BouteilleID <> 0 AND BouteilleID <> 1');
 
 				/*Création de la requète qui va récupérer les informations des recettes dans Recette_tb*/
 				$requete_recette = $bdd->query('SELECT RecetteID, RecetteName FROM Recette_tb');
 
 				/*Création de 6 requètes qui vont toutes récupérer l'ID et le nom des bouteilles depuis la base de données, il faut 6 requètes car on peut avoir jusqu'à 6 bouteilles dans une même boisson*/
-				$requete1 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');	
-				$requete2 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');
-				$requete3 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');
-				$requete4 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');
-				$requete5 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');
-				$requete6 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb');
+				$requete1 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');	
+				$requete2 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');
+				$requete3 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');
+				$requete4 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');
+				$requete5 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');
+				$requete6 = $bdd->query('SELECT BouteilleID, BouteilleName FROM Bouteille_tb ORDER BY BouteilleID');
 
 			?>
 			
@@ -59,7 +63,7 @@
 					<form method="post" action="modif_bouteille.php">
 						<select name="bouteille_modifiee" id="bouteille_modifiee">
 						<?php
-						/*On récupère les informations depuis requete_bouteille et on les affiches dans une liste déroulante. Chaque bouteille va créer une noption dans la liste. Cette liste permet de choisir la bouteille qui sera modifiée grâce à son ID*/
+						/*On récupère les informations depuis requete_bouteille et on les affiches dans une liste déroulante. Chaque bouteille va créer une option dans la liste. Cette liste permet de choisir la bouteille qui sera modifiée grâce à son ID*/
 							while($bouteilles = $requete_bouteille->fetch()){
 								echo "<option value=\"" . $bouteilles['BouteilleID'] . "\">" . $bouteilles['BouteilleName'] . "</option>";
 	        				}
@@ -94,7 +98,7 @@
 	        			</select>
 	   				</p>
 	   				<br />
-	   				<input type="submit" name="modif_bouteille_ok" value="Modifier" id="modif_ok" />
+	   				<input type="submit" name="modif_bouteille_ok" value="Modifier" id="modif_bouteille" />
 	   				<br />
 					</form>
 				</div>
@@ -222,7 +226,7 @@
 	        				<br />
 	        				<br />
 	        				<br />
-	        				<input type="submit" name="modif_boisson_ok" value="Modifier" id="modif_ok" />
+	        				<input type="submit" name="modif_boisson_ok" value="Modifier" id="modif_boisson_ok" />
 	        				<br />
 	   					</p>
 					</form>
@@ -237,12 +241,23 @@
 		<!-- Fonctions qui permettent de gérer les boutons présents sur la page -->
 		<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 		<script type="text/javascript">
-			//Bouton de validation d'une modification
-			const elt = document.getElementsByClassName('modif_ok');
-			elt.addEventListener('click', function modifier(event) {
-				//event.preventDefault()
+			//Bouton de validation de modification d'une bouteille
+			const elt_bouteille = document.getElementById('modif_bouteille');
+			elt_bouteille.addEventListener('click', function modifier_bouteille(event) {
 				if(confirm("Appliquer les modifications ?")){
-					alert("L'article a été modifié.")
+					alert("La bouteille a été modifiée.")
+					document.location = "IHM_Liste_Articles.php";
+				}
+				else{
+
+				}
+			})
+
+			//Bouton de validation de modification d'une boisson
+			const elt_boisson = document.getElementById('modif_boisson_ok');
+			elt_boisson.addEventListener('click', function modifier_boisson(event) {
+				if(confirm("Appliquer les modifications ?")){
+					alert("La boisson a été modifiée.")
 					document.location = "IHM_Liste_Articles.php";
 				}
 				else{
@@ -253,8 +268,7 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
-				document.location = "IHM_Page_Proprietaire.php";
+				document.location = "IHM_Liste_Articles.php";
 			})
 		</script>
 	</body>

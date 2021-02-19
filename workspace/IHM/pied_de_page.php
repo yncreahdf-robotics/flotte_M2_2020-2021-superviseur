@@ -1,5 +1,6 @@
-
-<!-- Fichier qui est appelé à chaque fin de page pour afficher le pied de page, le contenu de ce fichier remplace l'endroit où il est appelé lorsqu'on navigue sur le site-->
+<?php
+ 	/*Fichier qui est appelé à chaque fin de page pour afficher le pied de page, le contenu de ce fichier remplace l'endroit où il est appelé lorsqu'on navigue sur le site*/
+ ?>
 
 <footer>
 	<div id="Credits">

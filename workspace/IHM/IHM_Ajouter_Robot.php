@@ -1,3 +1,7 @@
+<?php
+	/*Page qui permet de saisir les informations d'un nouveau type de robot qui sera ajouté à la base de données avec le formulaire appelant ajout_type_robot.php*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -57,7 +61,6 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
 				document.location = "IHM_Liste_Robots.php";
 			})
 		</script>

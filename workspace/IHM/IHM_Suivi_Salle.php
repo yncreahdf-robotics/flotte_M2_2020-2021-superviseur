@@ -1,3 +1,7 @@
+<?php
+	/*Page permettant d'avoir un suivi de la salle avec les bouteilles présentent sur le tourniquet, la position des robots et la note à payer de chaque table. Elle permet aussi de libérer une table si le client part et elle donne accès ç l'outil permettant de déplacer les bouteilles sur le tourniquet*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -191,7 +195,7 @@
 		<script type="text/javascript">
 			const elt_table1 = document.getElementById('table1');
 			elt_table1.addEventListener('click', function table1(event) {
-				//Lien BDD pour changer l'état de la table sélectionnée vers "Libre"
+				//Lien BDD pour changer l'état de la table 1 vers "Libre", remet à 0 la note de cette table
 				<?php
 					$bdd->exec('
 						UPDATE Table_tb 
@@ -202,8 +206,8 @@
 			})
 
 			const elt_table2 = document.getElementById('table2');
-			elt_table2.addEventListener('click', function table1(event) {
-				//Lien BDD pour changer l'état de la table sélectionnée vers "Libre"
+			elt_table2.addEventListener('click', function table2(event) {
+				//Lien BDD pour changer l'état de la table 2 vers "Libre", remet à 0 la note de cette table
 				<?php
 					$bdd->exec('
 						UPDATE Table_tb 
@@ -214,8 +218,8 @@
 			})
 
 			const elt_table3 = document.getElementById('table3');
-			elt_table3.addEventListener('click', function table1(event) {
-				//Lien BDD pour changer l'état de la table sélectionnée vers "Libre"
+			elt_table3.addEventListener('click', function table3(event) {
+				//Lien BDD pour changer l'état de la table 3 vers "Libre", remet à 0 la note de cette table
 				<?php
 					$bdd->exec('
 						UPDATE Table_tb 
@@ -228,14 +232,12 @@
 			//Bouton de déplacement des bouteilles
 			const elt_tourniquet = document.getElementById('tourniquet');
 			elt_tourniquet.addEventListener('click', function tourniquet(event){
-				//event.preventDefault()
 				document.location = "IHM_Deplacer_Bouteille.php";
 			})
 
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
 				document.location = "IHM_Page_Proprietaire.php";
 			})
 		</script>

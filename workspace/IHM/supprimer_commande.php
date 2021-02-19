@@ -1,4 +1,5 @@
 <?php
+/*Fonction appelée lorsqu'on veut supprimer une commande de la base de données*/
 
 	/*On récupère le numéro de la commande à supprimer*/
 	$commande_supprimee = $_POST["commande_supprimee"];

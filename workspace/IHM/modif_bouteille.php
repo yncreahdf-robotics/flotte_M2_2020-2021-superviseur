@@ -1,4 +1,5 @@
 <?php
+/*Fonction php appelée par le formulaire de modification de bouteille de la page IHM_Modifier_Article.php, elle permet de modifier les informations de la bouteille sélectionnée grâce à son ID avec le formulaire*/
 
 	/*Récupération des données envoyées par le formulaire de modification de boisson*/
 	$bouteille_modifiee = $_POST["bouteille_modifiee"];

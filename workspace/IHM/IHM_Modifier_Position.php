@@ -1,3 +1,7 @@
+<?php
+	/*Page permettant de saisir les nouvelles informations d'une position déjà présente dans la base de données avec le formulaire appelant modif_position.php*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -9,7 +13,6 @@
 	<body>
 		<div id="bloc_page">
 			<?php
-				
 				/*Connexion à la base de données avec le fichier connexion.php*/
 				include("connexion.php");
 				
@@ -78,7 +81,6 @@
 			//Bouton validant les modifications
 			const elt = document.getElementById('modifier');
 			elt.addEventListener('click', function modifier(event) {
-				//event.preventDefault()
 				if(confirm("Appliquer les modifications ?")){
 					alert("La position a été modifiée.")
 					document.location = "IHM_Liste_Positions.php";
@@ -91,7 +93,6 @@
 			//Bouton de retour
 			const elt_retour = document.getElementById('Retour');
 			elt_retour.addEventListener('click', function retour(event){
-				//event.preventDefault()
 				document.location = "IHM_Liste_Positions.php";
 			})
 		</script>

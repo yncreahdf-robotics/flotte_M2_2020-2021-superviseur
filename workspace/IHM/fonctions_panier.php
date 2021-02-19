@@ -1,4 +1,5 @@
 <?php
+/*Définitions des fonctions de gestion du panier*/
 
 	/*Vérifie si le panier existe, le créer sinon*/
 	function creationPanier(){

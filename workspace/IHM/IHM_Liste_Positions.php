@@ -1,3 +1,7 @@
+<?php
+	/*Page qui permet d'afficher la liste des positions sous forme de tableau. Elle donne aussi accès aux outils pour ajouter, modifier ou supprimer une position*/
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
