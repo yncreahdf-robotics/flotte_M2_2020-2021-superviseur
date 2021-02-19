@@ -206,7 +206,7 @@
 			})
 
 			const elt_table2 = document.getElementById('table2');
-			elt_table2.addEventListener('click', function table1(event) {
+			elt_table2.addEventListener('click', function table2(event) {
 				//Lien BDD pour changer l'état de la table 2 vers "Libre", remet à 0 la note de cette table
 				<?php
 					$bdd->exec('
@@ -218,7 +218,7 @@
 			})
 
 			const elt_table3 = document.getElementById('table3');
-			elt_table3.addEventListener('click', function table1(event) {
+			elt_table3.addEventListener('click', function table3(event) {
 				//Lien BDD pour changer l'état de la table 3 vers "Libre", remet à 0 la note de cette table
 				<?php
 					$bdd->exec('
