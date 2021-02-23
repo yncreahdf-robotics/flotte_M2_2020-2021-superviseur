@@ -37,7 +37,7 @@
    						/*On affiche les robots mobiles qui sont libres*/
    							//Robot libre -> Etat = Idle
    							while($donnees = $requete->fetch()){
-   								if($donnees['Role'] == 'Service'){
+   								if($donnees['Role'] == 'Service' || $donnees['Role'] == 'Guide'){
    									echo "<input type=\"radio\" name=\"Robot\" value=\"".$donnees['RobotIP']."\" id=\"".$donnees['RobotIP']."\"/>
    									<label for=\"".$donnees['RobotIP']."\">IP : ".$donnees['RobotIP']." - Type : ".$donnees['RobotType']."</label>";
    						?>

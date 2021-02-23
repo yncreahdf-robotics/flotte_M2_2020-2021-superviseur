@@ -96,7 +96,7 @@ def get_all_Pose():
 			print(x)
 		mycursor.close()
 		flotte_db.close()
-	except mysql.connector.Error as err:
+	except mysql.connector.Error as err:	
 		print("Something went wrong: {}".format(err))
 
 #	GET A POSE BY ITS NAME

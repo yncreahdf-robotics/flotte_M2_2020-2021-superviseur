@@ -261,7 +261,7 @@ def update_position(RobotIP, newPosition):
 			user='root',
 			password='root'
 		)
-		sql = "UPDATE Robot_tb SET Position = \"" + newPosition + "\" WHERE RobotIP = \"" + str(RobotIP) + "\""
+		sql = "UPDATE Robot_tb SET Position = \"" + str(newPosition) + "\" WHERE RobotIP = \"" + str(RobotIP) + "\""
 		mycursor=flotte_db.cursor()
 		mycursor.execute("USE flotte_db")
 		mycursor.execute(sql)

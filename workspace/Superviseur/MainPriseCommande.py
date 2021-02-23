@@ -182,7 +182,7 @@ def main(stdscr):
 
 
 			elif menu[current_row] == "Preparateur/Prepare":
-				ippreparateur="192.168.1.4"
+				ippreparateur="192.168.1.128"
 				CommandNbr=2 #input()
 				Tablenbr=Table.get_Table_by_CommandNbr(CommandNbr)
 				Commande.update_status_when_status(CommandNbr,"Ordered","Pending")

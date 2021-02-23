@@ -47,7 +47,7 @@
 						<p>Valider la commande</p>
 					</div>
 					<div class="bouton" id="appel_serveur">
-						<h3>Appeler un serveur</h3>
+						<p>Appeler un serveur</p>
 					</div>
 				</nav>
 			</section>

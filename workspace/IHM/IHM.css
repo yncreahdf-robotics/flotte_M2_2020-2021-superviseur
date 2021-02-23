@@ -16,12 +16,8 @@ header
 
 body
 {
-<<<<<<< HEAD
 	background: url('images/fond.PNG') fixed;
 	color: white;
-=======
-	background: url('images/fond.png') fixed;
->>>>>>> 11fc59ea17953a238ceda7b96ed54049857efbb9
 	font-family: 'Trebuchet MS', Arial, sans-serif;
 }
 

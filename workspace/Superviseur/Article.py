@@ -153,8 +153,8 @@ def total_weight_of_an_order(CommandNbr):
 		mycursor.execute(sql)
 		myresult=mycursor.fetchall()
 		for x in myresult:
-			x=int(x)
 			print(x)
+			x=int(x[0])
 		mycursor.close()
 		flotte_db.close()
 	except mysql.connector.Error as err:

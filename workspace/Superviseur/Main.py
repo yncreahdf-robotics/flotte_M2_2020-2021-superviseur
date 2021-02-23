@@ -102,28 +102,38 @@ def on_message(client, userdata, msg):
 	if msg.topic == "Initialisation/Envoi":
 
 		# Récupération de l'ip du robot et de son type
-		iprobot = msg.payload.decode("utf-8").split("/")[0]
-		typerobot = msg.payload.decode("utf-8").split("/")[1]
+		try:
+			iprobot = msg.payload.decode("utf-8").split("/")[0]
+			typerobot = msg.payload.decode("utf-8").split("/")[1]
+		except mysql.connector.Error as err:
+			print("MISSING DATA: {}".format(err))
 
 		print("MESSAGE:  Nouveau robot,", typerobot, " (", iprobot, ")")
 
 		# Si le type existe on ajoute le robot à la liste des robots disponibles de la base de données
-		if Type.Type_exists(typerobot):
-			add_robot_user(iprobot)
-			#TODO: mettre la position initiale du robot 
-			if(Type.get_Type(typerobot)[0][2]=="Preparateur"):
-				Robot.insert_Robot(iprobot+"/1", typerobot+"/Melangeur", Positions.get_Pose_by_name("bar")[0][0], "Idle", 0, datetime.datetime.now())
-				Robot.insert_Robot(iprobot+"/2", typerobot+"/Manipulateur", Positions.get_Pose_by_name("bar")[0][0], "Idle", 0, datetime.datetime.now())
-				#envoi du message de lancement des différents programmes du Préparateur
-				publish(my_ip, port, "Preparateur/Start", iprobot, 2)
-			else:
-				Robot.insert_Robot(iprobot, typerobot, 0, "Idle", 0, datetime.datetime.now()) 
+		try:
+			if Type.Type_exists(typerobot):
+				add_robot_user(iprobot)
+				
+				if(Type.get_Type(typerobot)[0][2]=="Preparateur"):
+					position="Bar/"+iprobot
+					Positions.insert_Pose(position, 0, 0, 0, 0)
+					Robot.insert_Robot(iprobot+"/1", typerobot+"/Melangeur", Positions.get_Pose_by_name(position)[0][0], "Idle", 0, datetime.datetime.now())
+					Robot.insert_Robot(iprobot+"/2", typerobot+"/Manipulateur", Positions.get_Pose_by_name(position)[0][0], "Idle", 0, datetime.datetime.now())
+					#envoi du message de lancement des différents programmes du Préparateur
+					publish(my_ip, port, "Preparateur/Start", iprobot, 2)
+				else:
+					position="Recharge/"+iprobot
+					Positions.insert_Pose(position, 0.25, 0.1, -0.2, 1)
+					Robot.insert_Robot(iprobot, typerobot, Positions.get_Pose_by_name(position)[0][0], "Idle", 0, datetime.datetime.now()) 
 
-		# Si le type de robot n'existe pas encore on l'ajoute à la base des types
-		else:
-			#TODO: Lancer la fonction pour ajouter un type de robot dans la base de données à partir de l'IHM
-			print("MESSAGE:  Type de robot inexistant")
-		
+			# Si le type de robot n'existe pas encore on l'ajoute à la base des types
+			else:
+				#TODO: Lancer la fonction pour ajouter un type de robot dans la base de données à partir de l'IHM
+				print("MESSAGE:  Type de robot inexistant")	
+		except mysql.connector.Error as err:
+			print("ERROR: {}".format(err))
+			
 	if msg.topic == "Commande/Envoi":
 		#pass
 		print("MESSAGE:  Nouvelle commande")
@@ -134,34 +144,37 @@ def on_message(client, userdata, msg):
 
 	if msg.topic == "Robot/Ping": 
 		#	On cherche l'ip du robot qui nous envoie le message
-		iprobot = msg.payload.decode("utf-8").split("/")[0]
+		try:
+			iprobot = msg.payload.decode("utf-8").split("/")[0]
 
-		#	si le robot transmet ses niveaux de batterie et son état de charge on les récupère
-		if (len(msg.payload.decode("utf-8").split("/"))>1):
-			battery=msg.payload.decode("utf-8").split("/")[1]
-			charge_status=msg.payload.decode("utf-8").split("/")[2]
-			Robot.update_battery(iprobot,battery,charge_status)
-			#print(msg.payload.decode("utf-8"))
-			if (float(battery)<10 and charge_status=="Unpluged" and Robot.get_robot_data(iprobot)[0][3]=="Idle"):
-				publish(my_ip, port, "Service/Go/Base", iprobot+"/"+str(Positions.get_Pose_by_name("recharge")[0][0]), 2)
-				publish(my_ip, port, "Guide/Go/Base", iprobot+"/"+str(Positions.get_Pose_by_name("recharge")[0][0]), 2)
-		#print("MESSAGE:  Reception d'un ping : " + iprobot)
+			#	si le robot transmet ses niveaux de batterie et son état de charge on les récupère
+			if (len(msg.payload.decode("utf-8").split("/"))>1):
+				battery=msg.payload.decode("utf-8").split("/")[1]
+				charge_status=msg.payload.decode("utf-8").split("/")[2]
+				Robot.update_battery(iprobot,battery,charge_status)
+				#print(msg.payload.decode("utf-8"))
+				if (float(battery)<10 and charge_status=="Unpluged" and Robot.get_robot_data(iprobot)[0][3]=="Idle"):
+					publish(my_ip, port, "Service/Go/Base", iprobot+"/"+str(Positions.get_Pose_by_name("Recharge/iprobot")[0][0]), 2)
+					publish(my_ip, port, "Guide/Go/Base", iprobot+"/"+str(Positions.get_Pose_by_name("Recharge/iprobot")[0][0]), 2)
+			#print("MESSAGE:  Reception d'un ping : " + iprobot)
 
-		confirmation = 0
+			confirmation = 0
 
-		result = Robot.get_all_Robot()
-	
-		for robot in result:
+			result = Robot.get_all_Robot()
+		
+			for robot in result:
 
-			if robot[0].split("/")[0] == iprobot:
+				if robot[0].split("/")[0] == iprobot:
 
-				Robot.update_ping(robot[0])
+					Robot.update_ping(robot[0])
 
-				confirmation = 1
+					confirmation = 1
 
-		if confirmation == 0:
+			if confirmation == 0:
 
-			publish(my_ip, port, "Ping/Feedback", iprobot + "/" + "No", 2)
+				publish(my_ip, port, "Ping/Feedback", iprobot + "/" + "No", 2)
+		except mysql.connector.Error as err:
+			print("ERROR PINGING ROBOTS: {}".format(err))
 
 
 
@@ -170,29 +183,30 @@ def on_message(client, userdata, msg):
 	#####################
 
 	if msg.topic == "Accueil/Client":
+		try:
+			NbrClient=msg.payload.decode("utf-8")[0]
 
-		NbrClient=msg.payload.decode("utf-8")[0]
+			#	On cherche si une table est libre avec le bon nombre de places
+			tablesLibres=Table.get_Table_Nbr_and_Status(NbrClient, "Free")
 
-		#	On cherche si une table est libre avec le bon nombre de places
-		tablesLibres=Table.get_Table_Nbr_and_Status(NbrClient, "Free")
+			if len(tablesLibres)!=0:
+				Table.update_Table_status(tableLibres[0], Occupied)
 
-		if len(tablesLibres)!=0:
-			Table.update_Table_status(tableLibres[0], Occupied)
+				#	Assigne un robot pour guider les clients à la table choisie
+				service=Robot.get_robot_by_role_and_status("Guide", "Idle")
 
-			#	Assigne un robot pour guider les clients à la table choisie
-			service=Robot.get_robot_by_role_and_status("Guide", "Idle")
+				if len(service)!=0:
+					#	On dit au robot de service choisi de guider les clients jusqu'à leur table
+					Robot.update_status(service,"Occupied")
+					publish(my_ip, port, "Service/Guide", str(service) , 2)
 
-			if len(service)!=0:
-				#	On dit au robot de service choisi de guider les clients jusqu'à leur table
-				Robot.update_status(service,"Occupied")
-				publish(my_ip, port, "Service/Guide", str(service) , 2)
+				else:
+					print("MESSAGE: Pas de robot libre pour guider les nouveaux clients")
 
 			else:
-				print("MESSAGE: Pas de robot libre pour guider les nouveaux clients")
-
-		else:
-			print("MESSAGE:	Aucune table de libre")
-
+				print("MESSAGE:	Aucune table de libre")
+		except mysql.connector.Error as err:
+			print("ERROR: {}".format(err))
 
 	#if msg.topic == "Accueil/Paiement":
 	#	CommandNbr=msg.payload.decode("utf-8").split("/")[1]
@@ -205,8 +219,8 @@ def on_message(client, userdata, msg):
 
 
 	if msg.topic == "Accueil/GelLow":
-		#print("MESSAGE: Niveau de gel bas")
-		pass
+		print("MESSAGE: Niveau de gel bas")
+		
 
 
 	#########################
@@ -218,65 +232,68 @@ def on_message(client, userdata, msg):
 '''
 	#	Quand le préparateur a fini de préparer une commande
 	if msg.topic == "Preparateur/Prepared":
-		global tentative
-		tentative = 0
-		print("MESSAGE:	ARTICLE PREPARE")
-		#	On récupère l'IP du préparateur ayant terminé sa préparation
-		preparateur = msg.payload.decode("utf-8")
+		try:
+			global tentative
+			tentative = 0
+			print("MESSAGE:	ARTICLE PREPARE")
+			#	On récupère l'IP du préparateur ayant terminé sa préparation
+			preparateur = msg.payload.decode("utf-8")
 
-		#	On cherche le numéro de la commande prête (La commande active du robot melangeur)
-		CommandNbr=Robot.get_robot_data(preparateur+"/1")[0][4]
+			#	On cherche le numéro de la commande prête (La commande active du robot melangeur)
+			CommandNbr=Robot.get_robot_data(preparateur+"/1")[0][4]
 
-		# 	Mise de l'article préparé en "Prepared"
-		ArticleID=Commande.get_Commande_with_status_and_commandNbr(CommandNbr,"Ordered")[0][0]
-		Commande.update_Commande_status_by_article(ArticleID, "Prepared")
-	
-		#	On regarde si la commande complète est prête
-		CommandeIDlist=Commande.get_Commande_with_status_and_commandNbr(CommandNbr, "Ordered")
-		#print(str(len(CommandeIDlist)))
-		if (len(CommandeIDlist)!=0):
-			#Si tous les articles ne sont pas prêts on continue de préparer la commande
-			publish(my_ip, port, "Preparateur/Prepare", str(preparateur) + "/" + str(CommandNbr) , 2)
-
-		#	Si tous les articles sont prets on charge le robot ou on l'attend
-		else:
-			print("MESSAGE:	COMMANDE PRETE: " + str(CommandNbr))
-			#On met la Commande en préparée
-			Table.update_Table_status(Table.get_Table_by_CommandNbr(CommandNbr)[0][0],"Prepared")
-			#	Le préparateur peut préparer une autre commande
-			Robot.update_status(preparateur+"/1", "Idle")
-
-			# 	On attribue la commande au Manipulateur du même préparateur et on libère le Mélangeur
-			Robot.update_command(preparateur+"/1", 0)
-			Robot.update_command(preparateur+"/2", CommandNbr)
-
-			#	On cherche le robot de service qui s'occupe de la commande
-			#print(Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service"))
-			if (len(Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service"))!=0):
-				#On détermine le robot en charge de la commande
-				robot = Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service")[0][0]
-			
-				# Si le robot est déjà pret à être chargé (en attente)
-				if (len(robot)!=0 and Robot.get_robot_data(robot)[0][3] == "Pending") :
-					#	Dire au préparateur de charger la commande
-					publish(my_ip, port, "Preparateur/Charge", str(preparateur)+"/"+str(CommandNbr) , 2)
-
-				#	Sinon = Si un robot est attribué à la commande  mais n'est pas encore arrivé
-				else: 
-					print("MESSAGE:	COMMANDE PRETE: "+ str(CommandNbr) + " - ATTENTE DU ROBOT") 
-					#TODO: refaire les changements d'état du préparateur pour plusieurs commandes
-					#	Robot préparateur en "Pending"
-					Robot.update_status(preparateur+"/2", "Pending")
-				#SELECT * FROM Commande_tb;
-	 
-			else: 
-				# 	Si aucun robot de service ne se charge de la commande on attend qu'un robot soit attribué
-				print("MESSAGE:	COMMANDE PRETE - AUCUN ROBOT DISPONIBLE")
-				Robot.update_status(preparateur+"/2", "Pending")
+			# 	Mise de l'article préparé en "Prepared"
+			ArticleID=Commande.get_Commande_with_status_and_commandNbr(CommandNbr,"Ordered")[0][0]
+			Commande.update_Commande_status_by_article(ArticleID, "Prepared")
 		
+			#	On regarde si la commande complète est prête
+			CommandeIDlist=Commande.get_Commande_with_status_and_commandNbr(CommandNbr, "Ordered")
+			#print(str(len(CommandeIDlist)))
+			if (len(CommandeIDlist)!=0):
+				#Si tous les articles ne sont pas prêts on continue de préparer la commande
+				publish(my_ip, port, "Preparateur/Prepare", str(preparateur) + "/" + str(CommandNbr) , 2)
+
+			#	Si tous les articles sont prets on charge le robot ou on l'attend
+			else:
+				print("MESSAGE:	COMMANDE PRETE: " + str(CommandNbr))
+				#On met la Commande en préparée
+				Table.update_Table_status(Table.get_Table_by_CommandNbr(CommandNbr)[0][0],"Prepared")
+				#	Le préparateur peut préparer une autre commande
+				Robot.update_status(preparateur+"/1", "Idle")
+
+				# 	On attribue la commande au Manipulateur du même préparateur et on libère le Mélangeur
+				Robot.update_command(preparateur+"/1", 0)
+				Robot.update_command(preparateur+"/2", CommandNbr)
+
+				#	On cherche le robot de service qui s'occupe de la commande
+				#print(Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service"))
+				if (len(Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service"))!=0):
+					#On détermine le robot en charge de la commande
+					robot = Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service")[0][0]
+				
+					# Si le robot est déjà pret à être chargé (en attente)
+					if (len(robot)!=0 and Robot.get_robot_data(robot)[0][3] == "Pending") :
+						#	Dire au préparateur de charger la commande
+						publish(my_ip, port, "Preparateur/Charge", str(preparateur)+"/"+str(CommandNbr) , 2)
+
+					#	Sinon = Si un robot est attribué à la commande  mais n'est pas encore arrivé
+					else: 
+						print("MESSAGE:	COMMANDE PRETE: "+ str(CommandNbr) + " - ATTENTE DU ROBOT") 
+						#TODO: refaire les changements d'état du préparateur pour plusieurs commandes
+						#	Robot préparateur en "Pending"
+						Robot.update_status(preparateur+"/2", "Pending")
+					#SELECT * FROM Commande_tb;
+		 
+				else: 
+					# 	Si aucun robot de service ne se charge de la commande on attend qu'un robot soit attribué
+					print("MESSAGE:	COMMANDE PRETE - AUCUN ROBOT DISPONIBLE")
+					Robot.update_status(preparateur+"/2", "Pending")
+		except mysql.connector.Error as err:
+			print("ERROR Preparateur/Prepared: {}".format(err)) 
  	
  	# Quand le preparateur a fini de charger 
 	if msg.topic == "Preparateur/Charged":
+		
 		print("MESSAGE:	Article chargé")
 
 		#récupération de l'ip du préparateur
@@ -288,87 +305,124 @@ def on_message(client, userdata, msg):
 		#recherche des articles non chargés de la commande
 		remaining_articles=Commande.get_Commande_with_status_and_commandNbr(CommandNbr, "Prepared")
 		#mise du premier article de la liste en chargé
-		Commande.update_Commande_status_by_article(remaining_articles[0][0], "Charged" )
+		try:
+			Commande.update_Commande_status_by_article(remaining_articles[0][0], "Charged" )
+		except mysql.connector.Error as err:
+			print("ERROR Preparateur/Charged: {}".format(err))
+		
 		#recherche des articles non chargés de la commande
 		remaining_articles=Commande.get_Commande_with_status_and_commandNbr(CommandNbr, "Prepared")
 
 		#recherche du robot de service sur lequel on charge la commande
 		#robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr, "Service")[0][0]
+		print(remaining_articles)
+			#	Si l'article est le dernier de la commande on envoie le départ du robot
+		try:
+			if len(remaining_articles)==0:
+				print("MESSAGE: Commande chargée")
+				#global service_turns
+				#service_turns=0
+				robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr, "Service")[0][0]
 
-		#recherche du robot en fonction du poids
-		poids_total = Article.total_weight_of_an_order(CommandNbr)
-		print(poids_total)
-		#On selectionne les robots disponibles
-		robots_candidats=robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr, "Service")
-		for i in range (len(robots_candidats)):
-			print(robots_candidats[i])
-			if (Robot.get_robot_weight_capacity(i[0])>=poids_total and Robot.get_robot_weight_capacity(i[0])>Robot.get_robot_weight_capacity(robot)):
-				robot=robots_candidats[i]
-		print(robot)
+				#on cherche la table de la commande
+				tableID=Table.get_Table_by_CommandNbr(CommandNbr)[0][0]
+				#on cherche l'ID de la position de la table
+				poseID=Table.get_Table_data(tableID)[0][2]
+				#	robot en "Occupied"
+				Robot.update_status(robot, "Occupied")
+				#	manipulateur libre
+				Robot.update_status(preparateur+"/2","Idle")
+				Robot.update_command(preparateur+"/2",0)
+				# 	Commande en "Charged"
+				Table.update_Table_status(tableID,"Charged")
 
+				#	envoi de l'ordre au robot de livrer la commande à la table séléctionnée
+				publish(my_ip, port, "Service/Go/Table", str(robot) + "/" + str(poseID),2)
+			#	Sinon on continue de charger et on demande au robot de tourner d'un 8e de tour
+			else:
+				#article_count+=1
+				print("MESSAGE: Chargement de l'article suivant")
+				robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr, "Service")[0][0]
 
-
+				#On dit au robot de service sur lequel on charge la commande de tourner 
+				#if(service_turns%2==0):
+				publish(my_ip , port, "Service/Turn", str(robot), 2)
+				#On dit au préparateur de charger l'article suivant
+				publish(my_ip , port, "Preparateur/Charge", str(preparateur)+"/"+str(CommandNbr), 2)
+		except mysql.connector.Error as err:
+			print("ERROR Preparateur/Charged: {}".format(err))
 		
-		#	Si l'article est le dernier de la commande on envoie le départ du robot
-		if len(remaining_articles)==0:
-			print("MESSAGE: Commande chargée")
-			#global service_turns
-			#service_turns=0
-			
-			#on cherche la table de la commande
-			tableID=Table.get_Table_by_CommandNbr(CommandNbr)[0][0]
-			#on cherche l'ID de la position de la table
-			poseID=Table.get_Table_data(tableID)[0][2]
-			#	robot en "Occupied"
-			Robot.update_status(robot, "Occupied")
-			#	manipulateur libre
-			Robot.update_status(preparateur+"/2","Idle")
-			Robot.update_command(preparateur+"/2",0)
-			# 	Commande en "Charged"
-			Table.update_Table_status(tableID,"Charged")
-
-			#	envoi de l'ordre au robot de livrer la commande à la table séléctionnée
-			publish(my_ip, port, "Service/Go/Table", str(robot) + "/" + str(poseID),2)
-		
-		#	Sinon on continue de charger et on demande au robot de tourner d'un 8e de tour
-		else:
-			#article_count+=1
-			print("MESSAGE: Chargement de l'article suivant")
-			#On dit au robot de service sur lequel on charge la commande de tourner 
-			#if(service_turns%2==0):
-			publish(my_ip , port, "Service/Turn", str(robot), 2)
-			#On dit au préparateur de charger l'article suivant
-			publish(my_ip , port, "Preparateur/Charge", str(preparateur)+"/"+str(CommandNbr), 2)
 
 
 	if msg.topic=="Preparateur/Error":
-		preparateur=msg.payload.decode("utf-8").split("/")[0]
-		melangeur=preparateur+"/1"
-		CommandNbr=Robot.get_robot_data(melangeur)[0][4]
-		print("!!!!!!!	ERREUR	!!!!!!!!!")
-		codeError=int(msg.payload.decode("utf-8").split("/")[1])
-		if(codeError==1):	#obstable gobelet
-			print("Erreur 1 : obstacle gobelet")
-			tentative += 1
-			if (tentative <=3):
-				publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
-			else : 
-				Robot.update_status(preparateur+"/1","Maintenance")
+		try:
+			preparateur=msg.payload.decode("utf-8").split("/")[0]
+			melangeur=preparateur+"/1"
+			CommandNbr=Robot.get_robot_data(melangeur)[0][4]
+			print("!!!!!!!	ERREUR	!!!!!!!!!")
+			codeError=int(msg.payload.decode("utf-8").split("/")[1])
+			if(codeError==1):	#obstable gobelet
+				print("Erreur 1 : obstacle gobelet")
+				tentative += 1
+				if (tentative <=3):
+					publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
+				else : 
+					Robot.update_status(preparateur+"/1","Maintenance")
+					CommandNbr=Robot.get_robot_data(preparateur+"/1")[0][4]
+					Table.update_Table_status(Table.get_Table_by_CommandNbr(CommandNbr)[0][0],"Pending")
+
+
+				
+			if(codeError==2):	#gobelet absent
+				print("Erreur 2 : absence gobelet")
+				tentative = tentative+1
+				if (tentative <3):
+					publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
+				else : 
+					Robot.update_status(preparateur+"/1","Maintenance")
+					CommandNbr=Robot.get_robot_data(preparateur+"/1")[0][4]
+					Table.update_Table_status(Table.get_Table_by_CommandNbr(CommandNbr)[0][0],"Pending")
+
+
+
+
+			if(codeError==3):
+				Robot.update_status(preparateur+"/1","Maintenance")	
+				print("Erreur 3 : mise en maintenance")
+				CommandNbr=Robot.get_robot_data(preparateur+"/1")[0][4]
+				Table.update_Table_status(Table.get_Table_by_CommandNbr(CommandNbr)[0][0],"Pending")
+
+
+			if(codeError==5):
+				Robot.update_status(preparateur+"/1","Maintenance")	
+				print("Erreur 5 (Nyrio1) : mise en maintenance")
+				CommandNbr=Robot.get_robot_data(preparateur+"/1")[0][4]
+				Table.update_Table_status(Table.get_Table_by_CommandNbr(CommandNbr)[0][0],"Pending")
+
+			if(codeError==6):
+				Robot.update_status(preparateur+"/1","Maintenance")	
+				print("Erreur 6 (Nyrio2): mise en maintenance")
+				CommandNbr=Robot.get_robot_data(preparateur+"/1")[0][4]
+				Table.update_Table_status(Table.get_Table_by_CommandNbr(CommandNbr)[0][0],"Pending")
+
+
+			if(codeError==7):
+				Robot.update_status(preparateur+"/2","Maintenance")	
+				print("Erreur 7 (Nyrio3) : mise en maintenance")
+				CommandNbr=Robot.get_robot_data(preparateur+"/1")[0][4]
+
+			if(codeError==8):
+				Robot.update_status(preparateur+"/1","Maintenance")	
+				Robot.update_status(preparateur+"/2","Maintenance")	
+				print("Erreur 5 (Tourniquet): mise en maintenance")
+				CommandNbr=Robot.get_robot_data(preparateur+"/1")[0][4]
+
+		except mysql.connector.Error as err:
+			print("ERROR HANDLING PREPARATEUR ERROR: {}".format(err))
 
 			
-		if(codeError==2):	#gobelet absent
-			print("Erreur 2 : absence gobelet")
-			tentative = tentative+1
-			if (tentative <3):
-				publish(my_ip, port, "Preparateur/Prepare", preparateur + "/" + str(CommandNbr), 2)
-			else : 
-				Robot.update_status(preparateur+"/1","Maintenance")
 
 
-
-		if(codeError==3):
-			Robot.update_status(preparateur+"/1","Maintenance")	
-			print("Erreur 4 : mise en maintenance")
 
  	##############################
  	##	Topic Service et Guide  ##
@@ -376,70 +430,96 @@ def on_message(client, userdata, msg):
 	if (msg.topic.split("/")[1]=="Arrived"):
 		#Si le robot dit être arrivé, on met à jour sa position dans la base de données
 		#On trouve d'abord le robot en question
-		robot=msg.payload.decode("utf-8").split("/")[0]
-		#On trouve ensuite la nouvelle position du robot
-		position=msg.payload.decode("utf-8").split("/")[1]
-		print(position)
-		#On met à jour la position du robot
-		Robot.update_position(robot,position)
-		#Quand le robot arrive à la base de chargement des commandes
-		if msg.topic == "Service/Arrived/Bar":
-			
-			print("MESSAGE: ROBOT ARRIVE AU BAR")
-			#print("ip: " + str(msg.payload.decode("utf-8")))
-			CommandNbr=Robot.get_robot_data(robot)[0][4]
-			print("Commande: "+ str(CommandNbr))
+		try:
+			robot=msg.payload.decode("utf-8").split("/")[0]
+			#On trouve ensuite la nouvelle position du robot
+			position=msg.payload.decode("utf-8").split("/")[1]
+			print(position)
+			#On met à jour la position du robot
+			Robot.update_position(robot,position)
+			#Quand le robot arrive à la base de chargement des commandes
+			if msg.topic == "Service/Arrived/Bar":
+				
+				print("MESSAGE: ROBOT ARRIVE AU BAR")
+				#print("ip: " + str(msg.payload.decode("utf-8")))
+				CommandNbr=Robot.get_robot_data(robot)[0][4]
+				print("Commande: "+ str(CommandNbr))
 
-			#preparateur=Robot.find_robot_by_CommandNbr_and_position(CommandNbr,position)[0][0]
+				#preparateur=Robot.find_robot_by_CommandNbr_and_position(CommandNbr,position)[0][0]
 
-			if (len(Robot.find_robot_by_CommandNbr_and_status(CommandNbr,"Pending"))!=0):
-				#On lance le chargement de la commande
-				print("MESSAGE: DEBUT CHARGEMENT")
-				manipulateur=Robot.find_robot_by_CommandNbr_and_status(CommandNbr,"Pending")
-				print(manipulateur)
-				Robot.update_status(manipulateur,"Occupied")
-				publish(my_ip, port, "Preparateur/Charge", str(manipulateur[0][0].split("/")[0]) + "/" + str(CommandNbr) , 2)
+				if (len(Robot.find_robot_by_CommandNbr_and_status(CommandNbr,"Pending"))!=0):
+					#On lance le chargement de la commande
+					print("MESSAGE: DEBUT CHARGEMENT")
+					manipulateur=Robot.find_robot_by_CommandNbr_and_status(CommandNbr,"Pending")
+					print(manipulateur)
+					Robot.update_status(manipulateur,"Occupied")
+					publish(my_ip, port, "Preparateur/Charge", str(manipulateur[0][0].split("/")[0]) + "/" + str(CommandNbr) , 2)
 
-			else:
-		 		#	On fait attendre le robot jusqu'à ce que la commande soit prête
-		 		print("MESSAGE: ROBOT DE SERVICE EN ATTENTE")
-		 		robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service")[0][0]
-		 		Robot.update_status(robot, "Pending")
+				else:
+			 		#	On fait attendre le robot jusqu'à ce que la commande soit prête
+			 		print("MESSAGE: ROBOT DE SERVICE EN ATTENTE")
+			 		robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr,"Service")[0][0]
+			 		Robot.update_status(robot, "Pending")
+
+		except mysql.connector.Error as err:
+			print("ERROR HANDLING ARRIVED MESSAGE: {}".format(err))
 
 		#Quand le robot de service a livré
 		if msg.topic == "Service/Arrived/Table":
 
-			CommandNbr=Robot.get_robot_data(robot)[0][4]
+			try:
+				CommandNbr=Robot.get_robot_data(robot)[0][4]
 
-			print("MESSAGE: Livraison en cours")
-			time.sleep(5)
-			print("MESSAGE: Commande livrée")
+				print("MESSAGE: Livraison en cours")
+				time.sleep(5)
+				print("MESSAGE: Commande livrée")
 
-			#	Retour du robot à la base de recharge
-			publish(my_ip, port, "Service/Go/Base", robot + "/" + str(Positions.get_Pose_by_name("recharge")[0][0]),2)
-			
-			#	robot en "Idle"
-			Robot.update_status(robot, "Idle")
-			Robot.update_command(robot,0)
-			table=Table.get_Table_by_CommandNbr(CommandNbr)
-			position=Table.get_Table_data(Table)[0][2]
-			#	mise à jour de la dernière position du robot
-			Robot.update_position(robot,position)
+				#	Retour du robot à la base de recharge
+				publish(my_ip, port, "Service/Go/Base", robot + "/" + str(Positions.get_Pose_by_name("Recharge/"+robot)[0][0]),2)
+				
+				#	robot en "Idle"
+				Robot.update_status(robot, "Idle")
+				Robot.update_command(robot,0)
+				table=Table.get_Table_by_CommandNbr(CommandNbr)[0][0]
+				position=Table.get_Table_data(table)[0][2]
+				#	mise à jour de la dernière position du robot
+				Robot.update_position(robot,position)
 
-			#	Command en "Delivered"
-			Commande.update_status(CommandNbr, "Delivered")
-			Table.update_Table_status(Table.get_Table_by_CommandNbr(CommandNbr)[0][0],"Delivered")
+				#	Command en "Delivered"
+				Commande.update_status(CommandNbr, "Delivered")
+				Table.update_Table_status(Table.get_Table_by_CommandNbr(CommandNbr)[0][0],"Delivered")
+			except mysql.connector.Error as err:
+				print("ERROR HANDLING ARRIVED TO TABLE MESSAGE: {}".format(err))
 
 		if msg.topic == "Guide/Arrived":
-			robot=msg.payload.decode('utf-8').split("/")[0]
-			position = msg.payload.decode('utf-8').split("/")[1]
-			print("MESSAGE: Clients guidés")
+			try:
+				robot=msg.payload.decode('utf-8').split("/")[0]
+				position = msg.payload.decode('utf-8').split("/")[1]
+				print("MESSAGE: Clients guidés")
 
-			#	mise à jour de la dernière position du robot
-			Robot.update_position(robot,position)
-			#	On libère le robot et on lui dit de retourner à sa base de recharge
-			publish(my_ip, port, "Guide/Go/Base", robot, "recharge",2)
-			Robot.update_status(robot, "Idle")
+				#	mise à jour de la dernière position du robot
+				Robot.update_position(robot,position)
+				#	On libère le robot et on lui dit de retourner à sa base de recharge
+				publish(my_ip, port, "Guide/Go/Base", robot, "Recharge/"+robot,2)
+				Robot.update_status(robot, "Idle")
+			except mysql.connector.Error as err:
+				print("ERROR HANDLING GUIDE ARRIVED MESSAGE: {}".format(err))
+
+
+		if msg.topic == "Service/Error":
+			robot=msg.payload.decode("utf-8")[0]
+			CommandNbr=Robot.get_robot_data(robot)[0][4]
+			Status=Commande.get_commande_data(CommandNbr)[0][3]
+			if Status == "Prepared":
+				publish(my_ip, port, "Service/Go/Bar", robot + "/" + str(Positions.get_Pose_by_name("Bar")[0][0]),2)
+			if Status == "Charged":
+				table=Table.get_Table_by_CommandNbr(CommandNbr)[0][0]
+				publish(my_ip, port, "Service/Go/Table", robot + "/" + table,2)
+			else:
+				publish(my_ip, port, "Service/Go/Base", robot + "/" + str(Positions.get_Pose_by_name("Recharge/"+robot)[0][0]),2)
+
+		if msg.topic == "Guide/Error":
+			publish(my_ip, port, "Service/Go/Base", robot + "/" + str(Positions.get_Pose_by_name("Recharge/"+robot)[0][0]),2)
 
 
 
@@ -486,14 +566,21 @@ def pingRobots():
 	#print("PING:     Ping des robots ...")
 
 	for robot in result:
-
 		if (datetime.datetime.now() - robot[5]) > datetime.timedelta(seconds=30):
 			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+			print("ROBOT:     Robot ", robot[1], " (", robot[0], ") ", " absent")
+			Robot.update_status(robot[0],"Absent")
+
+		if (datetime.datetime.now() - robot[5]) > datetime.timedelta(seconds=90):
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 			print("ROBOT:     Robot ", robot[1], " (", robot[0], ") ", " deconnecte")
-			Robot.delete_Robot(robot[0])
+			Robot.delete_Robot(robot[0])	
 
 		else:
+			if robot[3]=="Absent":
+				Robot.update_status(robot[0],"Idle")
 			pass
+		Robot.update_ping(robot[0])
 			#print("ROBOT:	", robot[1], " (", robot[0], ") ")
 
 
@@ -526,10 +613,11 @@ def command_loop():
 	Pending=Table.get_Table_by_Status("Pending")
 	Ordered=Table.get_Table_by_Status("Ordered")
 	Prepared=Table.get_Table_by_Status("Prepared")
-	Delivered=Table.get_Table_by_Status("Delivered")
+	Charged=Table.get_Table_by_Status("Charged")
 	NbrPending=Commande.get_commande_Nbr_status("Pending")
 	NbrOrdered=Commande.get_commande_Nbr_status("Ordered")
 	NbrPrepared=Commande.get_commande_Nbr_status("Prepared")
+	NbrCharged=Commande.get_commande_Nbr_status("Charged")
 	Service=Robot.find_robot_by_role("Service")
 	Guide=Robot.find_robot_by_role("Guide")
 	Melangeur=Robot.find_robot_by_role("Melangeur")
@@ -545,7 +633,7 @@ def command_loop():
 	print("En attente:"+ str(len(Pending))+"		"+"Nbre d'article:"+str(len(NbrPending)))
 	print("Commandée(s):"+ str(len(Ordered))+"		"+"Nbre d'article:"+str(len(NbrOrdered)))
 	print("Preparée(s):"+ str(len(Prepared))+"		"+"Nbre d'article:"+str(len(NbrPrepared)))
-	print("Terminée(s):"+ str(len(Delivered)))
+	print("Chargée(s):"+ str(len(Charged))+"		"+"Nbre d'article:"+str(len(NbrCharged)))
 	#print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 	print("================= ROBOT(S) ==================")
 	print("Service(s):"+ str(len(Service)))
@@ -563,32 +651,48 @@ def command_loop():
 	print("Manipulateur(s):"+ str(len(Free_Manipulateur)))
 	
 	#Si une commande est en attente de préparation
-	if(len(Pending)!=0 and len(Free_Melangeur)!=0):
-		print("MESSAGE:	PREPARATION DE COMMANDE: "+ str(Table.get_Table_data(Pending[0][0])[0][1]))#+ " par Preparateur: "+ str(Free_Melangeur[0]))
-		
-		#La commande est en preparation
-		CommandNbr=Table.get_Table_data(Pending[0][0])[0][1]
-		Commande.update_status_when_status(CommandNbr,"Pending" ,"Ordered")
-		Table.update_Table_status(Pending[0][0],"Ordered")
-		
-		#Mise en occupé du préparateur
-		Robot.update_status(Free_Melangeur[0][0],"Occupied")
-		#Mise à jour de la commande active du preparateur
-		Robot.update_command(Free_Melangeur[0][0], CommandNbr)
-		
-		#Envoi de l'ordre au preparateur
-		publish(my_ip, port, "Preparateur/Prepare", Free_Melangeur[0][0].split("/")[0] + "/" + str(CommandNbr), 2)
+	try:
+		if(len(Pending)!=0 and len(Free_Melangeur)!=0):
+			print("MESSAGE:	PREPARATION DE COMMANDE: "+ str(Table.get_Table_data(Pending[0][0])[0][1]))#+ " par Preparateur: "+ str(Free_Melangeur[0]))
+			
+			#La commande est en preparation
+			CommandNbr=Table.get_Table_data(Pending[0][0])[0][1]
+			Commande.update_status_when_status(CommandNbr,"Pending" ,"Ordered")
+			Table.update_Table_status(Pending[0][0],"Ordered")
+			
+			#Mise en occupé du préparateur
+			Robot.update_status(Free_Melangeur[0][0],"Occupied")
+			#Mise à jour de la commande active du preparateur
+			Robot.update_command(Free_Melangeur[0][0], CommandNbr)
+			
+			#Envoi de l'ordre au preparateur
+			publish(my_ip, port, "Preparateur/Prepare", Free_Melangeur[0][0].split("/")[0] + "/" + str(CommandNbr), 2)
 
 
-	#Si une commande est preparee et qu'aucun robot de service ne s'en occupe et qu'un robot de service est libre
-	if(len(Prepared)!=0 and len(Free_Service)!=0 and len(Robot.get_robot_by_ActiveCommand_and_type(Prepared[0][0], "Service"))==0):
-		#Mise en occupé du robot de service
-		Robot.update_status(Free_Service[0][0],"Occupied")
-		#Mise à jour de la commande active du robot de service
-		Robot.update_command(Free_Service[0][0], Table.get_Table_data(Prepared[0][0])[0][1])
-		#On envoi un robot de service pour aller la chercher
-		publish(my_ip, port, "Service/Go/Bar", Free_Service[0][0] + "/" + str(Positions.get_Pose_by_name("bar")[0][0]), 2)
-		print("MESSAGE: Robot go to bar")
+		#recherche du robot en fonction du poids
+		#poids_total = int(Article.total_weight_of_an_order(CommandNbr))
+		#print(poids_total)
+		#On selectionne les robots disponibles
+		#robots_candidats=robot=Robot.get_robot_by_ActiveCommand_and_type(CommandNbr, "Service")
+		#for i in range (len(robots_candidats)):
+		#	print(robots_candidats[i])
+		#	if (Robot.get_robot_weight_capacity(i[0])>=poids_total and Robot.get_robot_weight_capacity(i[0])>Robot.get_robot_weight_capacity(robot)):
+		#		robot=robots_candidats[i]
+		#print(robot)
+
+		#Si une commande est preparee et qu'aucun robot de service ne s'en occupe et qu'un robot de service est libre
+		if(len(Prepared)!=0 and len(Free_Service)!=0 and len(Robot.get_robot_by_ActiveCommand_and_type(Prepared[0][0], "Service"))==0):
+			#Mise en occupé du robot de service
+			Robot.update_status(Free_Service[0][0],"Occupied")
+			#Mise à jour de la commande active du robot de service
+			Robot.update_command(Free_Service[0][0], Table.get_Table_data(Prepared[0][0])[0][1])
+			#On envoi un robot de service pour aller la chercher
+			publish(my_ip, port, "Service/Go/Bar", Free_Service[0][0] + "/" + str(Positions.get_Pose_by_name("Bar")[0][0]), 2)
+			print("MESSAGE: Robot go to Bar")
+
+	
+	except mysql.connector.Error as err:
+			print("ERROR IN MAIN LOOP: {}".format(err))
 
 	time.sleep(10)
 
@@ -598,6 +702,7 @@ def command_loop():
 
 
 # Lancement IHM Initialisation
+#InitBDDSuperviseur.delete_flotte_db()
 
 InitBDDSuperviseur.create_flotte_db()
 
@@ -606,7 +711,7 @@ InitBDDSuperviseur.create_all_tables()
 Positions.insert_Pose("table1", 3.30, 1.57, 0.05, -0.99)
 Positions.insert_Pose("table2", 1.64, 1.26, 0.99, 0.03)
 Positions.insert_Pose("table3", 2.56, 3.56, 0.91, -0.41)
-Positions.insert_Pose("bar", 4.92, 2.77, 0.72, 0.69)
+Positions.insert_Pose("Bar", 4.92, 2.77, 0.72, 0.69)
 #Positions.insert_Pose("tagne", -21.2689863214036, -1.0389461981502848, 0.62, 0.80)
 Positions.insert_Pose("accueil", 0.15,3.55,-0.25,1)
 

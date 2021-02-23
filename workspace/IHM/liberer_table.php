@@ -1,5 +1,5 @@
 <?php
-/*Fonction qui permet de libérer une table lorsqu'un client quitte le restaurant et supprime les commandes associsées au client de la abse de données*/
+/*Fonction qui permet de libérer une table lorsqu'un client quitte le restaurant et supprime les commandes associées au client de la abse de données*/
 
 	$liberer_table = $_POST["liberer_table"];
 

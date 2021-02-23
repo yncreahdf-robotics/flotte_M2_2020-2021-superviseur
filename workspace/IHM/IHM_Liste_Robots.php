@@ -22,6 +22,13 @@
 					SELECT RobotIP, RobotType, Position, Etat 
 					FROM Robot_tb
 				');
+
+				/*Création de la requète pour libérer les robots*/
+				$requete_liberer = $bdd->query('SELECT r.RobotIP, r.RobotType, r.Position, r.Etat, t.Role
+					FROM Robot_tb r	/*Lecture table Robot depuis la bdd*/
+					INNER JOIN Type_tb t
+					ON r.RobotType = t.TypeName
+				');
 			?>
 			
 			<!-- Affichage de l'entete de la page avec le fichier entete.php -->
@@ -67,6 +74,17 @@
 								?>
 							</tbody>
 						</table>
+						<form method="post" action="liberer_robot.php">
+							<label for="robot_liberer">Choisissez le robot à libérer : </label>
+							<select name="robot_liberer">
+								<?php
+								while($robot_a_liberer = $requete_liberer->fetch()){
+									echo "<option value =\"" . $robot_a_liberer['RobotIP'] . "\">".$robot_a_liberer['RobotIP']." - Type : ".$robot_a_liberer['RobotType']."</option>";
+								}
+								?>
+							</select>
+							<input type="submit" name="liberer" value="Libérer" id="liberer" />
+						</form>
 					</div>
 
 					<!-- Création d'un bouton permettant d'accéder à un outil d'ajout de type de robot -->

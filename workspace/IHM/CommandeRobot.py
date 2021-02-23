@@ -94,7 +94,7 @@ def send_robot():
 
 	#if(len(Positions.get_Pose_by_name(sys.argv[2]))!=0 and len(Robot.get_robot_data(sys.argv[1]))!=0):
 	publish("192.168.1.5", port, "Service/Go/"+ Position.capitalize(), Robot + "/" + str(Positions.get_Pose_by_name(Position)[0][0]), 2)
-	publish("192.168.1.5", port, "Guide/Go/"+ Position.capitalize(), Robot + "/" + str(Positions.get_Pose_by_name(Position)[0][0]), 2)
+	publish("192.168.1.5", port, "Guide/ReturnTrip/"+ Position.capitalize(), Robot + "/" + str(Positions.get_Pose_by_name(Position)[0][0]), 2)
 	time.sleep(1)
 
 if __name__=="__main__":
